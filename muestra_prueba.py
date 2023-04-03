@@ -23,6 +23,7 @@ from office365.runtime.auth.user_credential import UserCredential
 from office365.sharepoint.lists.list import List   
 from office365.sharepoint.listitems.collection import ListItemCollection
 from office365.runtime.client_request_exception import ClientRequestException 
+import urllib
 import time
 import ssl
 import requests
@@ -74,6 +75,8 @@ class MiApp(QtWidgets.QMainWindow):
         self.ui.bt_upload_file.clicked.connect(self.upload_file)
         self.index_stop=0
         self.count3=0
+
+        
     #*Esta función abre desde el sistema solo archivos Excel  guarda la información en la variable direccion    
     def abrir_archivo(self):
         file=QFileDialog.getOpenFileName(self,"Abrir Archivo Excel", "","Excel Files (*.xlsx) ;; All Files (*)")
@@ -88,17 +91,17 @@ class MiApp(QtWidgets.QMainWindow):
         despues_thread.start()
 
     def crear_tabla(self):#*Esta función filtra los datos del Dataframe requeridos y hace la tabla para mostrarla en la interfaz grafica
-        variable =""
+        self.variable =""
         try:
             file=pd.read_excel("Descargas/PRUEBA_4..xlsx")#*toma el archivo o la ruta y abre el archivo .xlsx
             df=pd.DataFrame(file)#*Lo convierte en Dataframe
             file_2=df.loc[:,['CMTS','Total','Description']].astype(str)#*Filtra las columnas en las que se requieren y transforma todos los datos en STR
-            variable=self.ui.lineEdit_buscar.text()#*Toma lo que se ingrese en el LineEdit y lo pasa como texto almacenandolo en una variable
-            variable=variable.upper()#*Debido a que todas las letras en la columna esta en mayuscula no importa lo que se digite en el LineEdit, lo transforma a mayuscula para facilitar el filtrado
-            self.filtro=file_2[file_2['Description'].str.contains(variable,case=False,na=False,regex=True)]#*con el argumento contains revisa lo que se guarde en la varible,filtre y en la variable filtro guarde todo.
-            if not (self.filtro['Description'].str.contains(variable,case=False,na=False,regex=True)!=variable).any() == (self.filtro['Description'].str.contains(variable,case=False,na=False,regex=True)==variable).any():#*Revisa con contains si lo ingresado en variable existe dentro del dataframe, si no existe continua sin realizar ningun proceso
+            self.variable=self.ui.lineEdit_buscar.text()#*Toma lo que se ingrese en el LineEdit y lo pasa como texto almacenandolo en una variable
+            self.variable=self.variable.upper()#*Debido a que todas las letras en la columna esta en mayuscula no importa lo que se digite en el LineEdit, lo transforma a mayuscula para facilitar el filtrado
+            self.filtro=file_2[file_2['Description'].str.contains(self.variable,case=False,na=False,regex=True)]#*con el argumento contains revisa lo que se guarde en la varible,filtre y en la variable filtro guarde todo.
+            if not (self.filtro['Description'].str.contains(self.variable,case=False,na=False,regex=True)!=self.variable).any() == (self.filtro['Description'].str.contains(self.variable,case=False,na=False,regex=True)==self.variable).any():#*Revisa con contains si lo ingresado en variable existe dentro del dataframe, si no existe continua sin realizar ningun proceso
                     print(self.filtro)
-                    if  not variable=='':#*Con esta condicion revisa que que lo ingresado no este vacio y si lo esta no realiza ninguna operación
+                    if  not self.variable=='':#*Con esta condicion revisa que que lo ingresado no este vacio y si lo esta no realiza ninguna operación
                         columnas=list(self.filtro.columns)#*Toma solo las columnas del Dataframe            
                         df_fila=self.filtro.to_numpy().tolist()#*lo transforma en una lista para revisar las filas del Dataframe                  
                         x=len(columnas)#*Toma el tamaño o longitud de la variable para luego recorrerlo en un for              
@@ -131,6 +134,9 @@ class MiApp(QtWidgets.QMainWindow):
 
     def crear_despues(self):
         try:
+            ############
+
+            ############
             path="data/Ocupacion.xlsx"
             file_despues=pd.read_excel(path,sheet_name='Hoja2',engine='openpyxl')
             df2=pd.DataFrame(file_despues)
@@ -138,7 +144,9 @@ class MiApp(QtWidgets.QMainWindow):
             
             variable2="PUERTOLIBRE"
             self.filtro2=file_3[file_3['Unnamed: 5'].str.contains(variable2,case=False,na=False,regex=True)].fillna(value='No Data')
-            #print(self.filtro2)
+            
+             
+            #print(f"filtro3==>{coincidencias}")
             columnas2=list(self.filtro2.columns)#*Toma solo las columnas del Dataframe            
             df_fila2=self.filtro2.to_numpy().tolist()#*lo transforma en una lista para revisar las filas del Dataframe                  
             xx=len(columnas2)#*Toma el tamaño o longitud de la variable para luego recorrerlo en un for              
@@ -299,10 +307,11 @@ class MiApp(QtWidgets.QMainWindow):
         excel_file = self.direccion
         df = pd.read_excel(excel_file)
         file=pd.DataFrame(df)
-        file_2=file.loc[:,['CMTS','Mac','Total','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
-        file_2[['Mac','Total','Description']] = file_2[['Mac','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
+        file=file.rename(columns={'S/CG/CH':'Sa'})
+        file_2=file.loc[:,['CMTS','Sa','Total','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+        file_2[['Sa','Total','Description']] = file_2[['Sa','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
         data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario
-
+        #print(data)
 
         
 
@@ -328,7 +337,7 @@ class MiApp(QtWidgets.QMainWindow):
 
                     for d in chunk:
                         c=c+1
-                        item_properties = {'CMTS': d['CMTS'],'Mac':d['Mac'],'Total': d['Total'], 'Description': d['Description']}
+                        item_properties = {'CMTS': d['CMTS'],'Sa':d['Sa'],'Total': d['Total'], 'Description': d['Description']}
                         
                         for i in range(max_attempts):
                             try:

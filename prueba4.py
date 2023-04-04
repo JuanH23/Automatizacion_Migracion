@@ -118,6 +118,30 @@ def complete_DAAS(df):
     df = pd.concat([df, nuevas_filas_df]).sort_values(['Dispositivo', 'Puerto']).reset_index(drop=True)
     df=df.drop_duplicates()
     return df
+
+def simpli_DAAS(df):
+    Valor_Dispositivo=df['Dispositivo']
+    Valor_Ip=df['IP']
+    valor_dispositivo=Valor_Dispositivo.index
+    valor_list_dispositivo=valor_dispositivo.to_list()
+    valor_IP=Valor_Ip.index
+    valor__list_IP=valor_IP.to_list()
+    indice_IP=valor__list_IP[1]
+    indice_IP2=valor__list_IP[0]
+    indice_Dispositivo=valor_list_dispositivo[1]
+    Dispositivo= df.loc[indice_Dispositivo, "Dispositivo"]
+    IP=df.loc[indice_IP,"IP"]
+    IP2=df.loc[indice_IP2,"IP"]
+    Sli_IP=IP.find(".")
+    Slic_IP=IP.find(".",Sli_IP+1)
+    SLICE_IP=IP.find(".",Slic_IP+1)
+    Sli_IP2=IP2.find(".")
+    Slic_IP2=IP2.find(".",Sli_IP2+1)
+    SLICE_IP2=IP2.find(".",Slic_IP2+1)
+    filter_IP=int(IP[SLICE_IP+1:])
+    filter_IP2=int(IP2[SLICE_IP2+1:])
+
+    return Dispositivo,filter_IP,filter_IP2
 #########################################################################################
 #path="data/Arris_SCMSummary.xlsx"
 #file=pd.read_excel(dfs["Arris_SCMSummary.xlsx"])
@@ -131,7 +155,8 @@ try:
     #print(file_2)
     df_concat = pd.concat([file_2, df_casa])
     print(df_concat)
-    variable="1is1"
+    #variable="39g1"
+    variable="fas1"
     variable=variable.upper()#*Debido a que todas las letras en la columna esta en mayuscula no importa lo que se digite en el LineEdit, lo transforma a mayuscula para facilitar el filtrado
     filtro=df_concat[df_concat['Description'].str.contains(variable,case=False,na=False,regex=True)]#*con el argumento contains revisa lo que se guarde en la varible,filtre y en la variable filtro guarde todo.
     print(filtro)
@@ -150,25 +175,73 @@ try:
 
 
     df2=pd.DataFrame(file_despues_DAAS)
-    print(df2)
     df_das=complete_DAAS(df2)
     #print(df2)
-    file_3=df_das.loc[:,['IP','Dispositivo','Puerto','status','Unnamed: 4','Unnamed: 5']].astype(str).fillna(value='No Data')
-    print(df_das)            
+    file_3=df_das.loc[:,['IP','Dispositivo','Puerto','status','Unnamed: 4','Unnamed: 5']].astype(str).fillna(value='No Data')          
     variable2="PUERTOLIBRE"
     #variable3="BOGO-GARCE"
     filtro2=file_3[file_3['Unnamed: 5'].str.contains(variable2,case=False,na=False,regex=True)].fillna(value='No Data')
     filtro3=filtro2[filtro2['Dispositivo'].str.contains(variable3,case=False,na=False,regex=True)].fillna(value='No Data')
-    print(filtro3)
     filtro3_sin_duplicados = filtro3.drop_duplicates()
     print(filtro3_sin_duplicados)
+    variable_disp,variable_ip,variable_ip2=simpli_DAAS(filtro3)
+    filtro4=filtro3_sin_duplicados[filtro3_sin_duplicados['Dispositivo'].str.contains(variable_disp,case=False,na=False,regex=True)]#!Opcion 1
+    ############!Opcion2
+    if filtro3_sin_duplicados['IP'].str.contains(str(variable_ip)).any():
+        in_colum=filtro3_sin_duplicados['IP'].str.contains(str(variable_ip),case=False,na=False,regex=True)
+        temp_df=filtro3_sin_duplicados[in_colum]
+        en_tempo=filtro3_sin_duplicados['IP'].str.contains(str(variable_ip+1),case=False,na=False,regex=True)
+        CON_DAAS_COS=filtro3_sin_duplicados[in_colum | en_tempo]
+        CON_DAAS_COS.to_excel("out4.xlsx")
+        #print(filtro3_sin_duplicados[in_colum | en_tempo])
+    elif filtro3_sin_duplicados['IP'].str.contains(str(variable_ip2)).any():
+        in_colum=filtro3_sin_duplicados['IP'].str.contains(str(variable_ip2),case=False,na=False,regex=True)
+        temp_df=filtro3_sin_duplicados[in_colum]
+        en_tempo=filtro3_sin_duplicados['IP'].str.contains(str(variable_ip2+1),case=False,na=False,regex=True)
+        CON_DAAS_COS=filtro3_sin_duplicados[in_colum | en_tempo]
+        CON_DAAS_COS.to_excel("out4.xlsx")
+        #print(filtro3_sin_duplicados[in_colum | en_tempo]) 
+    ############
 
-    filtro3_sin_duplicados.to_excel("out1.xlsx")
+    #!filtro4.to_excel("out2.xlsx")
     df_cos=pd.DataFrame(file_despues_COS)
     df_out=complet_COS(df_cos)
-    print("")
-    print("")
-    
+    #print(df_cos)
+    df_out=df_out[df_out['Dispositivo'].str.contains(variable3,case=False,na=False,regex=True)]
+    #print(df_out)
+    ptp="unlocked"
+    df_out2=df_out[df_out['ptp'].str.contains(ptp,case=False,na=False,regex=True)]#*Filtrado columna ptp
+    #print(f"df_out2==>{df_out2}")
+    df_out2=df_out2.loc[:,['Dispositivo','Puerto','ptp']]
+    df_out2=df_out2.rename(columns={'Dispositivo':'Dispositivo COS'}) 
+    CON_DAAS_COS=CON_DAAS_COS.loc[:,['Dispositivo','Puerto','Unnamed: 5']]
+    CON_DAAS_COS=CON_DAAS_COS.rename(columns={'Dispositivo':'Dispositivo DAAS'}) 
+    df_out2=pd.concat([df_out2, pd.Series([None] * len(df_out2.columns), index=df_out2.columns)], ignore_index=True)
+    CON_DAAS_COS=pd.concat([CON_DAAS_COS, pd.Series([None] * len(CON_DAAS_COS.columns), index=CON_DAAS_COS.columns)], ignore_index=True)
+    final=pd.concat([df_out2,CON_DAAS_COS],axis=1)
+    print(final)
+
+    DIS_COS=final['Dispositivo COS']
+    index_DIS_COS=DIS_COS.index
+    index_DIS_COS_list=index_DIS_COS.to_list()
+    indice_DIS_COS=index_DIS_COS_list[1]
+    UNO = final.loc[indice_DIS_COS, "Dispositivo COS"]
+
+    print(UNO)
+    first=UNO.find("-")
+    second=UNO.find("-",first+1)
+    three=UNO.find("-",second+1)
+    four=UNO.find("-",three+1)
+    UN_COS=UNO[three+1:four]
+    print(UN_COS)
+    if final['Dispositivo COS'].str.contains(UN_COS,case=False,na=False,regex=True).any():
+        NO_dos_COS=final['Dispositivo COS'].str.contains(UN_COS,case=False,na=False,regex=True)
+        FINAL_FILTRADO=final[NO_dos_COS]
+    else:
+        FINAL_FILTRADO=final
+    print(FINAL_FILTRADO )    
+    final.to_excel("out8.xlsx")
+    FINAL_FILTRADO.to_excel("out9.xlsx")
 except KeyError as e:
     print(f"Error:{e}")
 

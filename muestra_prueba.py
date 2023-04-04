@@ -418,9 +418,7 @@ class MiApp(QtWidgets.QMainWindow):
                                  
     def save_path_list(self):
         path_list=self.ui.lineEdit_path_list.text()
-        new_folder="\descarga"
-        FOL_DEST=path_list+new_folder
-        set_key(".env","path_list_download",FOL_DEST)
+        set_key(".env","path_list_download",path_list+"\descarga")
         FOLDER_DEST=env['path_list_download']
         print(FOLDER_DEST)
         return FOLDER_DEST

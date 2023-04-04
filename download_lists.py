@@ -21,9 +21,9 @@ FILE_NAME=sys.argv[4]
 
 def Type_file(file_name,export_type):
     if export_type == 'Excel':
-        file_name_export='.'.join([file_name,'.xlsx']) 
+        file_name_export='.'.join([file_name,'xlsx']) 
     elif export_type == 'CSV':
-        file_name_export='.'.join([file_name,'.csv'])
+        file_name_export='.'.join([file_name,'csv'])
     else:
         file_name_export=file_name
     return file_name_export

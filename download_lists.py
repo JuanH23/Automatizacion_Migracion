@@ -2,10 +2,12 @@ from office365_api import SharePoint
 import sys
 import csv
 from pathlib import PurePath
+from pathlib import Path
 from openpyxl import Workbook
 import pandas as pd
 import time
 import threading
+import os
 #Nombre de la lista la cual se va a descargar
 '''LIST_NAME=sys.argv[1]
 #Tipo de archivo el cual se va a descargar "Ya sea excel ó csv"
@@ -54,7 +56,8 @@ def save_file_csv(list_items,dir_path,file_name):
 
 
 def save_Execel(list_items,dir_path,file_name):
-    dir_file_path=PurePath(dir_path,file_name)
+    dir_file_path=Path(dir_path,file_name).with_suffix('.xlsx')
+    # dir_file_path=PurePath(dir_path,file_name)
     wb= Workbook()
     ws=wb.active
     #Obtiene las cabeceras de la lista
@@ -68,6 +71,8 @@ def save_Execel(list_items,dir_path,file_name):
         for idx, item in enumerate(dict_obj.properties.items()):
             ws.cell(row=row,column=idx+1,value=item[1])
         row+=1
+    dir_path=Path(dir_path)
+    dir_path.mkdir(parents=True,exist_ok=True)
     wb.save(dir_file_path)
 
 

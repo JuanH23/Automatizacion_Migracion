@@ -34,8 +34,8 @@ env=dotenv_values(".env")
 username = env["sharepoint_email"]
 password = env["sharepoint_password"]
 url = env['sharepoint_url_site']
+ruth_list_download= env["path_list_download"]
 
-FOLDER_DEST="C:\\Users\\IC0167A\\Desktop\\Proyecto_final\\Descargas"
 EXPORT_TYPE='Excel'
 
 ##############################################################################################################
@@ -72,6 +72,7 @@ class MiApp(QtWidgets.QMainWindow):
         self.ui.bt_filtrar_2.clicked.connect(self.upload_LIST)
         self.ui.bt_cancelar.clicked.connect(self.cancelar_stop)
         self.ui.bt_upload_file.clicked.connect(self.upload_file)
+        self.ui.bt_save_path_list.clicked.connect(self.save_path_list)
         self.index_stop=0
         self.count3=0
     #*Esta función abre desde el sistema solo archivos Excel  guarda la información en la variable direccion    
@@ -243,7 +244,7 @@ class MiApp(QtWidgets.QMainWindow):
     def download_LISTS(self):
         LIST_NAME=self.ui.lineEdit_descargar_lista.text()
         FILE_NAME=self.ui.lineEdit_nombre_lista.text()
-
+        FOLDER_DEST=self.save_path_list()
         file_name= download_lists.Type_file(FILE_NAME,EXPORT_TYPE)
         downloader_thread = threading.Thread(target=download_lists.download_list(LIST_NAME,EXPORT_TYPE,FOLDER_DEST,file_name))
         downloader_thread.start()
@@ -415,6 +416,14 @@ class MiApp(QtWidgets.QMainWindow):
                 if attempt_count >= max_attempts:
                     print("Se han excedido el número máximo de intentos. Saliendo del programa...")
                                  
+    def save_path_list(self):
+        path_list=self.ui.lineEdit_path_list.text()
+        new_folder="\descarga"
+        FOL_DEST=path_list+new_folder
+        set_key(".env","path_list_download",FOL_DEST)
+        FOLDER_DEST=env['path_list_download']
+        print(FOLDER_DEST)
+        return FOLDER_DEST
     
 if __name__=="__main__":
     app=QtWidgets.QApplication(sys.argv)

@@ -243,6 +243,7 @@ class Ui_MainWindow(object):
         self.comboBox.addItem("")
         self.comboBox.addItem("")
         self.comboBox.addItem("")
+        self.comboBox.addItem("")
         self.verticalLayout_4.addWidget(self.comboBox)
         self.lineEdit_nombre_lista = QtWidgets.QLineEdit(self.page_uno)
         self.lineEdit_nombre_lista.setObjectName("lineEdit_nombre_lista")
@@ -456,9 +457,10 @@ class Ui_MainWindow(object):
         self.bt_save_path_list.setText(_translate("MainWindow","Guardar Ruta"))
         self.label_path_list.setText(_translate("MainWindow","Ruta en donde va a guardar los archivos"))
         self.label_path_description.setText(_translate("MainWindow","Porfavor agregue una vez mas este caracter ' \\ ', a la ruta como este ejemplo: C:-->\\\<--Users\IC0167A\Desktop"))
-        self.comboBox.setItemText(0, _translate("MainWindow", "Arris_SCMSummary"))
-        self.comboBox.setItemText(1, _translate("Mainwindow", "Casa_SCMSummary"))
-        self.comboBox.setItemText(2, _translate("Mainwindow", "Ocupacion - Marcacion RPHY Harmonic"))
+        self.comboBox.setItemText(0, _translate("MainWindow", "Elija nombre del archivo"))
+        self.comboBox.setItemText(1, _translate("MainWindow", "Arris_SCMSummary"))
+        self.comboBox.setItemText(2, _translate("Mainwindow", "Casa_SCMSummary"))
+        self.comboBox.setItemText(3, _translate("Mainwindow", "Ocupacion - Marcacion RPHY Harmonic"))
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)

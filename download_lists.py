@@ -8,6 +8,7 @@ import pandas as pd
 import time
 import threading
 import os
+import ssl
 #Nombre de la lista la cual se va a descargar
 '''LIST_NAME=sys.argv[1]
 #Tipo de archivo el cual se va a descargar "Ya sea excel ó csv"
@@ -56,6 +57,7 @@ def save_file_csv(list_items,dir_path,file_name):
 
 
 def save_Execel(list_items,dir_path,file_name):
+    ssl._create_default_https_context=ssl._create_unverified_context
     dir_file_path=Path(dir_path,file_name).with_suffix('.xlsx')
     # dir_file_path=PurePath(dir_path,file_name)
     wb= Workbook()

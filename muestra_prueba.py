@@ -73,6 +73,7 @@ class MiApp(QtWidgets.QMainWindow):
         self.ui.bt_cancelar.clicked.connect(self.cancelar_stop)
         self.ui.bt_upload_file.clicked.connect(self.upload_file)
         self.ui.bt_save_path_list.clicked.connect(self.save_path_list)
+        self.ui.comboBox.currentIndexChanged.connect(self.seleccion_archivo)
         self.index_stop=0
         self.count3=0
     #*Esta función abre desde el sistema solo archivos Excel  guarda la información en la variable direccion    
@@ -237,14 +238,19 @@ class MiApp(QtWidgets.QMainWindow):
         print(self.index_stop)
         self.update_progress_bar(100)
         
-
-
+    def seleccion_archivo(self):
+        seleccion=self.ui.comboBox.itemText(self.ui.comboBox.currentIndex())
+        print(seleccion)   
+        return seleccion
+        
 
 
     def download_LISTS(self):
+        
         LIST_NAME=self.ui.lineEdit_descargar_lista.text()
-        FILE_NAME=self.ui.lineEdit_nombre_lista.text()
-        FOLDER_DEST=self.save_path_list()
+        FILE_NAME=self.seleccion_archivo()
+        FOLDER_DEST=self.save_path_list()#!Revisar porque no se actualiza el path 
+        print(FOLDER_DEST)
         file_name= download_lists.Type_file(FILE_NAME,EXPORT_TYPE)
         downloader_thread = threading.Thread(target=download_lists.download_list(LIST_NAME,EXPORT_TYPE,FOLDER_DEST,file_name))
         downloader_thread.start()
@@ -417,10 +423,26 @@ class MiApp(QtWidgets.QMainWindow):
                     print("Se han excedido el número máximo de intentos. Saliendo del programa...")
                                  
     def save_path_list(self):
-        path_list=self.ui.lineEdit_path_list.text()
-        set_key(".env","path_list_download",path_list+"\descarga")
-        FOLDER_DEST=env['path_list_download']
-        print(FOLDER_DEST)
+        path_list = self.ui.lineEdit_path_list.text()
+        # Obtenemos el valor anterior de path_list_download del archivo .env
+        old_path_list_download = env.get('path_list_download', '')
+        print(f"path_list==>{path_list}")
+
+        if self.ui.lineEdit_path_list.text()=='':
+            new_path_list_download = old_path_list_download
+            self.ui.lineEdit_path_list.setText('')
+            #!PROBAR SI VACIANDO EL LINEEDIT PERMITE QUE VARIE Y NO SE QUEDE EN UN VALOR.
+        else:
+            new_path_list_download = path_list + "\\descarga"
+            self.ui.lineEdit_path_list.setText('')
+
+        print(f"new_path_list_download==>{new_path_list_download}")
+        set_key(".env", "path_list_download", new_path_list_download)
+        print(set_key(".env", "path_list_download", new_path_list_download))
+        #FOLDER_DEST=env.get('path_list_download', '')
+        FOLDER_DEST=new_path_list_download
+        #FOLDER_DEST=FOLDER
+        print(f"FOLDER_DEST==>{FOLDER_DEST}")
         return FOLDER_DEST
     
 if __name__=="__main__":

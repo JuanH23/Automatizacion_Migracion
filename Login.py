@@ -10,78 +10,40 @@
 import sys
 from PyQt5.QtWidgets import (QApplication,QLabel,QWidget,QLineEdit,QPushButton,QMessageBox,QCheckBox)
 from PyQt5.QtGui import QFont,QPixmap
+from PyQt5.QtWidgets import (QDialog,QLabel,QPushButton,QLineEdit,QMessageBox,)
 from muestra_prueba import MiApp
 from Config_User import ConfigUsuarioView
 from dotenv import set_key,dotenv_values
+from Login_Final import*
 
 class Login(QWidget):
         def __init__(self):
             super().__init__()
-            
-            self.inicializar()
-        #Ventana principal vacia
-        def inicializar(self):
-            self.setGeometry(100,100,350,250)
-            self.setWindowTitle("Login")
-            self.generar_formulario()
-            self.show()
-
-        def generar_formulario(self):
+            self.ui=Ui_Form()
+            self.ui.setupUi(self)
+            self.ui.Login_button.clicked.connect(self.login) 
+             #*Button Config
+            self.ui.Config_button.clicked.connect(self.config_usuario)
+            self.ui.Close_button.clicked.connect(self.control_close)
              #Label de usuario
-             self.is_loged=False
-             user_Label=QLabel(self)
-             user_Label.setText("Usuario:")
-             user_Label.setFont(QFont('Arial',10))
-             user_Label.move(20,54)
-             
-
-             #Line edit para ingresar el usuario
-             self.user_input= QLineEdit(self)
-             self.user_input.resize(250,24)
-             self.user_input.move(90,50)
-            #Label Password
-             self.is_loged=False
-             password_Label=QLabel(self)
-             password_Label.setText("Password:")
-             password_Label.setFont(QFont('Arial',10))
-             password_Label.move(20,85)
-             
-
-             #Line edit para ingresar Password
-             self.password_input= QLineEdit(self)
-             self.password_input.resize(250,24)
-             self.password_input.move(90,82)
-             #Echo_mode se usa para no mostrar la contraseña en texto plano
-             self.password_input.setEchoMode(
+            self.is_loged=False
+            self.ui.lineEdit_2.setEchoMode(
                   QLineEdit.EchoMode.Password
              )
+            
              #Checkbox para poder visualizar o no, la contraseña
-             self.check_view_pass= QCheckBox(self)
-             self.check_view_pass.setText("Ver password")
-             self.check_view_pass.move(90,110)
-             self.check_view_pass.toggled.connect(self.mostrar_pass)
+            self.ui.checkBox.toggled.connect(self.mostrar_pass)
 
-             #Botones
-             login_button=QPushButton(self)
-             login_button.setText("Login")
-             login_button.resize(320,24)
-             login_button.move(20,140)
-             login_button.clicked.connect(self.login)
-             
-             #*Button Config
-             Config_button=QPushButton(self)
-             Config_button.setText("Configuración del Sharepoint")
-             Config_button.resize(320,24)
-             Config_button.move(20,180)
-             Config_button.clicked.connect(self.config_usuario)
+        def control_close(self):#*Función para cerrar el programa
+            self.close()
 
         def mostrar_pass(self,clicked):
-                  if clicked:
-                    self.password_input.setEchoMode(
+                  if clicked :
+                    self.ui.lineEdit_2.setEchoMode(
                         QLineEdit.EchoMode.Normal
-                    )
+                    )           
                   else:
-                        self.password_input.setEchoMode(
+                        self.ui.lineEdit_2.setEchoMode(
                         QLineEdit.EchoMode.Password
                     )          
                   
@@ -93,9 +55,9 @@ class Login(QWidget):
                     with open(user_path,'r') as f:
                           for linea in f:
                             users.append(linea.strip("\n"))
-                    login_information=f"{self.user_input.text()},{self.password_input.text()}"
-                    Username=self.user_input.text()
-                    Password=self.password_input.text()
+                    login_information=f"{self.ui.lineEdit.text()},{self.ui.lineEdit_2.text()}"
+                    Username=self.ui.lineEdit.text()
+                    Password=self.ui.lineEdit_2.text()
                     print(f'Correo==>{Username}')
                     print(f'Pass==>{Password}')
                     env=dotenv_values(".env")
@@ -137,5 +99,6 @@ class Login(QWidget):
 if __name__ == "__main__":
     import sys
     app = QApplication(sys.argv)
-    Login= Login()
+    Log= Login()
+    Log.show()
     sys.exit(app.exec_())

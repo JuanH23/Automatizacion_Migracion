@@ -320,6 +320,15 @@ class Ui_MainWindow(object):
         self.label_9.setAlignment(QtCore.Qt.AlignCenter)
         self.label_9.setObjectName("label_9")
         self.verticalLayout_5.addWidget(self.label_9)
+
+        self.bt_search_files = QtWidgets.QPushButton(self.page_tres)
+        font = QtGui.QFont()
+        font.setFamily("Lucida Bright")
+        font.setPointSize(9)
+        self.bt_search_files.setFont(font)
+        self.bt_search_files.setObjectName("bt_sear_files")
+        self.verticalLayout_5.addWidget(self.bt_search_files)
+
         self.label_8 = QtWidgets.QLabel(self.page_tres)
         font = QtGui.QFont()
         font.setFamily("Lucida Bright")
@@ -327,9 +336,14 @@ class Ui_MainWindow(object):
         self.label_8.setFont(font)
         self.label_8.setObjectName("label_8")
         self.verticalLayout_5.addWidget(self.label_8)
+        
+
         self.lineEdit_buscar = QtWidgets.QLineEdit(self.page_tres)
         self.lineEdit_buscar.setObjectName("lineEdit_buscar")
         self.verticalLayout_5.addWidget(self.lineEdit_buscar)
+
+
+
         self.bt_filtrar = QtWidgets.QPushButton(self.page_tres)
         font = QtGui.QFont()
         font.setFamily("Lucida Bright")
@@ -418,6 +432,7 @@ class Ui_MainWindow(object):
         self.bt_upload_file.setText(_translate("MainWindow", "SUBIR ARCHIVO"))
         self.label_6.setText(_translate("MainWindow", "ANTES"))
         self.label_7.setText(_translate("MainWindow", "DESPUES"))
+        self.bt_search_files.setText(_translate("MainWindow", "BUSCAR ARCHIVOS"))
 
 
 if __name__ == "__main__":

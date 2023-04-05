@@ -2,104 +2,55 @@
 from PyQt5.QtWidgets import (QDialog,QLabel,QPushButton,QLineEdit,QMessageBox,)
 from PyQt5.QtGui import QFont
 from dotenv import set_key,dotenv_values
-import Barra_descaga_list
+from Config import*
 class ConfigUsuarioView(QDialog):
     
 
     def __init__(self):
         super().__init__()
-        self.setModal(True)
+        self.ui=Ui_config()
+        self.ui.setupUi(self)
+        self.setModal(False)
         self.generar_formulario()
 
     def generar_formulario(self):
-        self.setGeometry(100,100,350,280)
-        self.setWindowTitle("Configuración Usuario")
 
-        self.user_label=QLabel(self)
-        self.user_label.setText("Usuario:")
-        self.user_label.setFont(QFont('Arial',10))
-        self.user_label.move(20,44)
-
-        self.user_input=QLineEdit(self)
-        self.user_input.resize(250,24)
-        self.user_input.move(90,40)
-
-        password_1_label=QLabel(self)
-        password_1_label.setText("Password:")
-        password_1_label.setFont(QFont('Arial',10))
-        password_1_label.move(20,74)
-
-        self.password_1_input=QLineEdit(self)
-        self.password_1_input.resize(250,24)
-        self.password_1_input.move(90,70)
-        self.password_1_input.setEchoMode(
+        self.ui.lineEdit_2.setEchoMode(
             QLineEdit.EchoMode.Password
         )
 
-        password_2_label=QLabel(self)
-        password_2_label.setText("Password:")
-        password_2_label.setFont(QFont('Arial',10))
-        password_2_label.move(20,104)
-
-        self.password_2_input=QLineEdit(self)
-        self.password_2_input.resize(250,24)
-        self.password_2_input.move(90,100)
-        self.password_2_input.setEchoMode(
+        self.ui.lineEdit_3.setEchoMode(
             QLineEdit.EchoMode.Password
         )
-        self.url_site=QLabel(self)
-        self.url_site.setText("Url:")
-        self.url_site.setFont(QFont('Arial',10))
-        self.url_site.move(20,134)
+        self.ui.checkBox.toggled.connect(self.mostrar_pass)
 
-        self.site_exam=QLabel(self)
-        self.site_exam.setText("URL:https://claromovilco.sharepoint.com/sites/sitename/")
-        self.site_exam.setFont(QFont('Arial',10))
-        self.site_exam.move(20,170)
+        self.ui.Login_button.clicked.connect(self.configurar_usuario)
+        self.ui.Close_button.clicked.connect(self.cancelar)
 
-        self.url_site=QLineEdit(self)
-        self.url_site.resize(250,24)
-        self.url_site.move(90,130)
-
-        self.name_site=QLabel(self)
-        self.name_site.setText("Name site:")
-        self.name_site.setFont(QFont('Arial',10))
-        self.name_site.move(20,204)
-
-        self.name_site=QLineEdit(self)
-        self.name_site.resize(250,24)
-        self.name_site.move(90,200)
-
-        
-
-
-        create_button=QPushButton(self)
-        create_button.setText("Guardar Parametros")
-        create_button.resize(150,25)
-        create_button.move(20,240)
-        create_button.clicked.connect(self.configurar_usuario)
-
-        cancel_button=QPushButton(self)
-        cancel_button.setText("Cancelar")
-        cancel_button.resize(150,25)
-        cancel_button.move(185,240)
-        create_button.clicked.connect(self.cancelar)
-
-
+    def mostrar_pass(self,clicked):
+                  if clicked:
+                    self.ui.lineEdit_2.setEchoMode(
+                        QLineEdit.EchoMode.Normal
+                    )
+                    self.ui.lineEdit_3.setEchoMode(
+                        QLineEdit.EchoMode.Normal
+                    )                    
+                  else:
+                        self.ui.lineEdit_2.setEchoMode(
+                        QLineEdit.EchoMode.Password
+                    )
+                        self.ui.lineEdit_3.setEchoMode(
+                        QLineEdit.EchoMode.Password
+                    )                             
     def cancelar(self):
         self.close()
     
-    def configurar_usuario(self):#!Guardar estos parametros en el archivo.env
+    def configurar_usuario(self):
         user_path='usuarios.txt'
-        usuario=self.user_input.text()
-        password1=self.password_1_input.text()
-        password2=self.password_2_input.text()
-        url=self.url_site.text()
-        site=self.name_site.text()
-        env=dotenv_values(".env")
-        set_key(".env","sharepoint_url_site",url)#input("Digite correo==>") cambiar por la variable del qt            USERNAME=env["sharepoint_email"]
-        set_key(".env","sharepoint_site_name",site)#
-        
+        usuario=self.ui.lineEdit.text()
+        password1=self.ui.lineEdit_2.text()
+        password2=self.ui.lineEdit_3.text()
+    
 
         if password1 == '' or password2 == '' or usuario=='':
             QMessageBox.warning(self,'Error','Por favor ingrese datos validos',

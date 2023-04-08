@@ -28,7 +28,7 @@ ssl._create_default_https_context=ssl._create_unverified_context #*Quita la segu
 ctx = ClientContext(url).with_credentials(UserCredential(username,password))
 #############################################################################
 
-list_title = "PRUEBA_FINAL2"
+list_title = "Lista_Casa"
 Sp_list = ctx.web.lists.get_by_title(list_title)#*Acceder a la lista
 
 print(Sp_list)
@@ -48,12 +48,35 @@ ctx.execute_query()
 
 #######################################################################################
 
-excel_file = "Descargas/Arris_SCMSummary.xlsx"
-df = pd.read_excel(excel_file)
-file=pd.DataFrame(df)
-file_2=file.loc[:,['CMTS','Mac','Total','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
-file_2[['S/CG/CH','Total','Description']] = file_2[['Mac','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
-data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario
+excel_file = "Descargas/Casa_SCMSummary.xlsx"
+if "arris" in list_title :
+    df = pd.read_excel(excel_file)
+    file=pd.DataFrame(df)
+    file_2=file.loc[:,['CMTS','Mac','Total','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+    file_2[['Mac','Total','Description']] = file_2[['Mac','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
+    data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario
+    flag=1
+elif "Casa" in list_title :
+    df = pd.read_excel(excel_file)
+    file=pd.DataFrame(df)
+    file_2=file.loc[:,['CMTS','Upstream','Total','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+    file_2[['Upstream','Total','Description']] = file_2[['Upstream','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
+    data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
+    flag=2
+elif "Daas" in list_title :
+    df = pd.read_excel(excel_file,sheet_name='Hoja2',engine='openpyxl')
+    file=pd.DataFrame(df)
+    file_2=file.loc[:,['IP','Dispositivo','Puerto','Unnamed: 5']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+    file_2[['IP','Dispositivo','Puerto','Unnamed: 5']] = file_2[['IP','Dispositivo','Puerto','Unnamed: 5']].astype(str)#*Convierte los valores de estas columnas a tipo str
+    data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
+    flag=3
+elif "Cos" in list_title :
+    df = pd.read_excel(excel_file,sheet_name='Hoja5',engine='openpyxl')
+    file=pd.DataFrame(df)
+    file_2=file.loc[:,['IP','Dispositivo','Puerto','ptp']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+    file_2[['IP','Dispositivo','Puerto','ptp']] = file_2[['IP','Dispositivo','Puerto','ptp']].astype(str)#*Convierte los valores de estas columnas a tipo str
+    data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
+    flag=4              
 c=0
 chunksize=1000#Cantidad de datos que va a recorrer del Dataframe, es decir va a coger x cantidad de datos y va a realizar todo el proceso con los datos y luego toam otra x cantidad de datos 
 last_index = 0 # índice del último elemento agregado
@@ -79,8 +102,16 @@ try:
             
 
             for d in chunk:
+                if flag==1:
+                    item_pro = {'CMTS': d['CMTS'],'Mac':d['Mac'],'Total': d['Total'], 'Description': d['Description']}     
+                elif flag==2:
+                    item_pro = {'CMTS': d['CMTS'],'Upstream':d['Upstream'],'Total': d['Total'], 'Description': d['Description']}    
+                elif flag==3:
+                    item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'], 'Unnamed: 5': d['Unnamed: 5']}  
+                elif flag==4:
+                    item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'], 'ptp': d['ptp']}      
                 c=c+1
-                item_properties = {'CMTS': d['CMTS'],'S/CG/CH':d['S/CG/CH'],'Total': d['Total'], 'Description': d['Description']}
+                item_properties=item_pro
                 
                 for i in range(max_attempts):
                     try:

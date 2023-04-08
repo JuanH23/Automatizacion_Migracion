@@ -84,11 +84,13 @@ class MiApp(QtWidgets.QMainWindow):
         self.ui.bt_filtrar_2.clicked.connect(self.upload_LIST)
         self.ui.bt_cancelar.clicked.connect(self.cancelar_stop)
         self.ui.bt_upload_file.clicked.connect(self.upload_file)
-        self.ui.bt_search_files.clicked.connect(self.search_file_filter)
+        self.ui.bt_search_files.clicked.connect(self.filtrado_COS_DAAS)
         self.index_stop=0
         self.count3=0
 
-        
+
+
+
     #*Esta función abre desde el sistema solo archivos Excel  guarda la información en la variable direccion    
     def abrir_archivo(self):
         file=QFileDialog.getOpenFileName(self,"Abrir Archivo Excel", "","Excel Files (*.xlsx) ;; All Files (*)")
@@ -96,6 +98,212 @@ class MiApp(QtWidgets.QMainWindow):
     #*Esta función llama a la función crear tabla lo unico que hace es correrlo en forma de hilos para que 
     #*corra en paralelo con la interfaz y cualquier proceso que se este ejecutando en el mismo instante    
     
+
+    def complet_COS(self,df):
+        todos_valores_num1=pd.Series(range(1,113))
+        todos_valores_num1=pd.concat([pd.Series([1]),todos_valores_num1,pd.Series([112])])
+        todos_valores_num2=pd.Series(range(0,1))
+        todos_valores_num2=pd.concat([pd.Series([0]),todos_valores_num2,pd.Series([1])])
+        print(todos_valores_num2)
+        dispositivos=df['Dispositivo'].unique()
+        dispositivos_con_puertos_faltantes=[]
+        for dispositivo in dispositivos:
+            puertos=df[df['Dispositivo']==dispositivo]['Puerto'].apply(lambda x:int(x.split(':')[-1]))
+            puertos_faltantes=todos_valores_num1[~todos_valores_num1.isin(puertos)]
+            if len(puertos_faltantes)>0:
+                dispositivos_con_puertos_faltantes.append(dispositivo)
+
+
+        nuevas_filas=[]
+        for dispositivo in dispositivos_con_puertos_faltantes:
+            puertos=df[df['Dispositivo']==dispositivo]['Puerto'].apply(lambda x: int(x.split(':')[-1]))
+            valores_faltantes=todos_valores_num1[~todos_valores_num1.isin(puertos)]
+            
+            for puerto in valores_faltantes[valores_faltantes<=112]:
+
+                puerto_str=str(puerto)+':0'
+                puerto2_str=str(puerto)+':1'
+                ip=df[df['Dispositivo']==dispositivo]['IP'].iloc[0]
+                nuevas_filas.append((ip,dispositivo,puerto_str,"-","-","-","offline","unlocked"))
+                nuevas_filas.append((ip,dispositivo,puerto2_str,"-","-","-","offline","unlocked"))
+        nuevas_filas_df=pd.DataFrame(nuevas_filas,columns=df.columns)
+
+        df=pd.concat([df,nuevas_filas_df]).sort_values(['Dispositivo','Puerto']).reset_index(drop=True)
+        df=df.drop_duplicates()
+        df=df.drop_duplicates(subset=['Dispositivo','Puerto'])
+        return df
+
+
+    def complete_DAAS(self,df):
+        # Crear una serie con todos los valores posibles de puerto
+        todos_los_valores = pd.Series(range(1, 49))
+        todos_los_valores = pd.concat([pd.Series([0]), todos_los_valores, pd.Series([48])])
+
+        # Identificar dispositivos con puertos faltantes
+        dispositivos = df['Dispositivo'].unique()
+        dispositivos_con_puertos_faltantes = []
+        for dispositivo in dispositivos:
+            puertos = df[df['Dispositivo'] == dispositivo]['Puerto'].apply(lambda x: int(x.split('/')[-1]))
+            puertos_faltantes = todos_los_valores[~todos_los_valores.isin(puertos)]
+            if len(puertos_faltantes) > 0:
+                dispositivos_con_puertos_faltantes.append(dispositivo)
+
+        # Crear DataFrame con nuevas filas para cada dispositivo
+        nuevas_filas = []
+        for dispositivo in dispositivos_con_puertos_faltantes:
+            puertos = df[df['Dispositivo'] == dispositivo]['Puerto'].apply(lambda x: int(x.split('/')[-1]))
+            valores_faltantes = todos_los_valores[~todos_los_valores.isin(puertos)]
+            valores_faltantes_menores=valores_faltantes[valores_faltantes <= 48]
+            if not valores_faltantes_menores.empty:
+                for puerto in valores_faltantes_menores:
+                    puerto_str = 'xe-0/0/' + str(puerto)
+                    ip_series = df[df['Dispositivo'] == dispositivo]['IP']
+                    if not ip_series.empty:
+                        ip=ip_series.iloc[0]
+                    else:
+                        ip=np.nan
+                    #ocupacion = df[df['Dispositivo'] == dispositivo]['Unnamed: 5'].iloc[0]
+                    nuevas_filas.append((ip, dispositivo, puerto_str, np.nan, np.nan, "PUERTOLIBRE"))
+        nuevas_filas_df = pd.DataFrame(nuevas_filas, columns=df.columns)
+
+        # Concatenar DataFrame original con nuevas filas y ordenar por dispositivo y puerto
+        df = pd.concat([df, nuevas_filas_df]).sort_values(['Dispositivo', 'Puerto']).reset_index(drop=True)
+        df=df.drop_duplicates()
+        return df
+
+    def simpli_DAAS(self,df):
+        Valor_Dispositivo=df['Dispositivo']
+        Valor_Ip=df['IP']
+        valor_dispositivo=Valor_Dispositivo.index
+        valor_list_dispositivo=valor_dispositivo.to_list()
+        valor_IP=Valor_Ip.index
+        valor__list_IP=valor_IP.to_list()      
+        indice_IP=valor__list_IP[0]
+        indice_IP2=valor__list_IP[0]
+        indice_Dispositivo=valor_list_dispositivo[0]
+        Dispositivo= df.loc[indice_Dispositivo, "Dispositivo"]
+        IP=df.loc[indice_IP,"IP"]
+        IP2=df.loc[indice_IP2,"IP"]
+        Sli_IP=IP.find(".")
+        Slic_IP=IP.find(".",Sli_IP+1)
+        SLICE_IP=IP.find(".",Slic_IP+1)
+        Sli_IP2=IP2.find(".")
+        Slic_IP2=IP2.find(".",Sli_IP2+1)
+        SLICE_IP2=IP2.find(".",Slic_IP2+1)
+        filter_IP=int(IP[SLICE_IP+1:])
+        filter_IP2=int(IP2[SLICE_IP2+1:])
+
+        return Dispositivo,filter_IP,filter_IP2
+
+    def filtrado_COS_DAAS(self):
+         try:
+            path_arris="Documents/Arris_SCMSummary.xlsx"
+            path_casa="Documents/Casa_SCMSummary.xlsx"
+            file_arris=pd.read_excel(path_arris)
+            file_casa=pd.read_excel(path_casa)
+            df=pd.DataFrame(file_arris)
+            df_casa=pd.DataFrame(file_casa)
+            df_casa=df_casa.loc[:,['CMTS','Upstream','Total','Description']]
+            df_casa=df_casa.rename(columns={'Upstream':'S'})
+            file_2=df.loc[:,['CMTS','Mac','Total','Description']]
+            file_2[['Mac','Total','Description']] = file_2[['Mac','Total','Description']].astype(str)
+            #print(file_2)
+            df_concat = pd.concat([file_2, df_casa])
+            #print(df_concat)
+            #variable="39g1"
+            #variable="fas1"
+            variable=self.ui.lineEdit_buscar.text()
+            variable=variable.upper()#*Debido a que todas las letras en la columna esta en mayuscula no importa lo que se digite en el LineEdit, lo transforma a mayuscula para facilitar el filtrado
+            self.filtro=df_concat[df_concat['Description'].str.contains(variable,case=False,na=False,regex=True)]#*con el argumento contains revisa lo que se guarde en la varible,filtre y en la variable filtro guarde todo.
+            #print(self.filtro)
+            
+            ciudad=self.filtro['CMTS']
+            #print(ciudad)
+            valor=ciudad.index
+            valor_list=valor.to_list()
+            indice=valor_list[1]
+            v = self.filtro.loc[indice, "CMTS"]
+
+            print(v)
+            sep=v.find("-")
+            sep2=v.find("-",sep+1)
+            variable3=v[:sep2]
+            print(variable3)
+
+            path_DAAS="Documents/Ocupacion - Marcacion RPHY Harmonic.xlsx"
+            file_DAAS=pd.read_excel(path_DAAS,sheet_name='Hoja2',engine='openpyxl')
+            df2=pd.DataFrame(file_DAAS)
+            #print(df2)
+            df_das=self.complete_DAAS(df2)
+            #print(df2)
+            file_3=df_das.loc[:,['IP','Dispositivo','Puerto','status','Unnamed: 4','Unnamed: 5']].astype(str).fillna(value='No Data')          
+            variable2="PUERTOLIBRE"
+            #variable3="BOGO-GARCE"
+            filtro2=file_3[file_3['Unnamed: 5'].str.contains(variable2,case=False,na=False,regex=True)].fillna(value='No Data')
+            
+            filtro3=filtro2[filtro2['Dispositivo'].str.contains(variable3,case=False,na=False,regex=True)].fillna(value='No Data')
+            filtro3_sin_duplicados = filtro3.drop_duplicates()
+            #print(filtro3_sin_duplicados)
+            variable_disp,variable_ip,variable_ip2=self.simpli_DAAS(filtro3)
+            filtro4=filtro3_sin_duplicados[filtro3_sin_duplicados['Dispositivo'].str.contains(variable_disp,case=False,na=False,regex=True)]#!Opcion 1
+            ############!Opcion2
+            if filtro3_sin_duplicados['IP'].str.contains(str(variable_ip)).any():
+                in_colum=filtro3_sin_duplicados['IP'].str.contains(str(variable_ip),case=False,na=False,regex=True)
+                temp_df=filtro3_sin_duplicados[in_colum]
+                en_tempo=filtro3_sin_duplicados['IP'].str.contains(str(variable_ip+1),case=False,na=False,regex=True)
+                CON_DAAS_COS=filtro3_sin_duplicados[in_colum | en_tempo]
+                CON_DAAS_COS.to_excel("out10.xlsx")
+                #print(filtro3_sin_duplicados[in_colum | en_tempo])
+            elif filtro3_sin_duplicados['IP'].str.contains(str(variable_ip2)).any():
+                in_colum=filtro3_sin_duplicados['IP'].str.contains(str(variable_ip2),case=False,na=False,regex=True)
+                temp_df=filtro3_sin_duplicados[in_colum]
+                en_tempo=filtro3_sin_duplicados['IP'].str.contains(str(variable_ip2+1),case=False,na=False,regex=True)
+                CON_DAAS_COS=filtro3_sin_duplicados[in_colum | en_tempo]
+                CON_DAAS_COS.to_excel("out10.xlsx")
+            path_COS="Documents/Ocupacion - Marcacion RPHY Harmonic.xlsx"
+            file_COS=pd.read_excel(path_COS,sheet_name='Hoja5',engine='openpyxl')
+            df_cos=pd.DataFrame(file_COS)
+            df_out=self.complet_COS(df_cos)
+            #print(df_cos)
+            df_out=df_out[df_out['Dispositivo'].str.contains(variable3,case=False,na=False,regex=True)]
+            #print(df_out)
+            ptp="unlocked"
+            df_out2=df_out[df_out['ptp'].str.contains(ptp,case=False,na=False,regex=True)]#*Filtrado columna ptp
+            #print(f"df_out2==>{df_out2}")
+            df_out2=df_out2.loc[:,['Dispositivo','Puerto','ptp']]
+            df_out2=df_out2.rename(columns={'Dispositivo':'Dispositivo COS'}) 
+            CON_DAAS_COS=CON_DAAS_COS.loc[:,['Dispositivo','Puerto','Unnamed: 5']]
+            CON_DAAS_COS=CON_DAAS_COS.rename(columns={'Dispositivo':'Dispositivo DAAS'}) 
+            df_out2=pd.concat([df_out2, pd.Series([None] * len(df_out2.columns), index=df_out2.columns)], ignore_index=True)
+            CON_DAAS_COS=pd.concat([CON_DAAS_COS, pd.Series([None] * len(CON_DAAS_COS.columns), index=CON_DAAS_COS.columns)], ignore_index=True)
+            final=pd.concat([df_out2,CON_DAAS_COS],axis=1)
+            #print(final)
+
+            DIS_COS=final['Dispositivo COS']
+            index_DIS_COS=DIS_COS.index
+            index_DIS_COS_list=index_DIS_COS.to_list()
+            indice_DIS_COS=index_DIS_COS_list[1]
+            UNO = final.loc[indice_DIS_COS, "Dispositivo COS"]
+
+            #print(UNO)
+            first=UNO.find("-")
+            second=UNO.find("-",first+1)
+            three=UNO.find("-",second+1)
+            four=UNO.find("-",three+1)
+            UN_COS=UNO[three+1:four]
+            #print(UN_COS)
+            if final['Dispositivo COS'].str.contains(UN_COS,case=False,na=False,regex=True).any():
+                NO_dos_COS=final['Dispositivo COS'].str.contains(UN_COS,case=False,na=False,regex=True)
+                self.FINAL_FILTRADO=final[NO_dos_COS]
+            else:
+                self.FINAL_FILTRADO=final
+            print(self.FINAL_FILTRADO )    
+            final.to_excel("out8.xlsx")
+            self.FINAL_FILTRADO.to_excel("out11.xlsx")##RETORNAR FINAL_FILTRADO PARA LA VISUALIZACION DE LA TABLA DEL DESPUES
+            return self.filtro,self.FINAL_FILTRADO
+         except KeyError as e:
+              print(e)
+
     def mostrar_tabla(self):
         tabla_thread = threading.Thread(target=self.crear_tabla)
         tabla_thread.start()
@@ -105,14 +313,13 @@ class MiApp(QtWidgets.QMainWindow):
     def crear_tabla(self):#*Esta función filtra los datos del Dataframe requeridos y hace la tabla para mostrarla en la interfaz grafica
         self.variable =""
         try:
-            file=pd.read_excel("Descargas/PRUEBA_4..xlsx")#*toma el archivo o la ruta y abre el archivo .xlsx
-            df=pd.DataFrame(file)#*Lo convierte en Dataframe
-            file_2=df.loc[:,['CMTS','Total','Description']].astype(str)#*Filtra las columnas en las que se requieren y transforma todos los datos en STR
+
             self.variable=self.ui.lineEdit_buscar.text()#*Toma lo que se ingrese en el LineEdit y lo pasa como texto almacenandolo en una variable
             self.variable=self.variable.upper()#*Debido a que todas las letras en la columna esta en mayuscula no importa lo que se digite en el LineEdit, lo transforma a mayuscula para facilitar el filtrado
-            self.filtro=file_2[file_2['Description'].str.contains(self.variable,case=False,na=False,regex=True)]#*con el argumento contains revisa lo que se guarde en la varible,filtre y en la variable filtro guarde todo.
-            if not (self.filtro['Description'].str.contains(self.variable,case=False,na=False,regex=True)!=self.variable).any() == (self.filtro['Description'].str.contains(self.variable,case=False,na=False,regex=True)==self.variable).any():#*Revisa con contains si lo ingresado en variable existe dentro del dataframe, si no existe continua sin realizar ningun proceso
-                    print(self.filtro)
+            filtro,x=self.filtrado_COS_DAAS()
+            
+            if not (filtro['Description'].str.contains(self.variable,case=False,na=False,regex=True)!=self.variable).any() == (self.filtro['Description'].str.contains(self.variable,case=False,na=False,regex=True)==self.variable).any():#*Revisa con contains si lo ingresado en variable existe dentro del dataframe, si no existe continua sin realizar ningun proceso
+                    #print(self.filtro)
                     if  not self.variable=='':#*Con esta condicion revisa que que lo ingresado no este vacio y si lo esta no realiza ninguna operación
                         columnas=list(self.filtro.columns)#*Toma solo las columnas del Dataframe            
                         df_fila=self.filtro.to_numpy().tolist()#*lo transforma en una lista para revisar las filas del Dataframe                  
@@ -130,12 +337,12 @@ class MiApp(QtWidgets.QMainWindow):
                                 if dato == 'nan':#*Revisa si hay algun dato vacio y si es asi colocarlo en blanco
                                     dato=''
                                 self.ui.tableWidget.setItem(i,j,QTableWidgetItem(dato))#*Inserta posicion a posicion en el tableWidget
-                                                          
+                                                        
                     else:
                         pass
             else:
                 pass
-
+            
 
         except ValueError:#*si hay un error de formato de archivo captura el archivo y lo muestra en un MessageBox
             QMessageBox.about (self,'Informacion', 'Formato incorrecto')
@@ -146,21 +353,11 @@ class MiApp(QtWidgets.QMainWindow):
 
     def crear_despues(self):
         try:
-            ############
+            x,FINAL_DESPUES=self.filtrado_COS_DAAS()
+            print(FINAL_DESPUES)
 
-            ############
-            path="data/Ocupacion.xlsx"
-            file_despues=pd.read_excel(path,sheet_name='Hoja2',engine='openpyxl')
-            df2=pd.DataFrame(file_despues)
-            file_3=df2.loc[:,['IP','Dispositivo','Puerto','status','Unnamed: 5']].astype(str).fillna(value='No Data')
-            
-            variable2="PUERTOLIBRE"
-            self.filtro2=file_3[file_3['Unnamed: 5'].str.contains(variable2,case=False,na=False,regex=True)].fillna(value='No Data')
-            
-             
-            #print(f"filtro3==>{coincidencias}")
-            columnas2=list(self.filtro2.columns)#*Toma solo las columnas del Dataframe            
-            df_fila2=self.filtro2.to_numpy().tolist()#*lo transforma en una lista para revisar las filas del Dataframe                  
+            columnas2=list(FINAL_DESPUES.columns)#*Toma solo las columnas del Dataframe            
+            df_fila2=FINAL_DESPUES.to_numpy().tolist()#*lo transforma en una lista para revisar las filas del Dataframe                  
             xx=len(columnas2)#*Toma el tamaño o longitud de la variable para luego recorrerlo en un for              
             yy=len(df_fila2)#*Toma el tamaño o longitud de la variable para luego recorrerlo en un for 
         except ValueError:#*si hay un error de formato de archivo captura el archivo y lo muestra en un MessageBox
@@ -332,7 +529,6 @@ class MiApp(QtWidgets.QMainWindow):
             return arris_df,ocupacion_Daas,ocupacion_Cos,Casa_df    
     def search_file_filter(self):
     
-        
             file_arris,file_despues_DAAS,file_despues_COS,file_casa=self.read_data()
         
 ##########################################################################################

@@ -297,11 +297,35 @@ class MiApp(QtWidgets.QMainWindow):
         self.ctx.load(Sp_list)
         self.ctx.execute_query()
         excel_file = self.direccion
-        df = pd.read_excel(excel_file)
-        file=pd.DataFrame(df)
-        file_2=file.loc[:,['CMTS','Mac','Total','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
-        file_2[['Mac','Total','Description']] = file_2[['Mac','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
-        data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario
+        data={}
+        if "arris" in list_title :
+            df = pd.read_excel(excel_file)
+            file=pd.DataFrame(df)
+            file_2=file.loc[:,['CMTS','Mac','Total','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+            file_2[['Mac','Total','Description']] = file_2[['Mac','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
+            data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario
+            flag=1
+        elif "Casa" in list_title :
+            df = pd.read_excel(excel_file)
+            file=pd.DataFrame(df)
+            file_2=file.loc[:,['CMTS','Upstream','Total','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+            file_2[['Upstream','Total','Description']] = file_2[['Upstream','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
+            data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
+            flag=2
+        elif "Daas" in list_title :
+            df = pd.read_excel(excel_file,sheet_name='Hoja2',engine='openpyxl')
+            file=pd.DataFrame(df)
+            file_2=file.loc[:,['IP','Dispositivo','Puerto','Unnamed: 5']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+            file_2[['IP','Dispositivo','Puerto','Unnamed: 5']] = file_2[['IP','Dispositivo','Puerto','Unnamed: 5']].astype(str)#*Convierte los valores de estas columnas a tipo str
+            data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
+            flag=3
+        elif "Cos" in list_title :
+            df = pd.read_excel(excel_file,sheet_name='Hoja5',engine='openpyxl')
+            file=pd.DataFrame(df)
+            file_2=file.loc[:,['IP','Dispositivo','Puerto','ptp']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+            file_2[['IP','Dispositivo','Puerto','ptp']] = file_2[['IP','Dispositivo','Puerto','ptp']].astype(str)#*Convierte los valores de estas columnas a tipo str
+            data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
+            flag=4 
 
 
         
@@ -327,8 +351,16 @@ class MiApp(QtWidgets.QMainWindow):
                     
 
                     for d in chunk:
+                        if flag==1:
+                            item_pro = {'CMTS': d['CMTS'],'Mac':d['Mac'],'Total': d['Total'], 'Description': d['Description']}     
+                        elif flag==2:
+                            item_pro = {'CMTS': d['CMTS'],'Upstream':d['Upstream'],'Total': d['Total'], 'Description': d['Description']}    
+                        elif flag==3:
+                            item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'], 'Unnamed: 5': d['Unnamed: 5']}  
+                        elif flag==4:
+                            item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'], 'ptp': d['ptp']}      
                         c=c+1
-                        item_properties = {'CMTS': d['CMTS'],'Mac':d['Mac'],'Total': d['Total'], 'Description': d['Description']}
+                        item_properties=item_pro
                         
                         for i in range(max_attempts):
                             try:
@@ -345,9 +377,9 @@ class MiApp(QtWidgets.QMainWindow):
                                     print("Valor reestablecido :)")
                                     Sp_list.clear()
                                     commit_count=0
-        
+                                   
                                 break  #* Si la inserción es exitosa, salir del ciclo for
-
+                                     
                             except requests.exceptions.HTTPError as http_error:
                                 
                                 print(f"Error de HTTP al agregar el elemento #{c}: {http_error}")
@@ -373,7 +405,7 @@ class MiApp(QtWidgets.QMainWindow):
                             commit_count=0
                         self.show()
                     
-
+                    
                     if commit_count> commit_interval:
                         print("Valor reestablecido :)")
                         Sp_list.clear()

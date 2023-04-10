@@ -84,16 +84,14 @@ class MiApp(QtWidgets.QMainWindow):
         self.ui.bt_filtrar_2.clicked.connect(self.upload_LIST)
         self.ui.bt_cancelar.clicked.connect(self.cancelar_stop)
         self.ui.bt_upload_file.clicked.connect(self.upload_file)
-<<<<<<< HEAD
-<<<<<<< HEAD
+
         self.ui.bt_search_files.clicked.connect(self.search_file_filter)
-=======
+
         self.ui.bt_save_path_list.clicked.connect(self.save_path_list)
         self.ui.comboBox.currentIndexChanged.connect(self.seleccion_archivo)
->>>>>>> ec70483058eb6c74734527ace01784ccbbd931cb
-=======
+
         self.ui.bt_search_files.clicked.connect(self.filtrado_COS_DAAS)
->>>>>>> 19ddb9756052fbd2d172843a4c5d66a680779366
+
         self.index_stop=0
         self.count3=0
 
@@ -579,7 +577,7 @@ class MiApp(QtWidgets.QMainWindow):
         self.ctx.load(Sp_list)
         self.ctx.execute_query()
         excel_file = self.direccion
-<<<<<<< HEAD
+
         df = pd.read_excel(excel_file)
         file=pd.DataFrame(df)
         file=file.rename(columns={'S/CG/CH':'Sa'})
@@ -587,7 +585,7 @@ class MiApp(QtWidgets.QMainWindow):
         file_2[['Sa','Total','Description']] = file_2[['Sa','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
         data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario
         #print(data)
-=======
+
         data={}
         if "arris" in list_title :
             df = pd.read_excel(excel_file)
@@ -618,7 +616,7 @@ class MiApp(QtWidgets.QMainWindow):
             data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
             flag=4 
 
->>>>>>> 43deedc41f31fce0f43e0a1d8f9386e69db667e4
+
 
         
 
@@ -652,12 +650,11 @@ class MiApp(QtWidgets.QMainWindow):
                         elif flag==4:
                             item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'], 'ptp': d['ptp']}      
                         c=c+1
-<<<<<<< HEAD
+
                         item_properties = {'CMTS': d['CMTS'],'Sa':d['Sa'],'Total': d['Total'], 'Description': d['Description']}
-=======
+
                         item_properties=item_pro
->>>>>>> 43deedc41f31fce0f43e0a1d8f9386e69db667e4
-                        
+
                         for i in range(max_attempts):
                             try:
                                 item=Sp_list.add_item(item_properties)

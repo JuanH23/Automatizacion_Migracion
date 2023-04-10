@@ -2,10 +2,13 @@ from office365_api import SharePoint
 import sys
 import csv
 from pathlib import PurePath
+from pathlib import Path
 from openpyxl import Workbook
 import pandas as pd
 import time
 import threading
+import os
+import ssl
 #Nombre de la lista la cual se va a descargar
 '''LIST_NAME=sys.argv[1]
 #Tipo de archivo el cual se va a descargar "Ya sea excel ó csv"
@@ -19,9 +22,9 @@ FILE_NAME=sys.argv[4]
 
 def Type_file(file_name,export_type):
     if export_type == 'Excel':
-        file_name_export='.'.join([file_name,'.xlsx']) 
+        file_name_export='.'.join([file_name,'xlsx']) 
     elif export_type == 'CSV':
-        file_name_export='.'.join([file_name,'.csv'])
+        file_name_export='.'.join([file_name,'csv'])
     else:
         file_name_export=file_name
     return file_name_export
@@ -54,7 +57,9 @@ def save_file_csv(list_items,dir_path,file_name):
 
 
 def save_Execel(list_items,dir_path,file_name):
-    dir_file_path=PurePath(dir_path,file_name)
+    ssl._create_default_https_context=ssl._create_unverified_context
+    dir_file_path=Path(dir_path,file_name).with_suffix('.xlsx')
+    # dir_file_path=PurePath(dir_path,file_name)
     wb= Workbook()
     ws=wb.active
     #Obtiene las cabeceras de la lista
@@ -68,6 +73,8 @@ def save_Execel(list_items,dir_path,file_name):
         for idx, item in enumerate(dict_obj.properties.items()):
             ws.cell(row=row,column=idx+1,value=item[1])
         row+=1
+    dir_path=Path(dir_path)
+    dir_path.mkdir(parents=True,exist_ok=True)
     wb.save(dir_file_path)
 
 

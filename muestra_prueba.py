@@ -181,10 +181,12 @@ class MiApp(QtWidgets.QMainWindow):
     def simpli_DAAS(self,df):
         Valor_Dispositivo=df['Dispositivo']
         Valor_Ip=df['IP']
+        print(Valor_Ip)
         valor_dispositivo=Valor_Dispositivo.index
         valor_list_dispositivo=valor_dispositivo.to_list()
         valor_IP=Valor_Ip.index
-        valor__list_IP=valor_IP.to_list()      
+        valor__list_IP=valor_IP.to_list()
+        print(valor__list_IP)      
         indice_IP=valor__list_IP[0]
         indice_IP2=valor__list_IP[0]
         indice_Dispositivo=valor_list_dispositivo[0]

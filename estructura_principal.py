@@ -468,11 +468,11 @@ class Ui_MainWindow(object):
         self.bt_upload_file.setText(_translate("MainWindow", "SUBIR ARCHIVO"))
         self.label_6.setText(_translate("MainWindow", "ANTES"))
         self.label_7.setText(_translate("MainWindow", "DESPUES"))
-<<<<<<< HEAD
+
         self.bt_search_files.setText(_translate("MainWindow", "BUSCAR ARCHIVOS"))
 
 
-=======
+
         self.bt_save_path_list.setText(_translate("MainWindow","Guardar Ruta"))
         self.label_path_list.setText(_translate("MainWindow","Ruta en donde va a guardar los archivos"))
         self.label_path_description.setText(_translate("MainWindow","Porfavor agregue una vez mas este caracter ' \\ ', a la ruta como este ejemplo: C:-->\\\<--Users\IC0167A\Desktop"))
@@ -480,7 +480,7 @@ class Ui_MainWindow(object):
         self.comboBox.setItemText(1, _translate("MainWindow", "Arris_SCMSummary"))
         self.comboBox.setItemText(2, _translate("Mainwindow", "Casa_SCMSummary"))
         self.comboBox.setItemText(3, _translate("Mainwindow", "Ocupacion - Marcacion RPHY Harmonic"))
->>>>>>> ec70483058eb6c74734527ace01784ccbbd931cb
+
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)

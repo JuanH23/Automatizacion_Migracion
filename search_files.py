@@ -4,7 +4,7 @@ from pathlib import Path
 from multiprocessing import Pool,cpu_count,freeze_support
 import numpy as np
 name_files=["Arris_SCMSummary.xlsx","Casa_SCMSummary.xlsx","Ocupacion - Marcacion RPHY Harmonic.xlsx"]
-ruta_de_busqueda=['C:\\Users\\IC0167A\\Desktop\\Documents','C\\Users']
+ruta_de_busqueda=['C:\\Users\\pc\\Automatizacion_Migracion\\Documents','C\\Users']
 sheet_names=[None,None,'Hoja2','Hoja5']
 
 def buscar_archivo(name_file,ruta):

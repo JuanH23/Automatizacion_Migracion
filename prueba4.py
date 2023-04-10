@@ -4,7 +4,7 @@ from pathlib import Path
 from multiprocessing import Pool,cpu_count,freeze_support
 import numpy as np
 name_files=["Arris_SCMSummary.xlsx","Casa_SCMSummary.xlsx","Ocupacion - Marcacion RPHY Harmonic.xlsx"]
-ruta_de_busqueda=['C:\\Users\\IC0167A\\Desktop\\Documents','C\\Users']
+ruta_de_busqueda=['C:\\Users\\pc\\Automatizacion_Migracion\\Documents','C\\Users']
 sheet_names=[None,None,'Hoja2','Hoja5']
 
 def buscar_archivo(name_file,ruta):
@@ -51,6 +51,7 @@ def read_data():
             
     return arris_df,ocupacion_Daas,ocupacion_Cos,Casa_df
 file_arris,file_despues_DAAS,file_despues_COS,file_casa=read_data()
+print(file_despues_COS)
 #!Tarda 1:20 segundos en encontrar dos archivos dentro del PC
 #########################################################################################
 def complet_COS(df):
@@ -107,11 +108,17 @@ def complete_DAAS(df):
     for dispositivo in dispositivos_con_puertos_faltantes:
         puertos = df[df['Dispositivo'] == dispositivo]['Puerto'].apply(lambda x: int(x.split('/')[-1]))
         valores_faltantes = todos_los_valores[~todos_los_valores.isin(puertos)]
-        for puerto in valores_faltantes[valores_faltantes <= 48]:
-            puerto_str = 'xe-0/0/' + str(puerto)
-            ip = df[df['Dispositivo'] == dispositivo]['IP'].iloc[0]
-            ocupacion = df[df['Dispositivo'] == dispositivo]['Unnamed: 5'].iloc[0]
-            nuevas_filas.append((ip, dispositivo, puerto_str, np.nan, np.nan, "PUERTOLIBRE"))
+        valores_faltantes_menores=valores_faltantes[valores_faltantes <= 48]
+        if not valores_faltantes_menores.empty:
+            for puerto in valores_faltantes_menores:
+                puerto_str = 'xe-0/0/' + str(puerto)
+                ip_series = df[df['Dispositivo'] == dispositivo]['IP']
+                if not ip_series.empty:
+                    ip=ip_series.iloc[0]
+                else:
+                    ip=np.nan
+                #ocupacion = df[df['Dispositivo'] == dispositivo]['Unnamed: 5'].iloc[0]
+                nuevas_filas.append((ip, dispositivo, puerto_str, np.nan, np.nan, "PUERTOLIBRE"))
     nuevas_filas_df = pd.DataFrame(nuevas_filas, columns=df.columns)
 
     # Concatenar DataFrame original con nuevas filas y ordenar por dispositivo y puerto
@@ -160,6 +167,7 @@ try:
     variable=variable.upper()#*Debido a que todas las letras en la columna esta en mayuscula no importa lo que se digite en el LineEdit, lo transforma a mayuscula para facilitar el filtrado
     filtro=df_concat[df_concat['Description'].str.contains(variable,case=False,na=False,regex=True)]#*con el argumento contains revisa lo que se guarde en la varible,filtre y en la variable filtro guarde todo.
     print(filtro)
+    
     ciudad=filtro['CMTS']
     #print(ciudad)
     valor=ciudad.index
@@ -175,12 +183,14 @@ try:
 
 
     df2=pd.DataFrame(file_despues_DAAS)
+    print(df2)
     df_das=complete_DAAS(df2)
     #print(df2)
     file_3=df_das.loc[:,['IP','Dispositivo','Puerto','status','Unnamed: 4','Unnamed: 5']].astype(str).fillna(value='No Data')          
     variable2="PUERTOLIBRE"
     #variable3="BOGO-GARCE"
     filtro2=file_3[file_3['Unnamed: 5'].str.contains(variable2,case=False,na=False,regex=True)].fillna(value='No Data')
+    
     filtro3=filtro2[filtro2['Dispositivo'].str.contains(variable3,case=False,na=False,regex=True)].fillna(value='No Data')
     filtro3_sin_duplicados = filtro3.drop_duplicates()
     print(filtro3_sin_duplicados)
@@ -241,6 +251,7 @@ try:
         FINAL_FILTRADO=final
     print(FINAL_FILTRADO )    
     final.to_excel("out8.xlsx")
+    FINAL_FILTRADO.drop("0")
     FINAL_FILTRADO.to_excel("out9.xlsx")
 except KeyError as e:
     print(f"Error:{e}")

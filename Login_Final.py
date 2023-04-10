@@ -100,6 +100,7 @@ class Ui_Form(object):
         self.label_4.setGeometry(QtCore.QRect(135, 95, 90, 40))
         font = QtGui.QFont()
         font.setPointSize(20)
+        font.setFamily(u"Segoe UI Semibold")
         font.setBold(True)
         font.setWeight(75)
         self.label_4.setFont(font)
@@ -109,6 +110,7 @@ class Ui_Form(object):
         self.lineEdit.setGeometry(QtCore.QRect(80, 165, 200, 40))
         font = QtGui.QFont()
         font.setPointSize(10)
+        font.setFamily(u"Segoe UI Semibold")
         self.lineEdit.setFont(font)
         self.lineEdit.setStyleSheet("background-color:rgba(0,0,0,0);\n"
 "border:None;\n"
@@ -120,6 +122,7 @@ class Ui_Form(object):
         self.lineEdit_2.setGeometry(QtCore.QRect(80, 230, 200, 40))
         font = QtGui.QFont()
         font.setPointSize(10)
+        font.setFamily(u"Segoe UI Semibold")
         self.lineEdit_2.setFont(font)
         self.lineEdit_2.setStyleSheet("background-color:rgba(0,0,0,0);\n"
 "border:None;\n"
@@ -133,6 +136,7 @@ class Ui_Form(object):
         font.setPointSize(12)
         font.setBold(True)
         font.setWeight(75)
+        font.setFamily(u"Segoe UI Semibold")
         self.Login_button.setFont(font)
         self.Login_button.setStyleSheet("")
         self.Login_button.setObjectName("Login_button")
@@ -140,12 +144,14 @@ class Ui_Form(object):
         self.checkBox.setGeometry(QtCore.QRect(90, 280, 181, 17))
         font = QtGui.QFont()
         font.setPointSize(10)
+        font.setFamily(u"Segoe UI Semibold")
         self.checkBox.setFont(font)
         self.checkBox.setObjectName("checkBox")
         self.Config_button = QtWidgets.QPushButton(self.widget)
         self.Config_button.setGeometry(QtCore.QRect(80, 360, 200, 40))
         font = QtGui.QFont()
         font.setPointSize(12)
+        font.setFamily(u"Segoe UI Semibold")
         font.setBold(True)
         font.setWeight(75)
         self.Config_button.setFont(font)
@@ -168,6 +174,7 @@ class Ui_Form(object):
         self.Close_button.setGeometry(QtCore.QRect(290, 50, 16, 16))
         font = QtGui.QFont()
         font.setPointSize(12)
+        font.setFamily(u"Segoe UI Semibold")
         font.setBold(True)
         font.setWeight(75)
         self.Close_button.setFont(font)
@@ -186,7 +193,7 @@ class Ui_Form(object):
         self.label_4.setText(_translate("Form", "Log In"))
         self.lineEdit.setPlaceholderText(_translate("Form", "User Name"))
         self.lineEdit_2.setPlaceholderText(_translate("Form", "Password"))
-        self.Login_button.setText(_translate("Form", "L o g  I n"))
+        self.Login_button.setText(_translate("Form", "Log  In"))
         self.checkBox.setText(_translate("Form", "Ver Password"))
         self.Config_button.setText(_translate("Form", "Registrarse"))
 if __name__=='__main__':

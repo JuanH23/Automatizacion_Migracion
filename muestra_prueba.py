@@ -10,7 +10,7 @@ import threading
 from office365_api import SharePoint
 import download_lists
 from Advertencia import*
-
+from search_files import Search
 ##########################################################################################################
 #*Librerias utilizadas en la función de subir lista a SharePoint
 from office365.sharepoint.lists.template_type import ListTemplateType
@@ -33,6 +33,8 @@ import os
 from pathlib import Path
 from multiprocessing import Pool,cpu_count,freeze_support
 import numpy as np
+import concurrent.futures
+from concurrent.futures import ThreadPoolExecutor, as_completed
 ###########################################################################################################
 #*Variables de entorno para las funciones con SharePoint
 env=dotenv_values(".env")
@@ -90,13 +92,15 @@ class MiApp(QtWidgets.QMainWindow):
         self.ui.bt_save_path_list.clicked.connect(self.save_path_list)
         self.ui.comboBox.currentIndexChanged.connect(self.seleccion_archivo)
 
-        self.ui.bt_search_files.clicked.connect(self.filtrado_COS_DAAS)
 
         self.index_stop=0
         self.count3=0
 
-
-
+        self.search=Search()
+        self.file_arris=0
+        self.file_despues_DAAS=0
+        self.file_despues_COS=0
+        self.file_casa=0
 
     #*Esta función abre desde el sistema solo archivos Excel  guarda la información en la variable direccion    
     def abrir_archivo(self):
@@ -206,12 +210,12 @@ class MiApp(QtWidgets.QMainWindow):
 
     def filtrado_COS_DAAS(self):
          try:
-            path_arris="Documents/Arris_SCMSummary.xlsx"
-            path_casa="Documents/Casa_SCMSummary.xlsx"
-            file_arris=pd.read_excel(path_arris)
-            file_casa=pd.read_excel(path_casa)
-            df=pd.DataFrame(file_arris)
-            df_casa=pd.DataFrame(file_casa)
+            #path_arris="Documents/Arris_SCMSummary.xlsx"
+            #path_casa="Documents/Casa_SCMSummary.xlsx"
+            
+            #file_casa=pd.read_excel(path_casa)
+            df=pd.DataFrame(self.file_arris)
+            df_casa=pd.DataFrame(self.file_casa)
             df_casa=df_casa.loc[:,['CMTS','Upstream','Total','Description']]
             df_casa=df_casa.rename(columns={'Upstream':'S'})
             file_2=df.loc[:,['CMTS','Mac','Total','Description']]
@@ -224,6 +228,7 @@ class MiApp(QtWidgets.QMainWindow):
             variable=self.ui.lineEdit_buscar.text()
             variable=variable.upper()#*Debido a que todas las letras en la columna esta en mayuscula no importa lo que se digite en el LineEdit, lo transforma a mayuscula para facilitar el filtrado
             self.filtro=df_concat[df_concat['Description'].str.contains(variable,case=False,na=False,regex=True)]#*con el argumento contains revisa lo que se guarde en la varible,filtre y en la variable filtro guarde todo.
+            #self.filtro=self.filtro.loc[:,[]]
             #print(self.filtro)
             
             ciudad=self.filtro['CMTS']
@@ -239,9 +244,9 @@ class MiApp(QtWidgets.QMainWindow):
             variable3=v[:sep2]
             print(variable3)
 
-            path_DAAS="Documents/Ocupacion - Marcacion RPHY Harmonic.xlsx"
-            file_DAAS=pd.read_excel(path_DAAS,sheet_name='Hoja2',engine='openpyxl')
-            df2=pd.DataFrame(file_DAAS)
+            #path_DAAS="Documents/Ocupacion - Marcacion RPHY Harmonic.xlsx"
+            #file_DAAS=pd.read_excel(path_DAAS,sheet_name='Hoja2',engine='openpyxl')
+            df2=pd.DataFrame(self.file_despues_DAAS)
             #print(df2)
             df_das=self.complete_DAAS(df2)
             #print(df2)
@@ -269,9 +274,9 @@ class MiApp(QtWidgets.QMainWindow):
                 en_tempo=filtro3_sin_duplicados['IP'].str.contains(str(variable_ip2+1),case=False,na=False,regex=True)
                 CON_DAAS_COS=filtro3_sin_duplicados[in_colum | en_tempo]
                 CON_DAAS_COS.to_excel("out10.xlsx")
-            path_COS="Documents/Ocupacion - Marcacion RPHY Harmonic.xlsx"
-            file_COS=pd.read_excel(path_COS,sheet_name='Hoja5',engine='openpyxl')
-            df_cos=pd.DataFrame(file_COS)
+            #path_COS="Documents/Ocupacion - Marcacion RPHY Harmonic.xlsx"
+            #file_COS=pd.read_excel(path_COS,sheet_name='Hoja5',engine='openpyxl')
+            df_cos=pd.DataFrame(self.file_despues_COS)
             df_out=self.complet_COS(df_cos)
             #print(df_cos)
             df_out=df_out[df_out['Dispositivo'].str.contains(variable3,case=False,na=False,regex=True)]
@@ -280,9 +285,11 @@ class MiApp(QtWidgets.QMainWindow):
             df_out2=df_out[df_out['ptp'].str.contains(ptp,case=False,na=False,regex=True)]#*Filtrado columna ptp
             #print(f"df_out2==>{df_out2}")
             df_out2=df_out2.loc[:,['Dispositivo','Puerto','ptp']]
-            df_out2=df_out2.rename(columns={'Dispositivo':'Dispositivo COS'}) 
+            df_out2=df_out2.rename(columns={'Dispositivo':'Dispositivo COS'})
+            df_out2=df_out2.rename(columns={'Puerto':'Puerto COS'})  
             CON_DAAS_COS=CON_DAAS_COS.loc[:,['Dispositivo','Puerto','Unnamed: 5']]
-            CON_DAAS_COS=CON_DAAS_COS.rename(columns={'Dispositivo':'Dispositivo DAAS'}) 
+            CON_DAAS_COS=CON_DAAS_COS.rename(columns={'Dispositivo':'Dispositivo DAAS'})
+            CON_DAAS_COS=CON_DAAS_COS.rename(columns={'Puerto':'Puerto DAAS'})
             df_out2=pd.concat([df_out2, pd.Series([None] * len(df_out2.columns), index=df_out2.columns)], ignore_index=True)
             CON_DAAS_COS=pd.concat([CON_DAAS_COS, pd.Series([None] * len(CON_DAAS_COS.columns), index=CON_DAAS_COS.columns)], ignore_index=True)
             final=pd.concat([df_out2,CON_DAAS_COS],axis=1)
@@ -304,8 +311,10 @@ class MiApp(QtWidgets.QMainWindow):
             if final['Dispositivo COS'].str.contains(UN_COS,case=False,na=False,regex=True).any():
                 NO_dos_COS=final['Dispositivo COS'].str.contains(UN_COS,case=False,na=False,regex=True)
                 self.FINAL_FILTRADO=final[NO_dos_COS]
+                self.FINAL_FILTRADO=self.FINAL_FILTRADO.loc[:,['Dispositivo COS','Puerto COS','ptp','Dispositivo DAAS','Puerto DAAS','Unnamed: 5']]
             else:
                 self.FINAL_FILTRADO=final
+                self.FINAL_FILTRADO=self.FINAL_FILTRADO.loc[:,['Dispositivo COS','Puerto COS','ptp','Dispositivo DAAS','Puerto DAAS','Unnamed: 5']]
             print(self.FINAL_FILTRADO )    
             final.to_excel("out8.xlsx")
             self.FINAL_FILTRADO.to_excel("out11.xlsx")##RETORNAR FINAL_FILTRADO PARA LA VISUALIZACION DE LA TABLA DEL DESPUES
@@ -474,7 +483,7 @@ class MiApp(QtWidgets.QMainWindow):
         
         LIST_NAME=self.ui.lineEdit_descargar_lista.text()
         FILE_NAME=self.seleccion_archivo()
-        FOLDER_DEST=self.save_path_list()#!Revisar porque no se actualiza el path 
+        FOLDER_DEST=self.save_path_list()
         print(FOLDER_DEST)
         file_name= download_lists.Type_file(FILE_NAME,EXPORT_TYPE)
         downloader_thread = threading.Thread(target=download_lists.download_list(LIST_NAME,EXPORT_TYPE,FOLDER_DEST,file_name))
@@ -498,17 +507,15 @@ class MiApp(QtWidgets.QMainWindow):
 
 ######################################################################################
 
-    def buscar_archivo(self,name_file,ruta):
-            for root,dirs, files in os.walk(ruta):
-                for file in files:
-                    if file.endswith('.xlsx') and file==name_file:
-                        return Path(root)/file
+
     
     def obtener_dataframes(self,name_files,ruta_de_busqueda):            
             if __name__=='__main__':
                 freeze_support()       
-                with Pool(processes=os.cpu_count()) as pool:
-                    rutas_files=pool.starmap(self.buscar_archivo,[(name_file,ruta) for ruta in ruta_de_busqueda for name_file in name_files])
+                #with Pool(processes=os.cpu_count()) as pool:
+                with concurrent.futures.ThreadPoolExecutor() as executor:    
+                    #rutas_files=pool.starmap(self.search.buscar_archivo,[(name_file,ruta) for ruta in ruta_de_busqueda for name_file in name_files])
+                    rutas_files = list(executor.map(lambda x: self.search.buscar_archivo(*x), [(name_file, ruta) for ruta in ruta_de_busqueda for name_file in name_files]))
                     rutas_files=[ruta_file for ruta_file in rutas_files if ruta_file is not None]
                 dfs={}
                 for ruta_file,sheet_name in zip(rutas_files,sheet_names):
@@ -543,7 +550,12 @@ class MiApp(QtWidgets.QMainWindow):
             return arris_df,ocupacion_Daas,ocupacion_Cos,Casa_df    
     def search_file_filter(self):
     
-            file_arris,file_despues_DAAS,file_despues_COS,file_casa=self.read_data()
+            self.file_arris,self.file_despues_DAAS,self.file_despues_COS,self.file_casa=self.read_data()
+            print(f"file_arris==>{self.file_arris}")
+            print(f"file_despues_DAAS==>{self.file_despues_DAAS}")
+            print(f"file_depues_COS==>{self.file_despues_COS}")
+            print(f"file_casa==>{self.file_casa}")
+            
         
 ##########################################################################################
 
@@ -751,7 +763,7 @@ class MiApp(QtWidgets.QMainWindow):
         if self.ui.lineEdit_path_list.text()=='':
             new_path_list_download = old_path_list_download
             self.ui.lineEdit_path_list.setText('')
-            #!PROBAR SI VACIANDO EL LINEEDIT PERMITE QUE VARIE Y NO SE QUEDE EN UN VALOR.
+            
         else:
             new_path_list_download = path_list + "\\descarga"
             self.ui.lineEdit_path_list.setText('')

@@ -298,6 +298,7 @@ class MiApp(QtWidgets.QMainWindow):
         self.ctx.execute_query()
         excel_file = self.direccion
         data={}
+        chunk=0
         if "arris" in list_title :
             df = pd.read_excel(excel_file)
             file=pd.DataFrame(df)
@@ -319,7 +320,7 @@ class MiApp(QtWidgets.QMainWindow):
             file_2[['IP','Dispositivo','Puerto','Unnamed: 5']] = file_2[['IP','Dispositivo','Puerto','Unnamed: 5']].astype(str)#*Convierte los valores de estas columnas a tipo str
             data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
             flag=3
-        elif "Cos" in list_title :
+        elif "COS" in list_title :
             df = pd.read_excel(excel_file,sheet_name='Hoja5',engine='openpyxl')
             file=pd.DataFrame(df)
             file_2=file.loc[:,['IP','Dispositivo','Puerto','ptp']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
@@ -369,9 +370,11 @@ class MiApp(QtWidgets.QMainWindow):
                                 commit_count += 1
                                 count+=1
                                 progress=int((count/len(data))*100)
-                                progress_bar_thread=threading.Thread(target=self.update_progress_bar,args=(progress,))
+                                #progress_bar_thread=threading.Thread(target=self.update_progress_bar,args=(progress,))
                                 #progress_bar_thread.start()
-                                #self.ui.progressBar_2.setValue(progress)
+                                self.ui.progressBar_2.setValue(progress)
+                                QApplication.processEvents() # Agregar esta línea para que se actualice la interfaz
+                                time.sleep(0.1)
                                 
                                 if commit_count> commit_interval:
                                     print("Valor reestablecido :)")
@@ -394,7 +397,7 @@ class MiApp(QtWidgets.QMainWindow):
                                     print(f"No se pudo agregar el elemento #{c} después de {max_attempts} intentos. Saliendo del programa...")
                                     break
                         self.show()                
-                        progress_bar_thread.start()
+                        #progress_bar_thread.start()
                         if commit_count==commit_interval:
                             self.ctx.execute_batch()       
                                 
@@ -422,7 +425,7 @@ class MiApp(QtWidgets.QMainWindow):
                         commit_count=0
                 self.show()         
                 self.last_saved_index2 = self.last_saved_index+len(chunk)
-                progress_bar_thread.join()
+                #progress_bar_thread.join()
                 #self.ui.progressBar_2.deleteLater()    
 
                 if commit_count> 0:
@@ -446,7 +449,10 @@ class MiApp(QtWidgets.QMainWindow):
                 time.sleep(5)
                 if attempt_count >= max_attempts:
                     print("Se han excedido el número máximo de intentos. Saliendo del programa...")
-                                 
+        except QWidget as e:
+                print(f"error painted{e}")
+        except QObject as e:
+                print(f"Diferente thread")                       
     
 if __name__=="__main__":
     app=QtWidgets.QApplication(sys.argv)

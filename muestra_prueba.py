@@ -309,40 +309,56 @@ class MiApp(QtWidgets.QMainWindow):
         excel_file = self.direccion
         data={}
         chunk=0
-        if "arris" in list_title :
+        if "Arris_SCMSummary" in excel_file :
             df = pd.read_excel(excel_file)
             file=pd.DataFrame(df)
+            print("a")
             file_2=file.loc[:,['CMTS','Mac','Total','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
             file_2[['Mac','Total','Description']] = file_2[['Mac','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
             data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario
             flag=1
-        elif "Casa" in list_title :
+        elif "Casa_SCMSummary" in excel_file :
             df = pd.read_excel(excel_file)
             file=pd.DataFrame(df)
+            print("b")
             file_2=file.loc[:,['CMTS','Upstream','Total','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
             file_2[['Upstream','Total','Description']] = file_2[['Upstream','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
             data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
             flag=2
-        elif "Daas" in list_title :
+        elif "Ocupacion - Marcacion RPHY Harmonic" in excel_file :
             df = pd.read_excel(excel_file,sheet_name='Hoja2',engine='openpyxl')
             file=pd.DataFrame(df)
-            file_2=file.loc[:,['IP','Dispositivo','Puerto','Unnamed: 5']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
-            file_2[['IP','Dispositivo','Puerto','Unnamed: 5']] = file_2[['IP','Dispositivo','Puerto','Unnamed: 5']].astype(str)#*Convierte los valores de estas columnas a tipo str
-            data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
-            flag=3
-        elif "COS" in list_title :
+            cont1=0
+            cabeceras=list(file.columns)
+            headers=['IP','Dispositivo','Puerto','Unnamed: 5']
+            for header in headers:
+                 if header in cabeceras:
+                      cont1+=1
+            if cont1==4:          
+                file_2=file.loc[:,['IP','Dispositivo','Puerto','Unnamed: 5']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+                file_2[['IP','Dispositivo','Puerto','Unnamed: 5']] = file_2[['IP','Dispositivo','Puerto','Unnamed: 5']].astype(str)#*Convierte los valores de estas columnas a tipo str
+                data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
+                flag=3
+        elif "Ocupacion - Marcacion RPHY Harmonic" in excel_file :
             df = pd.read_excel(excel_file,sheet_name='Hoja5',engine='openpyxl')
             file=pd.DataFrame(df)
-            file_2=file.loc[:,['IP','Dispositivo','Puerto','ptp']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
-            file_2[['IP','Dispositivo','Puerto','ptp']] = file_2[['IP','Dispositivo','Puerto','ptp']].astype(str)#*Convierte los valores de estas columnas a tipo str
-            data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
-            flag=4 
+            cont2=0
+            cabeceras=list(file.columns)
+            headers=['IP','Dispositivo','Puerto','ptp']
+            for header in headers:
+                 if header in cabeceras:
+                      cont2+=1
+            if cont2==4: 
+                file_2=file.loc[:,['IP','Dispositivo','Puerto','ptp']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+                file_2[['IP','Dispositivo','Puerto','ptp']] = file_2[['IP','Dispositivo','Puerto','ptp']].astype(str)#*Convierte los valores de estas columnas a tipo str
+                data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
+                flag=4    
 
 
         
-        while self.continuar_subida:
-            try:    
-                    print(self.flag==1)
+        
+        try:    
+                    
                     if  self.flag==1:
                         self.last_saved_index=self.index_stop
                         count=self.count3
@@ -429,6 +445,8 @@ class MiApp(QtWidgets.QMainWindow):
                         if commit_count % commit_interval != 0:             
                             self.ctx.execute_batch()
                             print("Se realizo Commit2")
+                            count=0
+                            print(self.last_saved_index)
                             self.show() 
                             Sp_list.clear()
                             commit_count=0
@@ -440,18 +458,20 @@ class MiApp(QtWidgets.QMainWindow):
                     if commit_count> 0:
                         self.ctx.execute_batch()
                         print("commit final :)")
+                        self.last_saved_index=0
+                        count=0
                         Sp_list.clear()
                         commit_count=0  
                     self.show()
                         
                 
-            except (requests.exceptions.ConnectionError, requests.exceptions.ChunkedEncodingError):
+        except (requests.exceptions.ConnectionError, requests.exceptions.ChunkedEncodingError):
 
                     print("No hay conexión a internet. Esperando...")
                     time.sleep(5)  # Esperar 5 segundos antes de volver a intentar
                     
                     pass  # Volver al inicio del bucle while
-            except Exception as e:
+        except Exception as e:
 
                     attempt_count += 1
                 
@@ -460,11 +480,11 @@ class MiApp(QtWidgets.QMainWindow):
                     time.sleep(5)
                     if attempt_count >= max_attempts:
                         print("Se han excedido el número máximo de intentos. Saliendo del programa...")
-            except QWidget as e:
+        except QWidget as e:
                     print(f"error painted{e}")
-            except QObject as e:
+        except QObject as e:
                     print(f"Diferente thread")                       
-            self.show()
+        self.show()
 if __name__=="__main__":
     app=QtWidgets.QApplication(sys.argv)
     mi_app=MiApp()

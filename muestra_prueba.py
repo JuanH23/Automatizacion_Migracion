@@ -419,12 +419,12 @@ class MiApp(QtWidgets.QMainWindow):
                 width=self.ui.frame_lateral.width()
                 normal=0
                 if width==0:
-                        extender=200
+                        extender=40
                 else:
                         extender=normal
 
                 self.animacion=QPropertyAnimation(self.ui.frame_lateral, b'minimumWidth' )
-                self.animacion.setProperty("minimuWidth",200)
+                self.animacion.setProperty("minimuWidth",40)
                 self.animacion.setDuration(300)
                 self.animacion.setStartValue(width)
                 self.animacion.setEndValue(extender)

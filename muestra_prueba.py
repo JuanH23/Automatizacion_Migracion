@@ -44,6 +44,9 @@ EXPORT_TYPE='Excel'
 
 
 class MiApp(QtWidgets.QMainWindow):
+    update_progressBar=QtCore.pyqtSignal(int)
+
+
     def __init__(self):
         super().__init__()
         self.ui=Ui_MainWindow()
@@ -74,6 +77,15 @@ class MiApp(QtWidgets.QMainWindow):
         self.ui.bt_upload_file.clicked.connect(self.upload_file)
         self.index_stop=0
         self.count3=0
+        self.continuar_subida = True
+        #######################################
+        self.update_progressBar.connect(self.ui.progressBar_2.setValue)
+        #######################################
+
+    def update_progress_bar_Slot(self,value):
+        self.ui.progressBar_2.setValue(value)
+
+
     #*Esta función abre desde el sistema solo archivos Excel  guarda la información en la variable direccion    
     def abrir_archivo(self):
         file=QFileDialog.getOpenFileName(self,"Abrir Archivo Excel", "","Excel Files (*.xlsx) ;; All Files (*)")
@@ -179,6 +191,7 @@ class MiApp(QtWidgets.QMainWindow):
 
     def control_close(self):#*Función para cerrar el programa
         self.close()
+        self.cancelar_stop()
     def mover_menu(self):
         if True:
                 width=self.ui.frame_lateral.width()
@@ -221,10 +234,7 @@ class MiApp(QtWidgets.QMainWindow):
         
         
 
-    def update_progress_bar(self,value):
-        self.ui.progressBar.setValue(value)
-        if value==100:
-            self.ui.progressBar.setValue(0)
+
 
     def cancelar_stop(self):
         self.index_stop=self.saved_index
@@ -234,7 +244,7 @@ class MiApp(QtWidgets.QMainWindow):
         self.ctx=ClientContext(url2)
         self.ctx.execute_query()
         print(self.index_stop)
-        self.update_progress_bar(100)
+        self.continuar_subida=False
         
 
 
@@ -260,12 +270,12 @@ class MiApp(QtWidgets.QMainWindow):
                 
         
            
-    def update_progress_bar(self,progress):
-        self.ui.progressBar_2.setValue(progress)
+
 
 
 
     def subir_list(self):
+        self.continuar_subida=True
         self.count2=0
         self.flag=1
         self.index_saved=False
@@ -330,130 +340,131 @@ class MiApp(QtWidgets.QMainWindow):
 
 
         
-
-        try:    
-                print(self.flag==1)
-                if  self.flag==1:
-                    self.last_saved_index=self.index_stop
-                    count=self.count3
-                    print(f"count==>{count}")
-                    print(f"L1==>{self.last_saved_index}")
-                    self.flag=0
+        while self.continuar_subida:
+            try:    
                     print(self.flag==1)
-                while self.last_saved_index < len(data): 
-                    
-                    if  self.index_saved==False:
-                         self.saved_index=self.last_saved_index
-                         self.count2=count
-                         
-
-
-                    chunk=data[self.last_saved_index:self.last_saved_index+chunksize]
-                    
-
-                    for d in chunk:
-                        if flag==1:
-                            item_pro = {'CMTS': d['CMTS'],'Mac':d['Mac'],'Total': d['Total'], 'Description': d['Description']}     
-                        elif flag==2:
-                            item_pro = {'CMTS': d['CMTS'],'Upstream':d['Upstream'],'Total': d['Total'], 'Description': d['Description']}    
-                        elif flag==3:
-                            item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'], 'Unnamed: 5': d['Unnamed: 5']}  
-                        elif flag==4:
-                            item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'], 'ptp': d['ptp']}      
-                        c=c+1
-                        item_properties=item_pro
+                    if  self.flag==1:
+                        self.last_saved_index=self.index_stop
+                        count=self.count3
+                        print(f"count==>{count}")
+                        print(f"L1==>{self.last_saved_index}")
+                        self.flag=0
+                        print(self.flag==1)
+                    while self.last_saved_index < len(data): 
                         
-                        for i in range(max_attempts):
-                            try:
-                                item=Sp_list.add_item(item_properties)
-                                
-                                commit_count += 1
-                                count+=1
-                                progress=int((count/len(data))*100)
-                                #progress_bar_thread=threading.Thread(target=self.update_progress_bar,args=(progress,))
-                                #progress_bar_thread.start()
-                                self.ui.progressBar_2.setValue(progress)
-                                QApplication.processEvents() # Agregar esta línea para que se actualice la interfaz
-                                time.sleep(0.1)
-                                
-                                if commit_count> commit_interval:
-                                    print("Valor reestablecido :)")
-                                    Sp_list.clear()
-                                    commit_count=0
-                                   
-                                break  #* Si la inserción es exitosa, salir del ciclo for
-                                     
-                            except requests.exceptions.HTTPError as http_error:
-                                
-                                print(f"Error de HTTP al agregar el elemento #{c}: {http_error}")
-                                time.sleep(5)  #* Esperar 5 segundos antes de intentar de nuevo
-                                count=self.last_saved_index
-                            except Exception as e:
-                                
-                                print(f"Error en el intento {i+1} de inserción para el elemento #{c}: {e}")
-                                time.sleep(5)  #*Esperar 5 segundos antes de intentar de nuevo
-                                if i == max_attempts - 1:
-                                    # Si se alcanza el número máximo de intentos sin éxito, salir del programa
-                                    print(f"No se pudo agregar el elemento #{c} después de {max_attempts} intentos. Saliendo del programa...")
-                                    break
-                        self.show()                
-                        #progress_bar_thread.start()
-                        if commit_count==commit_interval:
-                            self.ctx.execute_batch()       
-                                
-                            print("Se realizo Commit")
-                            print(f"El último ID guardado en la lista es: {self.last_saved_index}")
-                           
+                        if  self.index_saved==False:
+                            self.saved_index=self.last_saved_index
+                            self.count2=count
+                            
+
+
+                        chunk=data[self.last_saved_index:self.last_saved_index+chunksize]
+                        
+                    
+                        for d in chunk:
+                            if flag==1:
+                                item_pro = {'CMTS': d['CMTS'],'Mac':d['Mac'],'Total': d['Total'], 'Description': d['Description']}     
+                            elif flag==2:
+                                item_pro = {'CMTS': d['CMTS'],'Upstream':d['Upstream'],'Total': d['Total'], 'Description': d['Description']}    
+                            elif flag==3:
+                                item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'], 'Unnamed: 5': d['Unnamed: 5']}  
+                            elif flag==4:
+                                item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'], 'ptp': d['ptp']}      
+                            c=c+1
+                            item_properties=item_pro
+                            
+                            for i in range(max_attempts):
+                                try:
+                                    item=Sp_list.add_item(item_properties)
+                                    
+                                    commit_count += 1
+                                    count+=1
+                                    progress=int((count/len(data))*100)
+                                    self.update_progressBar.emit(progress)
+                                    #time.sleep(0.1)
+                                    
+                                    if commit_count> commit_interval:
+                                        print("Valor reestablecido :)")
+                                        Sp_list.clear()
+                                        commit_count=0
+                                    
+                                    break  #* Si la inserción es exitosa, salir del ciclo for
+                                        
+                                except requests.exceptions.HTTPError as http_error:
+                                    
+                                    print(f"Error de HTTP al agregar el elemento #{c}: {http_error}")
+                                    time.sleep(5)  #* Esperar 5 segundos antes de intentar de nuevo
+                                    count=self.last_saved_index
+                                except Exception as e:
+                                    
+                                    print(f"Error en el intento {i+1} de inserción para el elemento #{c}: {e}")
+                                    time.sleep(5)  #*Esperar 5 segundos antes de intentar de nuevo
+                                    if i == max_attempts - 1:
+                                        # Si se alcanza el número máximo de intentos sin éxito, salir del programa
+                                        print(f"No se pudo agregar el elemento #{c} después de {max_attempts} intentos. Saliendo del programa...")
+                                        break
+                            
+                            self.show()                
+                            #progress_bar_thread.start()
+                            if commit_count==commit_interval:
+                                self.ctx.execute_batch()       
+                                    
+                                print("Se realizo Commit")
+                                print(f"El último ID guardado en la lista es: {self.last_saved_index}")
+                            
+                                Sp_list.clear()
+                                commit_count=0
+                            self.show()
+                        
+                        
+                        if commit_count> commit_interval:
+                            print("Valor reestablecido :)")
+                            Sp_list.clear()
+                            commit_count=0 
+                        self.last_saved_index = self.last_saved_index+len(chunk)
+                        
+                        print(c)
+
+
+                        if commit_count % commit_interval != 0:             
+                            self.ctx.execute_batch()
+                            print("Se realizo Commit2")
+                            self.show() 
                             Sp_list.clear()
                             commit_count=0
-                        self.show()
-                    
-                    
-                    if commit_count> commit_interval:
-                        print("Valor reestablecido :)")
-                        Sp_list.clear()
-                        commit_count=0 
-                    self.last_saved_index = self.last_saved_index+len(chunk)
-                    
-                    print(c)
+                    self.show()         
+                    self.last_saved_index2 = self.last_saved_index+len(chunk)
+                    #progress_bar_thread.join()
+                    #self.ui.progressBar_2.deleteLater()    
 
-
-                    if commit_count % commit_interval != 0:             
+                    if commit_count> 0:
                         self.ctx.execute_batch()
-                        print("Se realizo Commit2")
+                        print("commit final :)")
                         Sp_list.clear()
-                        commit_count=0
-                self.show()         
-                self.last_saved_index2 = self.last_saved_index+len(chunk)
-                #progress_bar_thread.join()
-                #self.ui.progressBar_2.deleteLater()    
-
-                if commit_count> 0:
-                    self.ctx.execute_batch()
-                    print("commit final :)")
-                    Sp_list.clear()
-                    commit_count=0  
-                self.show()
-        except (requests.exceptions.ConnectionError, requests.exceptions.ChunkedEncodingError):
-
-                print("No hay conexión a internet. Esperando...")
-                time.sleep(5)  # Esperar 5 segundos antes de volver a intentar
+                        commit_count=0  
+                    self.show()
+                        
                 
-                pass  # Volver al inicio del bucle while
-        except Exception as e:
+            except (requests.exceptions.ConnectionError, requests.exceptions.ChunkedEncodingError):
 
-                attempt_count += 1
-               
-                print(f"Error al Agregar el elemento a la lista #{c} error: {e}")
-                print("Reintentando en 5 segundo...")
-                time.sleep(5)
-                if attempt_count >= max_attempts:
-                    print("Se han excedido el número máximo de intentos. Saliendo del programa...")
-        except QWidget as e:
-                print(f"error painted{e}")
-        except QObject as e:
-                print(f"Diferente thread")                       
-    
+                    print("No hay conexión a internet. Esperando...")
+                    time.sleep(5)  # Esperar 5 segundos antes de volver a intentar
+                    
+                    pass  # Volver al inicio del bucle while
+            except Exception as e:
+
+                    attempt_count += 1
+                
+                    print(f"Error al Agregar el elemento a la lista #{c} error: {e}")
+                    print("Reintentando en 5 segundo...")
+                    time.sleep(5)
+                    if attempt_count >= max_attempts:
+                        print("Se han excedido el número máximo de intentos. Saliendo del programa...")
+            except QWidget as e:
+                    print(f"error painted{e}")
+            except QObject as e:
+                    print(f"Diferente thread")                       
+            self.show()
 if __name__=="__main__":
     app=QtWidgets.QApplication(sys.argv)
     mi_app=MiApp()

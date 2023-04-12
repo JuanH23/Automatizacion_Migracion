@@ -510,41 +510,41 @@ class MiApp(QtWidgets.QMainWindow):
 
     
     def obtener_dataframes(self,name_files,ruta_de_busqueda):            
-            if __name__=='__main__':
-                freeze_support()       
+            #if __name__=='__main__':
+            freeze_support()       
                 #with Pool(processes=os.cpu_count()) as pool:
-                with concurrent.futures.ThreadPoolExecutor() as executor:    
-                    #rutas_files=pool.starmap(self.search.buscar_archivo,[(name_file,ruta) for ruta in ruta_de_busqueda for name_file in name_files])
-                    rutas_files = list(executor.map(lambda x: self.search.buscar_archivo(*x), [(name_file, ruta) for ruta in ruta_de_busqueda for name_file in name_files]))
-                    rutas_files=[ruta_file for ruta_file in rutas_files if ruta_file is not None]
-                dfs={}
-                for ruta_file,sheet_name in zip(rutas_files,sheet_names):
-                    print(ruta_file.name,sheet_name)
-                    if sheet_name is not None:
-                        for sheet_name in sheet_names:
+            with concurrent.futures.ThreadPoolExecutor() as executor:    
+                #rutas_files=pool.starmap(self.search.buscar_archivo,[(name_file,ruta) for ruta in ruta_de_busqueda for name_file in name_files])
+                rutas_files = list(executor.map(lambda x: self.search.buscar_archivo(*x), [(name_file, ruta) for ruta in ruta_de_busqueda for name_file in name_files]))
+                rutas_files=[ruta_file for ruta_file in rutas_files if ruta_file is not None]
+            dfs={}
+            for ruta_file,sheet_name in zip(rutas_files,sheet_names):
+                print(ruta_file.name,sheet_name)
+                if sheet_name is not None:
+                    for sheet_name in sheet_names:
 
-                            df=pd.read_excel(ruta_file,sheet_name=sheet_name,engine='openpyxl')
-                            dfs[f"{sheet_name }_{ruta_file.name}"]=df
-                    else:
-                        df=pd.read_excel(ruta_file)
-                        dfs[ruta_file.name]=df
+                        df=pd.read_excel(ruta_file,sheet_name=sheet_name,engine='openpyxl')
+                        dfs[f"{sheet_name }_{ruta_file.name}"]=df
+                else:
+                    df=pd.read_excel(ruta_file)
+                    dfs[ruta_file.name]=df
                                 
-                return dfs
+            return dfs
     def read_data(self):
             arris_df=None
             ocupacion_Cos=None
             ocupacion_Daas=None
             Casa_df=None
-            if __name__=='__main__':  
-                dataframes=self.obtener_dataframes(name_files,ruta_de_busqueda)
-                arris_df=dataframes['Arris_SCMSummary.xlsx']
-                Casa_df=dataframes['Casa_SCMSummary.xlsx']
-                for key in dataframes.keys():
-                    print(key)  # Imprimir las claves del diccionario
-                if 'Hoja5_Ocupacion - Marcacion RPHY Harmonic.xlsx' in dataframes.keys():
-                    ocupacion_Cos = dataframes['Hoja5_Ocupacion - Marcacion RPHY Harmonic.xlsx']
-                    print(ocupacion_Cos)
-                if 'Hoja2_Ocupacion - Marcacion RPHY Harmonic.xlsx' in dataframes.keys():
+            #if __name__=='__main__':  
+            dataframes=self.obtener_dataframes(name_files,ruta_de_busqueda)
+            arris_df=dataframes['Arris_SCMSummary.xlsx']
+            Casa_df=dataframes['Casa_SCMSummary.xlsx']
+            for key in dataframes.keys():
+                print(key)  # Imprimir las claves del diccionario
+            if 'Hoja5_Ocupacion - Marcacion RPHY Harmonic.xlsx' in dataframes.keys():
+                ocupacion_Cos = dataframes['Hoja5_Ocupacion - Marcacion RPHY Harmonic.xlsx']
+                print(ocupacion_Cos)
+            if 'Hoja2_Ocupacion - Marcacion RPHY Harmonic.xlsx' in dataframes.keys():
                     ocupacion_Daas = dataframes['Hoja2_Ocupacion - Marcacion RPHY Harmonic.xlsx']
                     
             return arris_df,ocupacion_Daas,ocupacion_Cos,Casa_df    

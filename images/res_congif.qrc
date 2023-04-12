@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="images_config">
+    <file>images/fondo_config.jpg</file>
+    <file>images/BG-9.jpg</file>
+  </qresource>
+</RCC>

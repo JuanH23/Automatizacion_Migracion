@@ -52,12 +52,8 @@ sheet_names=[None,None,'Hoja2','Hoja5']
 ##############################################################################################################
 
 
-
-
-
-
-
 class MiApp(QtWidgets.QMainWindow):
+    update_progressBar=QtCore.pyqtSignal(int)
     def __init__(self):
         super().__init__()
         self.ui=Ui_MainWindow()
@@ -86,21 +82,23 @@ class MiApp(QtWidgets.QMainWindow):
         self.ui.bt_filtrar_2.clicked.connect(self.upload_LIST)
         self.ui.bt_cancelar.clicked.connect(self.cancelar_stop)
         self.ui.bt_upload_file.clicked.connect(self.upload_file)
-
         self.ui.bt_search_files.clicked.connect(self.search_file_filter)
-
         self.ui.bt_save_path_list.clicked.connect(self.save_path_list)
         self.ui.comboBox.currentIndexChanged.connect(self.seleccion_archivo)
 
-
         self.index_stop=0
         self.count3=0
-
         self.search=Search()
         self.file_arris=0
         self.file_despues_DAAS=0
         self.file_despues_COS=0
         self.file_casa=0
+        self.c_up=0
+        self.continuar_subida=True
+        self.update_progressBar.connect(self.ui.progressBar_2.setValue)
+
+    def update_progress_bar_Slot(self,value):
+        self.ui.progressBar_2.setValue(value)
 
     #*Esta función abre desde el sistema solo archivos Excel  guarda la información en la variable direccion    
     def abrir_archivo(self):
@@ -455,12 +453,6 @@ class MiApp(QtWidgets.QMainWindow):
         self.ad.show()
         
         
-        
-
-    def update_progress_bar(self,value):
-        self.ui.progressBar.setValue(value)
-        if value==100:
-            self.ui.progressBar.setValue(0)
 
     def cancelar_stop(self):
         self.index_stop=self.saved_index
@@ -470,7 +462,8 @@ class MiApp(QtWidgets.QMainWindow):
         self.ctx=ClientContext(url2)
         self.ctx.execute_query()
         print(self.index_stop)
-        self.update_progress_bar(100)
+        self.continuar_subida=False
+        self.c_up=0
         
     def seleccion_archivo(self):
         seleccion=self.ui.comboBox.itemText(self.ui.comboBox.currentIndex())
@@ -495,10 +488,10 @@ class MiApp(QtWidgets.QMainWindow):
 
     def upload_LIST(self):
         
-        self.upload_thread = threading.Thread(target=self.subir_list(self))
+        self.upload_thread = threading.Thread(target=self.subir_list)
         
         self.upload_thread.start()
-                
+        self.c_up=1        
         
            
     def update_progress_bar(self,progress):
@@ -560,6 +553,7 @@ class MiApp(QtWidgets.QMainWindow):
 ##########################################################################################
 
     def subir_list(self):
+        self.continuar_subida=True
         self.count2=0
         self.flag=1
         self.index_saved=False
@@ -591,44 +585,55 @@ class MiApp(QtWidgets.QMainWindow):
         self.ctx.load(Sp_list)
         self.ctx.execute_query()
         excel_file = self.direccion
-
-        df = pd.read_excel(excel_file)
-        file=pd.DataFrame(df)
-        file=file.rename(columns={'S/CG/CH':'Sa'})
-        file_2=file.loc[:,['CMTS','Sa','Total','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
-        file_2[['Sa','Total','Description']] = file_2[['Sa','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
-        data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario
-        #print(data)
-
         data={}
-        if "arris" in list_title :
+        chunk=0
+
+        if "Arris_SCMSummary" in excel_file:
             df = pd.read_excel(excel_file)
             file=pd.DataFrame(df)
+            print("a")
             file_2=file.loc[:,['CMTS','Mac','Total','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
             file_2[['Mac','Total','Description']] = file_2[['Mac','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
             data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario
             flag=1
-        elif "Casa" in list_title :
+        elif "Casa_SCMSummary" in excel_file :
             df = pd.read_excel(excel_file)
             file=pd.DataFrame(df)
+            print("b")
             file_2=file.loc[:,['CMTS','Upstream','Total','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
             file_2[['Upstream','Total','Description']] = file_2[['Upstream','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
             data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
             flag=2
-        elif "Daas" in list_title :
+        elif "Ocupacion - Marcacion RPHY Harmonic" in excel_file :
             df = pd.read_excel(excel_file,sheet_name='Hoja2',engine='openpyxl')
             file=pd.DataFrame(df)
-            file_2=file.loc[:,['IP','Dispositivo','Puerto','Unnamed: 5']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
-            file_2[['IP','Dispositivo','Puerto','Unnamed: 5']] = file_2[['IP','Dispositivo','Puerto','Unnamed: 5']].astype(str)#*Convierte los valores de estas columnas a tipo str
-            data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
-            flag=3
-        elif "Cos" in list_title :
+            cont1=0
+            print("c")
+            cabeceras=list(file.columns)
+            headers=['IP','Dispositivo','Puerto','Unnamed: 5']
+            for header in headers:
+                if header in cabeceras:
+                    cont1+=1
+                    if cont1==4:
+                        file_2=file.loc[:,['IP','Dispositivo','Puerto','Unnamed: 5']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+                        file_2[['IP','Dispositivo','Puerto','Unnamed: 5']] = file_2[['IP','Dispositivo','Puerto','Unnamed: 5']].astype(str)#*Convierte los valores de estas columnas a tipo str
+                        data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
+                        flag=3
+        elif "Ocupacion - Marcacion RPHY Harmoni" in excel_file :
             df = pd.read_excel(excel_file,sheet_name='Hoja5',engine='openpyxl')
             file=pd.DataFrame(df)
-            file_2=file.loc[:,['IP','Dispositivo','Puerto','ptp']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
-            file_2[['IP','Dispositivo','Puerto','ptp']] = file_2[['IP','Dispositivo','Puerto','ptp']].astype(str)#*Convierte los valores de estas columnas a tipo str
-            data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
-            flag=4 
+            cont2=0
+            print("d")
+            cabeceras=list(file.columns)
+            headers=['IP','Dispositivo','Puerto','ptp']
+            for header in headers:
+                if header in cabeceras:
+                    cont2+=1
+            if cont2==2:
+                file_2=file.loc[:,['IP','Dispositivo','Puerto','ptp']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+                file_2[['IP','Dispositivo','Puerto','ptp']] = file_2[['IP','Dispositivo','Puerto','ptp']].astype(str)#*Convierte los valores de estas columnas a tipo str
+                data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
+                flag=4 
 
 
 
@@ -637,12 +642,19 @@ class MiApp(QtWidgets.QMainWindow):
         try:    
                 print(self.flag==1)
                 if  self.flag==1:
-                    self.last_saved_index=self.index_stop
-                    count=self.count3
-                    print(f"count==>{count}")
-                    print(f"L1==>{self.last_saved_index}")
-                    self.flag=0
-                    print(self.flag==1)
+                    if self.c_up>1:
+                        self.last_saved_index=0
+                        count=0
+                        print(f"count==>{count}")
+                        print(f"L1==>{self.last_saved_index}")
+                        self.flag=0
+                    else:
+                        self.last_saved_index=self.index_stop
+                        count=self.count3
+                        print(f"count==>{count}")
+                        print(f"L1==>{self.last_saved_index}")
+                        self.flag=0
+                        print(self.flag==1)
                 while self.last_saved_index < len(data): 
                     
                     if  self.index_saved==False:
@@ -664,9 +676,6 @@ class MiApp(QtWidgets.QMainWindow):
                         elif flag==4:
                             item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'], 'ptp': d['ptp']}      
                         c=c+1
-
-                        item_properties = {'CMTS': d['CMTS'],'Sa':d['Sa'],'Total': d['Total'], 'Description': d['Description']}
-
                         item_properties=item_pro
 
                         for i in range(max_attempts):
@@ -676,9 +685,8 @@ class MiApp(QtWidgets.QMainWindow):
                                 commit_count += 1
                                 count+=1
                                 progress=int((count/len(data))*100)
-                                progress_bar_thread=threading.Thread(target=self.update_progress_bar,args=(progress,))
-                                #progress_bar_thread.start()
-                                #self.ui.progressBar_2.setValue(progress)
+                                self.update_progressBar.emit(progress)
+
                                 
                                 if commit_count> commit_interval:
                                     print("Valor reestablecido :)")
@@ -701,8 +709,9 @@ class MiApp(QtWidgets.QMainWindow):
                                     print(f"No se pudo agregar el elemento #{c} después de {max_attempts} intentos. Saliendo del programa...")
                                     break
                         self.show()                
-                        progress_bar_thread.start()
+                        
                         if commit_count==commit_interval:
+                            print("h")
                             self.ctx.execute_batch()       
                                 
                             print("Se realizo Commit")
@@ -725,11 +734,14 @@ class MiApp(QtWidgets.QMainWindow):
                     if commit_count % commit_interval != 0:             
                         self.ctx.execute_batch()
                         print("Se realizo Commit2")
+                        count=0
+                        print(self.last_saved_index)
+                        self.show()
                         Sp_list.clear()
                         commit_count=0
                 self.show()         
                 self.last_saved_index2 = self.last_saved_index+len(chunk)
-                progress_bar_thread.join()
+                
                 #self.ui.progressBar_2.deleteLater()    
 
                 if commit_count> 0:

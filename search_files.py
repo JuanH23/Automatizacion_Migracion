@@ -6,7 +6,6 @@ class Search:
     def __init__(self):
         super().__init__()
 
-
     def buscar_archivo(self,name_file,ruta):
         for root,dirs, files in os.walk(ruta):
             for file in files:

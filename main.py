@@ -51,7 +51,6 @@ ruta_de_busqueda=['C:\\Users\\IC0167A\\Desktop\\Documents','C\\Users']
 sheet_names=[None,None,'Hoja2','Hoja5']
 ##############################################################################################################
 
-
 class MiApp(QtWidgets.QMainWindow):
     update_progressBar=QtCore.pyqtSignal(int)
     def __init__(self):
@@ -66,7 +65,6 @@ class MiApp(QtWidgets.QMainWindow):
         self.ui.frame_Sup.mouseMoveEvent=self.mover_ventana
         self.ui.bt_restaurar.hide()
         #*Funciones con los botones para cada uno de los eventos
-        #self.ui.pushButton.clicked.connect(self.abrir_archivo)
         self.ui.bt_filtrar.clicked.connect(self.mostrar_tabla)
         self.ui.download_LIST.clicked.connect(self.download_LISTS)
         self.ui.bt_inicio.clicked.connect(lambda: self.ui.stackedWidget.setCurrentWidget(self.ui.page_tres))
@@ -107,7 +105,6 @@ class MiApp(QtWidgets.QMainWindow):
     #*Esta función llama a la función crear tabla lo unico que hace es correrlo en forma de hilos para que 
     #*corra en paralelo con la interfaz y cualquier proceso que se este ejecutando en el mismo instante    
     
-
     def complet_COS(self,df):
         todos_valores_num1=pd.Series(range(1,113))
         todos_valores_num1=pd.concat([pd.Series([1]),todos_valores_num1,pd.Series([112])])
@@ -122,14 +119,12 @@ class MiApp(QtWidgets.QMainWindow):
             if len(puertos_faltantes)>0:
                 dispositivos_con_puertos_faltantes.append(dispositivo)
 
-
         nuevas_filas=[]
         for dispositivo in dispositivos_con_puertos_faltantes:
             puertos=df[df['Dispositivo']==dispositivo]['Puerto'].apply(lambda x: int(x.split(':')[-1]))
             valores_faltantes=todos_valores_num1[~todos_valores_num1.isin(puertos)]
             
             for puerto in valores_faltantes[valores_faltantes<=112]:
-
                 puerto_str=str(puerto)+':0'
                 puerto2_str=str(puerto)+':1'
                 ip=df[df['Dispositivo']==dispositivo]['IP'].iloc[0]
@@ -141,7 +136,6 @@ class MiApp(QtWidgets.QMainWindow):
         df=df.drop_duplicates()
         df=df.drop_duplicates(subset=['Dispositivo','Puerto'])
         return df
-
 
     def complete_DAAS(self,df):
         # Crear una serie con todos los valores posibles de puerto
@@ -171,7 +165,6 @@ class MiApp(QtWidgets.QMainWindow):
                         ip=ip_series.iloc[0]
                     else:
                         ip=np.nan
-                    #ocupacion = df[df['Dispositivo'] == dispositivo]['Unnamed: 5'].iloc[0]
                     nuevas_filas.append((ip, dispositivo, puerto_str, np.nan, np.nan, "PUERTOLIBRE"))
         nuevas_filas_df = pd.DataFrame(nuevas_filas, columns=df.columns)
 
@@ -208,54 +201,35 @@ class MiApp(QtWidgets.QMainWindow):
 
     def filtrado_COS_DAAS(self):
          try:
-            #path_arris="Documents/Arris_SCMSummary.xlsx"
-            #path_casa="Documents/Casa_SCMSummary.xlsx"
-            
-            #file_casa=pd.read_excel(path_casa)
             df=pd.DataFrame(self.file_arris)
             df_casa=pd.DataFrame(self.file_casa)
             df_casa=df_casa.loc[:,['CMTS','Upstream','Total','Description']]
             df_casa=df_casa.rename(columns={'Upstream':'S'})
             file_2=df.loc[:,['CMTS','Mac','Total','Description']]
             file_2[['Mac','Total','Description']] = file_2[['Mac','Total','Description']].astype(str)
-            #print(file_2)
             df_concat = pd.concat([file_2, df_casa])
-            #print(df_concat)
             #variable="39g1"
             #variable="fas1"
             variable=self.ui.lineEdit_buscar.text()
             variable=variable.upper()#*Debido a que todas las letras en la columna esta en mayuscula no importa lo que se digite en el LineEdit, lo transforma a mayuscula para facilitar el filtrado
             self.filtro=df_concat[df_concat['Description'].str.contains(variable,case=False,na=False,regex=True)]#*con el argumento contains revisa lo que se guarde en la varible,filtre y en la variable filtro guarde todo.
-            #self.filtro=self.filtro.loc[:,[]]
-            #print(self.filtro)
-            
             ciudad=self.filtro['CMTS']
-            #print(ciudad)
             valor=ciudad.index
             valor_list=valor.to_list()
             indice=valor_list[1]
             v = self.filtro.loc[indice, "CMTS"]
-
             print(v)
             sep=v.find("-")
             sep2=v.find("-",sep+1)
             variable3=v[:sep2]
             print(variable3)
-
-            #path_DAAS="Documents/Ocupacion - Marcacion RPHY Harmonic.xlsx"
-            #file_DAAS=pd.read_excel(path_DAAS,sheet_name='Hoja2',engine='openpyxl')
             df2=pd.DataFrame(self.file_despues_DAAS)
-            #print(df2)
             df_das=self.complete_DAAS(df2)
-            #print(df2)
             file_3=df_das.loc[:,['IP','Dispositivo','Puerto','status','Unnamed: 4','Unnamed: 5']].astype(str).fillna(value='No Data')          
             variable2="PUERTOLIBRE"
-            #variable3="BOGO-GARCE"
-            filtro2=file_3[file_3['Unnamed: 5'].str.contains(variable2,case=False,na=False,regex=True)].fillna(value='No Data')
-            
+            filtro2=file_3[file_3['Unnamed: 5'].str.contains(variable2,case=False,na=False,regex=True)].fillna(value='No Data')     
             filtro3=filtro2[filtro2['Dispositivo'].str.contains(variable3,case=False,na=False,regex=True)].fillna(value='No Data')
             filtro3_sin_duplicados = filtro3.drop_duplicates()
-            #print(filtro3_sin_duplicados)
             variable_disp,variable_ip,variable_ip2=self.simpli_DAAS(filtro3)
             filtro4=filtro3_sin_duplicados[filtro3_sin_duplicados['Dispositivo'].str.contains(variable_disp,case=False,na=False,regex=True)]#!Opcion 1
             ############!Opcion2
@@ -265,23 +239,18 @@ class MiApp(QtWidgets.QMainWindow):
                 en_tempo=filtro3_sin_duplicados['IP'].str.contains(str(variable_ip+1),case=False,na=False,regex=True)
                 CON_DAAS_COS=filtro3_sin_duplicados[in_colum | en_tempo]
                 CON_DAAS_COS.to_excel("out10.xlsx")
-                #print(filtro3_sin_duplicados[in_colum | en_tempo])
             elif filtro3_sin_duplicados['IP'].str.contains(str(variable_ip2)).any():
                 in_colum=filtro3_sin_duplicados['IP'].str.contains(str(variable_ip2),case=False,na=False,regex=True)
                 temp_df=filtro3_sin_duplicados[in_colum]
                 en_tempo=filtro3_sin_duplicados['IP'].str.contains(str(variable_ip2+1),case=False,na=False,regex=True)
                 CON_DAAS_COS=filtro3_sin_duplicados[in_colum | en_tempo]
                 CON_DAAS_COS.to_excel("out10.xlsx")
-            #path_COS="Documents/Ocupacion - Marcacion RPHY Harmonic.xlsx"
-            #file_COS=pd.read_excel(path_COS,sheet_name='Hoja5',engine='openpyxl')
+
             df_cos=pd.DataFrame(self.file_despues_COS)
             df_out=self.complet_COS(df_cos)
-            #print(df_cos)
             df_out=df_out[df_out['Dispositivo'].str.contains(variable3,case=False,na=False,regex=True)]
-            #print(df_out)
             ptp="unlocked"
             df_out2=df_out[df_out['ptp'].str.contains(ptp,case=False,na=False,regex=True)]#*Filtrado columna ptp
-            #print(f"df_out2==>{df_out2}")
             df_out2=df_out2.loc[:,['Dispositivo','Puerto','ptp']]
             df_out2=df_out2.rename(columns={'Dispositivo':'Dispositivo COS'})
             df_out2=df_out2.rename(columns={'Puerto':'Puerto COS'})  
@@ -291,21 +260,16 @@ class MiApp(QtWidgets.QMainWindow):
             df_out2=pd.concat([df_out2, pd.Series([None] * len(df_out2.columns), index=df_out2.columns)], ignore_index=True)
             CON_DAAS_COS=pd.concat([CON_DAAS_COS, pd.Series([None] * len(CON_DAAS_COS.columns), index=CON_DAAS_COS.columns)], ignore_index=True)
             final=pd.concat([df_out2,CON_DAAS_COS],axis=1)
-            #print(final)
-
             DIS_COS=final['Dispositivo COS']
             index_DIS_COS=DIS_COS.index
             index_DIS_COS_list=index_DIS_COS.to_list()
             indice_DIS_COS=index_DIS_COS_list[1]
-            UNO = final.loc[indice_DIS_COS, "Dispositivo COS"]
-
-            #print(UNO)
+            UNO = final.loc[indice_DIS_COS, "Dispositivo COS"]           
             first=UNO.find("-")
             second=UNO.find("-",first+1)
             three=UNO.find("-",second+1)
             four=UNO.find("-",three+1)
-            UN_COS=UNO[three+1:four]
-            #print(UN_COS)
+            UN_COS=UNO[three+1:four]           
             if final['Dispositivo COS'].str.contains(UN_COS,case=False,na=False,regex=True).any():
                 NO_dos_COS=final['Dispositivo COS'].str.contains(UN_COS,case=False,na=False,regex=True)
                 self.FINAL_FILTRADO=final[NO_dos_COS]
@@ -329,7 +293,6 @@ class MiApp(QtWidgets.QMainWindow):
     def crear_tabla(self):#*Esta función filtra los datos del Dataframe requeridos y hace la tabla para mostrarla en la interfaz grafica
         self.variable =""
         try:
-
             self.variable=self.ui.lineEdit_buscar.text()#*Toma lo que se ingrese en el LineEdit y lo pasa como texto almacenandolo en una variable
             self.variable=self.variable.upper()#*Debido a que todas las letras en la columna esta en mayuscula no importa lo que se digite en el LineEdit, lo transforma a mayuscula para facilitar el filtrado
             filtro,x=self.filtrado_COS_DAAS()
@@ -359,7 +322,6 @@ class MiApp(QtWidgets.QMainWindow):
             else:
                 pass
             
-
         except ValueError:#*si hay un error de formato de archivo captura el archivo y lo muestra en un MessageBox
             QMessageBox.about (self,'Informacion', 'Formato incorrecto')
             return None
@@ -371,7 +333,6 @@ class MiApp(QtWidgets.QMainWindow):
         try:
             x,FINAL_DESPUES=self.filtrado_COS_DAAS()
             print(FINAL_DESPUES)
-
             columnas2=list(FINAL_DESPUES.columns)#*Toma solo las columnas del Dataframe            
             df_fila2=FINAL_DESPUES.to_numpy().tolist()#*lo transforma en una lista para revisar las filas del Dataframe                  
             xx=len(columnas2)#*Toma el tamaño o longitud de la variable para luego recorrerlo en un for              
@@ -395,7 +356,6 @@ class MiApp(QtWidgets.QMainWindow):
                     dato2=''
                 self.ui.tabla.setItem(ii,jj,QTableWidgetItem(dato2))#*Inserta posicion a posicion en el tableWidget    
        
-
     def control_bt_minimizar(self):#*Función para minimizar el programa
         self.showMinimized()
 
@@ -420,7 +380,6 @@ class MiApp(QtWidgets.QMainWindow):
                         extender=200
                 else:
                         extender=normal
-
                 self.animacion=QPropertyAnimation(self.ui.frame_lateral, b'minimumWidth' )
                 self.animacion.setProperty("minimuWidth",200)
                 self.animacion.setDuration(300)
@@ -446,14 +405,11 @@ class MiApp(QtWidgets.QMainWindow):
               self.showMaximized()
          else:
               self.showNormal()    
-
-   
+  
     def upload_file(self):
         self.ad=Ui_ADVERTENCIA()
         self.ad.show()
         
-        
-
     def cancelar_stop(self):
         self.index_stop=self.saved_index
         self.count3=self.count2
@@ -469,8 +425,6 @@ class MiApp(QtWidgets.QMainWindow):
         seleccion=self.ui.comboBox.itemText(self.ui.comboBox.currentIndex())
         print(seleccion)   
         return seleccion
-        
-
 
     def download_LISTS(self):
         
@@ -481,11 +435,6 @@ class MiApp(QtWidgets.QMainWindow):
         file_name= download_lists.Type_file(FILE_NAME,EXPORT_TYPE)
         downloader_thread = threading.Thread(target=download_lists.download_list(LIST_NAME,EXPORT_TYPE,FOLDER_DEST,file_name))
         downloader_thread.start()
-        
-
-
-        
-
     def upload_LIST(self):
         
         self.upload_thread = threading.Thread(target=self.subir_list)
@@ -497,11 +446,8 @@ class MiApp(QtWidgets.QMainWindow):
     def update_progress_bar(self,progress):
         self.ui.progressBar_2.setValue(progress)
 
-
 ######################################################################################
 
-
-    
     def obtener_dataframes(self,name_files,ruta_de_busqueda):            
             #if __name__=='__main__':
             freeze_support()       
@@ -548,8 +494,7 @@ class MiApp(QtWidgets.QMainWindow):
             print(f"file_despues_DAAS==>{self.file_despues_DAAS}")
             print(f"file_depues_COS==>{self.file_despues_COS}")
             print(f"file_casa==>{self.file_casa}")
-            
-        
+      
 ##########################################################################################
 
     def subir_list(self):
@@ -635,10 +580,6 @@ class MiApp(QtWidgets.QMainWindow):
                 data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
                 flag=4 
 
-
-
-        
-
         try:    
                 print(self.flag==1)
                 if  self.flag==1:
@@ -661,11 +602,8 @@ class MiApp(QtWidgets.QMainWindow):
                          self.saved_index=self.last_saved_index
                          self.count2=count
                          
-
-
                     chunk=data[self.last_saved_index:self.last_saved_index+chunksize]
                     
-
                     for d in chunk:
                         if flag==1:
                             item_pro = {'CMTS': d['CMTS'],'Mac':d['Mac'],'Total': d['Total'], 'Description': d['Description']}     
@@ -720,8 +658,7 @@ class MiApp(QtWidgets.QMainWindow):
                             Sp_list.clear()
                             commit_count=0
                         self.show()
-                    
-                    
+                                        
                     if commit_count> commit_interval:
                         print("Valor reestablecido :)")
                         Sp_list.clear()
@@ -729,7 +666,6 @@ class MiApp(QtWidgets.QMainWindow):
                     self.last_saved_index = self.last_saved_index+len(chunk)
                     
                     print(c)
-
 
                     if commit_count % commit_interval != 0:             
                         self.ctx.execute_batch()
@@ -741,9 +677,7 @@ class MiApp(QtWidgets.QMainWindow):
                         commit_count=0
                 self.show()         
                 self.last_saved_index2 = self.last_saved_index+len(chunk)
-                
-                #self.ui.progressBar_2.deleteLater()    
-
+                  
                 if commit_count> 0:
                     self.ctx.execute_batch()
                     print("commit final :)")
@@ -783,9 +717,7 @@ class MiApp(QtWidgets.QMainWindow):
         print(f"new_path_list_download==>{new_path_list_download}")
         set_key(".env", "path_list_download", new_path_list_download)
         print(set_key(".env", "path_list_download", new_path_list_download))
-        #FOLDER_DEST=env.get('path_list_download', '')
         FOLDER_DEST=new_path_list_download
-        #FOLDER_DEST=FOLDER
         print(f"FOLDER_DEST==>{FOLDER_DEST}")
         return FOLDER_DEST
     

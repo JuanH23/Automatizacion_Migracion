@@ -9,16 +9,6 @@ import time
 import threading
 import os
 import ssl
-#Nombre de la lista la cual se va a descargar
-'''LIST_NAME=sys.argv[1]
-#Tipo de archivo el cual se va a descargar "Ya sea excel ó csv"
-EXPORT_TYPE=sys.argv[2]
-#A que lugar del computador se va a guardar el archivo
-FOLDER_DEST=sys.argv[3]
-#Nombre del archivo al querer descargar solo uno 
-FILE_NAME=sys.argv[4]
-'''
-
 
 def Type_file(file_name,export_type):
     if export_type == 'Excel':

@@ -237,6 +237,14 @@ class Ui_MainWindow(object):
         self.label_3.setFont(font)
         self.label_3.setObjectName("label_3")
         self.verticalLayout_4.addWidget(self.label_3)
+        self.comboBox = QtWidgets.QComboBox(self.page_uno)
+        self.comboBox.setGeometry(QtCore.QRect(100, 80, 211, 31))
+        self.comboBox.setObjectName("comboBox")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.verticalLayout_4.addWidget(self.comboBox)
         self.lineEdit_nombre_lista = QtWidgets.QLineEdit(self.page_uno)
         self.lineEdit_nombre_lista.setObjectName("lineEdit_nombre_lista")
         self.verticalLayout_4.addWidget(self.lineEdit_nombre_lista)
@@ -320,6 +328,15 @@ class Ui_MainWindow(object):
         self.label_9.setAlignment(QtCore.Qt.AlignCenter)
         self.label_9.setObjectName("label_9")
         self.verticalLayout_5.addWidget(self.label_9)
+
+        self.bt_search_files = QtWidgets.QPushButton(self.page_tres)
+        font = QtGui.QFont()
+        font.setFamily("Lucida Bright")
+        font.setPointSize(9)
+        self.bt_search_files.setFont(font)
+        self.bt_search_files.setObjectName("bt_sear_files")
+        self.verticalLayout_5.addWidget(self.bt_search_files)
+
         self.label_8 = QtWidgets.QLabel(self.page_tres)
         font = QtGui.QFont()
         font.setFamily("Lucida Bright")
@@ -327,9 +344,14 @@ class Ui_MainWindow(object):
         self.label_8.setFont(font)
         self.label_8.setObjectName("label_8")
         self.verticalLayout_5.addWidget(self.label_8)
+        
+
         self.lineEdit_buscar = QtWidgets.QLineEdit(self.page_tres)
         self.lineEdit_buscar.setObjectName("lineEdit_buscar")
         self.verticalLayout_5.addWidget(self.lineEdit_buscar)
+
+
+
         self.bt_filtrar = QtWidgets.QPushButton(self.page_tres)
         font = QtGui.QFont()
         font.setFamily("Lucida Bright")
@@ -381,10 +403,38 @@ class Ui_MainWindow(object):
         self.stackedWidget.addWidget(self.page_tres)
         self.page_cuatro = QtWidgets.QWidget()
         self.page_cuatro.setObjectName("page_cuatro")
+        self.verticalLayout_7 = QtWidgets.QVBoxLayout(self.page_cuatro)
         self.stackedWidget.addWidget(self.page_cuatro)
         self.verticalLayout_2.addWidget(self.stackedWidget)
         self.horizontalLayout.addWidget(self.frame_2)
         self.verticalLayout.addWidget(self.frame_Inf)
+        
+        self.label_path_list = QtWidgets.QLabel(self.page_cuatro)
+        font = QtGui.QFont()
+        font.setFamily("Lucida Bright")
+        font.setPointSize(9)
+        self.label_path_list.setFont(font)
+        self.label_path_list.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_path_list.setObjectName("label_path_list")
+        self.verticalLayout_7.addWidget(self.label_path_list)
+        self.label_path_description = QtWidgets.QLabel(self.page_cuatro)
+        font = QtGui.QFont()
+        font.setFamily("Lucida Bright")
+        font.setPointSize(9)
+        self.label_path_description.setFont(font)
+        self.label_path_description.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_path_description.setObjectName("label_path_list")
+        self.verticalLayout_7.addWidget(self.label_path_description)
+        self.lineEdit_path_list = QtWidgets.QLineEdit(self.page_cuatro)
+        self.lineEdit_path_list.setObjectName("lineEdit_path_list")
+        self.verticalLayout_7.addWidget(self.lineEdit_path_list)
+        self.bt_save_path_list = QtWidgets.QPushButton(self.page_cuatro)
+        font = QtGui.QFont()
+        font.setFamily("Lucida Bright")
+        font.setPointSize(9)
+        self.bt_save_path_list.setFont(font)
+        self.bt_save_path_list.setObjectName("bt_save_path_list")
+        self.verticalLayout_7.addWidget(self.bt_save_path_list)
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -419,6 +469,17 @@ class Ui_MainWindow(object):
         self.label_6.setText(_translate("MainWindow", "ANTES"))
         self.label_7.setText(_translate("MainWindow", "DESPUES"))
 
+        self.bt_search_files.setText(_translate("MainWindow", "BUSCAR ARCHIVOS"))
+
+
+
+        self.bt_save_path_list.setText(_translate("MainWindow","Guardar Ruta"))
+        self.label_path_list.setText(_translate("MainWindow","Ruta en donde va a guardar los archivos"))
+        self.label_path_description.setText(_translate("MainWindow","Porfavor agregue una vez mas este caracter ' \\ ', a la ruta como este ejemplo: C:-->\\\<--Users\IC0167A\Desktop"))
+        self.comboBox.setItemText(0, _translate("MainWindow", "Elija nombre del archivo"))
+        self.comboBox.setItemText(1, _translate("MainWindow", "Arris_SCMSummary"))
+        self.comboBox.setItemText(2, _translate("Mainwindow", "Casa_SCMSummary"))
+        self.comboBox.setItemText(3, _translate("Mainwindow", "Ocupacion - Marcacion RPHY Harmonic"))
 
 if __name__ == "__main__":
     import sys

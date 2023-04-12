@@ -58,8 +58,6 @@ sheet_names=[None,None,'Hoja2','Hoja5']
 
 
 class MiApp(QtWidgets.QMainWindow):
-    update_progressBar=QtCore.pyqtSignal(int)
-
     def __init__(self):
         super().__init__()
         self.ui=Ui_MainWindow()
@@ -97,19 +95,12 @@ class MiApp(QtWidgets.QMainWindow):
 
         self.index_stop=0
         self.count3=0
-        self.c_up=0
+
         self.search=Search()
         self.file_arris=0
         self.file_despues_DAAS=0
         self.file_despues_COS=0
         self.file_casa=0
-        self.contiuar_subida=True
-        #######################################
-        self.update_progressBar.connect(self.ui.progressBar_2.setValue)
-        #######################################
-
-    def update_progress_bar_Slot(self,value):
-        self.ui.progressBar_2.setValue(value)        
 
     #*Esta función abre desde el sistema solo archivos Excel  guarda la información en la variable direccion    
     def abrir_archivo(self):
@@ -466,6 +457,10 @@ class MiApp(QtWidgets.QMainWindow):
         
         
 
+    def update_progress_bar(self,value):
+        self.ui.progressBar.setValue(value)
+        if value==100:
+            self.ui.progressBar.setValue(0)
 
     def cancelar_stop(self):
         self.index_stop=self.saved_index
@@ -475,8 +470,7 @@ class MiApp(QtWidgets.QMainWindow):
         self.ctx=ClientContext(url2)
         self.ctx.execute_query()
         print(self.index_stop)
-        self.continuar_subida=False
-        self.c_up=0
+        self.update_progress_bar(100)
         
     def seleccion_archivo(self):
         seleccion=self.ui.comboBox.itemText(self.ui.comboBox.currentIndex())
@@ -501,13 +495,14 @@ class MiApp(QtWidgets.QMainWindow):
 
     def upload_LIST(self):
         
-        self.upload_thread = threading.Thread(target=self.subir_list())
+        self.upload_thread = threading.Thread(target=self.subir_list(self))
         
         self.upload_thread.start()
-        self.c_up+=1         
+                
         
            
-
+    def update_progress_bar(self,progress):
+        self.ui.progressBar_2.setValue(progress)
 
 
 ######################################################################################
@@ -565,7 +560,6 @@ class MiApp(QtWidgets.QMainWindow):
 ##########################################################################################
 
     def subir_list(self):
-        self.continuar_subida=True
         self.count2=0
         self.flag=1
         self.index_saved=False
@@ -598,197 +592,167 @@ class MiApp(QtWidgets.QMainWindow):
         self.ctx.execute_query()
         excel_file = self.direccion
 
+        df = pd.read_excel(excel_file)
+        file=pd.DataFrame(df)
+        file=file.rename(columns={'S/CG/CH':'Sa'})
+        file_2=file.loc[:,['CMTS','Sa','Total','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+        file_2[['Sa','Total','Description']] = file_2[['Sa','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
+        data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario
+        #print(data)
+
         data={}
-        chunk=0
-        if "Arris_SCMSummary" in excel_file :
+        if "arris" in list_title :
             df = pd.read_excel(excel_file)
             file=pd.DataFrame(df)
-            print("a")
             file_2=file.loc[:,['CMTS','Mac','Total','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
             file_2[['Mac','Total','Description']] = file_2[['Mac','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
             data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario
             flag=1
-        elif "Casa_SCMSummary" in excel_file :
+        elif "Casa" in list_title :
             df = pd.read_excel(excel_file)
             file=pd.DataFrame(df)
-            print("b")
             file_2=file.loc[:,['CMTS','Upstream','Total','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
             file_2[['Upstream','Total','Description']] = file_2[['Upstream','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
             data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
             flag=2
-        elif "Ocupacion - Marcacion RPHY Harmonic" in excel_file :
+        elif "Daas" in list_title :
             df = pd.read_excel(excel_file,sheet_name='Hoja2',engine='openpyxl')
             file=pd.DataFrame(df)
-            cont1=0
-            print("c")
-            cabeceras=list(file.columns)
-            headers=['IP','Dispositivo','Puerto','Unnamed: 5']
-            for header in headers:
-                 if header in cabeceras:
-                      cont1+=1
-            if cont1==4:          
-                file_2=file.loc[:,['IP','Dispositivo','Puerto','Unnamed: 5']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
-                file_2[['IP','Dispositivo','Puerto','Unnamed: 5']] = file_2[['IP','Dispositivo','Puerto','Unnamed: 5']].astype(str)#*Convierte los valores de estas columnas a tipo str
-                data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
-                flag=3
-        elif "Ocupacion - Marcacion RPHY Harmonic" in excel_file :
+            file_2=file.loc[:,['IP','Dispositivo','Puerto','Unnamed: 5']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+            file_2[['IP','Dispositivo','Puerto','Unnamed: 5']] = file_2[['IP','Dispositivo','Puerto','Unnamed: 5']].astype(str)#*Convierte los valores de estas columnas a tipo str
+            data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
+            flag=3
+        elif "Cos" in list_title :
             df = pd.read_excel(excel_file,sheet_name='Hoja5',engine='openpyxl')
             file=pd.DataFrame(df)
-            cont2=0
-            print("d")
-            cabeceras=list(file.columns)
-            headers=['IP','Dispositivo','Puerto','ptp']
-            for header in headers:
-                 if header in cabeceras:
-                      cont2+=1
-            if cont2==4: 
-                file_2=file.loc[:,['IP','Dispositivo','Puerto','ptp']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
-                file_2[['IP','Dispositivo','Puerto','ptp']] = file_2[['IP','Dispositivo','Puerto','ptp']].astype(str)#*Convierte los valores de estas columnas a tipo str
-                data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
-                flag=4    
+            file_2=file.loc[:,['IP','Dispositivo','Puerto','ptp']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+            file_2[['IP','Dispositivo','Puerto','ptp']] = file_2[['IP','Dispositivo','Puerto','ptp']].astype(str)#*Convierte los valores de estas columnas a tipo str
+            data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
+            flag=4 
+
 
 
         
-        
+
         try:    
+                print(self.flag==1)
+                if  self.flag==1:
+                    self.last_saved_index=self.index_stop
+                    count=self.count3
+                    print(f"count==>{count}")
+                    print(f"L1==>{self.last_saved_index}")
+                    self.flag=0
+                    print(self.flag==1)
+                while self.last_saved_index < len(data): 
                     
-                    if  self.flag==1:
-                        if self.c_up>1:
-                             self.last_saved_index=0
-                             count=0
-                             print(f"count==>{count}")
-                             print(f"L1==>{self.last_saved_index}")
-                             self.flag=0
-                        else:     
-                            self.last_saved_index=self.index_stop
-                            count=self.count3
-                            print(f"count==>{count}")
-                            print(f"L1==>{self.last_saved_index}")
-                            self.flag=0
-                            print(self.flag==1)
-                    while self.last_saved_index < len(data): 
-                        
-                        if  self.index_saved==False:
-                            self.saved_index=self.last_saved_index
-                            self.count2=count
-                            
+                    if  self.index_saved==False:
+                         self.saved_index=self.last_saved_index
+                         self.count2=count
+                         
 
 
-                        chunk=data[self.last_saved_index:self.last_saved_index+chunksize]
-                        
+                    chunk=data[self.last_saved_index:self.last_saved_index+chunksize]
                     
-                        for d in chunk:
-                            if flag==1:
-                                item_pro = {'CMTS': d['CMTS'],'Mac':d['Mac'],'Total': d['Total'], 'Description': d['Description']}     
-                            elif flag==2:            
-                                item_pro = {'CMTS': d['CMTS'],'Upstream':d['Upstream'],'Total': d['Total'], 'Description': d['Description']}    
-                            elif flag==3:
-                                item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'], 'Unnamed: 5': d['Unnamed: 5']}  
-                            elif flag==4:                     
-                                item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'], 'ptp': d['ptp']}      
-                            c=c+1
-                            item_properties=item_pro
-                            
-                            for i in range(max_attempts):
-                                try:
-                                    
-                                    item=Sp_list.add_item(item_properties)
-                                    
-                                    commit_count += 1
-                                    count+=1
-                                    progress=int((count/len(data))*100)
-                                    self.update_progressBar.emit(progress)
-                                    #time.sleep(0.1)
-                                    
-                                    if commit_count> commit_interval:
-                                        print("Valor reestablecido :)")
-                                        Sp_list.clear()
-                                        commit_count=0
-                                    
-                                    break  #* Si la inserción es exitosa, salir del ciclo for
-                                        
-                                except requests.exceptions.HTTPError as http_error:
-                                    
-                                    print(f"Error de HTTP al agregar el elemento #{c}: {http_error}")
-                                    time.sleep(5)  #* Esperar 5 segundos antes de intentar de nuevo
-                                    count=self.last_saved_index
-                                except Exception as e:
-                                    
-                                    print(f"Error en el intento {i+1} de inserción para el elemento #{c}: {e}")
-                                    time.sleep(5)  #*Esperar 5 segundos antes de intentar de nuevo
-                                    if i == max_attempts - 1:
-                                        # Si se alcanza el número máximo de intentos sin éxito, salir del programa
-                                        print(f"No se pudo agregar el elemento #{c} después de {max_attempts} intentos. Saliendo del programa...")
-                                        break
-                            
-                            self.show()  
-                                         
-                            #progress_bar_thread.start()
-                            if commit_count==commit_interval:
-                                print("h")
-                                self.ctx.execute_batch()       
-                                    
-                                print("Se realizo Commit")
-                                print(f"El último ID guardado en la lista es: {self.last_saved_index}")
-                                
-                                Sp_list.clear()
-                                
-                                commit_count=0
-                            self.show()
-                            
-                        
-                        if commit_count> commit_interval:
-                            print("Valor reestablecido :)")
-                            Sp_list.clear()
-                            commit_count=0 
-                        self.last_saved_index = self.last_saved_index+len(chunk)
-                        
-                        print(c)
 
+                    for d in chunk:
+                        if flag==1:
+                            item_pro = {'CMTS': d['CMTS'],'Mac':d['Mac'],'Total': d['Total'], 'Description': d['Description']}     
+                        elif flag==2:
+                            item_pro = {'CMTS': d['CMTS'],'Upstream':d['Upstream'],'Total': d['Total'], 'Description': d['Description']}    
+                        elif flag==3:
+                            item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'], 'Unnamed: 5': d['Unnamed: 5']}  
+                        elif flag==4:
+                            item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'], 'ptp': d['ptp']}      
+                        c=c+1
 
-                        if commit_count % commit_interval != 0:             
-                            self.ctx.execute_batch()
-                            print("Se realizo Commit2")
-                            count=0
-                            print(self.last_saved_index)
-                            self.show() 
+                        item_properties = {'CMTS': d['CMTS'],'Sa':d['Sa'],'Total': d['Total'], 'Description': d['Description']}
+
+                        item_properties=item_pro
+
+                        for i in range(max_attempts):
+                            try:
+                                item=Sp_list.add_item(item_properties)
+                                
+                                commit_count += 1
+                                count+=1
+                                progress=int((count/len(data))*100)
+                                progress_bar_thread=threading.Thread(target=self.update_progress_bar,args=(progress,))
+                                #progress_bar_thread.start()
+                                #self.ui.progressBar_2.setValue(progress)
+                                
+                                if commit_count> commit_interval:
+                                    print("Valor reestablecido :)")
+                                    Sp_list.clear()
+                                    commit_count=0
+                                   
+                                break  #* Si la inserción es exitosa, salir del ciclo for
+                                     
+                            except requests.exceptions.HTTPError as http_error:
+                                
+                                print(f"Error de HTTP al agregar el elemento #{c}: {http_error}")
+                                time.sleep(5)  #* Esperar 5 segundos antes de intentar de nuevo
+                                count=self.last_saved_index
+                            except Exception as e:
+                                
+                                print(f"Error en el intento {i+1} de inserción para el elemento #{c}: {e}")
+                                time.sleep(5)  #*Esperar 5 segundos antes de intentar de nuevo
+                                if i == max_attempts - 1:
+                                    # Si se alcanza el número máximo de intentos sin éxito, salir del programa
+                                    print(f"No se pudo agregar el elemento #{c} después de {max_attempts} intentos. Saliendo del programa...")
+                                    break
+                        self.show()                
+                        progress_bar_thread.start()
+                        if commit_count==commit_interval:
+                            self.ctx.execute_batch()       
+                                
+                            print("Se realizo Commit")
+                            print(f"El último ID guardado en la lista es: {self.last_saved_index}")
+                           
                             Sp_list.clear()
                             commit_count=0
-                    self.show()         
-                    self.last_saved_index2 = self.last_saved_index+len(chunk)
-                    #progress_bar_thread.join()
-                    #self.ui.progressBar_2.deleteLater()    
-
-                    if commit_count> 0:
-                        self.ctx.execute_batch()
-                        print("commit final :)")
-                        self.last_saved_index=0
-                        count=0
+                        self.show()
+                    
+                    
+                    if commit_count> commit_interval:
+                        print("Valor reestablecido :)")
                         Sp_list.clear()
-                        commit_count=0  
-                    self.show()
-                        
-                
+                        commit_count=0 
+                    self.last_saved_index = self.last_saved_index+len(chunk)
+                    
+                    print(c)
+
+
+                    if commit_count % commit_interval != 0:             
+                        self.ctx.execute_batch()
+                        print("Se realizo Commit2")
+                        Sp_list.clear()
+                        commit_count=0
+                self.show()         
+                self.last_saved_index2 = self.last_saved_index+len(chunk)
+                progress_bar_thread.join()
+                #self.ui.progressBar_2.deleteLater()    
+
+                if commit_count> 0:
+                    self.ctx.execute_batch()
+                    print("commit final :)")
+                    Sp_list.clear()
+                    commit_count=0  
+                self.show()
         except (requests.exceptions.ConnectionError, requests.exceptions.ChunkedEncodingError):
 
-                    print("No hay conexión a internet. Esperando...")
-                    time.sleep(5)  # Esperar 5 segundos antes de volver a intentar
-                    
-                    pass  # Volver al inicio del bucle while
+                print("No hay conexión a internet. Esperando...")
+                time.sleep(5)  # Esperar 5 segundos antes de volver a intentar
+                
+                pass  # Volver al inicio del bucle while
         except Exception as e:
 
-                    attempt_count += 1
-                
-                    print(f"Error al Agregar el elemento a la lista #{c} error: {e}")
-                    print("Reintentando en 5 segundo...")
-                    time.sleep(5)
-                    if attempt_count >= max_attempts:
-                        print("Se han excedido el número máximo de intentos. Saliendo del programa...")
-        except QWidget as e:
-                    print(f"error painted{e}")
-        except QObject as e:
-                    print(f"Diferente thread")                       
-        self.show()
+                attempt_count += 1
+               
+                print(f"Error al Agregar el elemento a la lista #{c} error: {e}")
+                print("Reintentando en 5 segundo...")
+                time.sleep(5)
+                if attempt_count >= max_attempts:
+                    print("Se han excedido el número máximo de intentos. Saliendo del programa...")
                                  
     def save_path_list(self):
         path_list = self.ui.lineEdit_path_list.text()

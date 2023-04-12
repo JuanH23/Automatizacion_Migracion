@@ -77,6 +77,7 @@ class MiApp(QtWidgets.QMainWindow):
         self.ui.bt_upload_file.clicked.connect(self.upload_file)
         self.index_stop=0
         self.count3=0
+        self.c_up=0
         self.continuar_subida = True
         #######################################
         self.update_progressBar.connect(self.ui.progressBar_2.setValue)
@@ -245,7 +246,7 @@ class MiApp(QtWidgets.QMainWindow):
         self.ctx.execute_query()
         print(self.index_stop)
         self.continuar_subida=False
-        
+        self.c_up=0
 
 
 
@@ -267,7 +268,8 @@ class MiApp(QtWidgets.QMainWindow):
         self.upload_thread = threading.Thread(target=self.subir_list)
         
         self.upload_thread.start()
-                
+        
+        self.c_up+=1        
         
            
 
@@ -329,6 +331,7 @@ class MiApp(QtWidgets.QMainWindow):
             df = pd.read_excel(excel_file,sheet_name='Hoja2',engine='openpyxl')
             file=pd.DataFrame(df)
             cont1=0
+            print("c")
             cabeceras=list(file.columns)
             headers=['IP','Dispositivo','Puerto','Unnamed: 5']
             for header in headers:
@@ -343,6 +346,7 @@ class MiApp(QtWidgets.QMainWindow):
             df = pd.read_excel(excel_file,sheet_name='Hoja5',engine='openpyxl')
             file=pd.DataFrame(df)
             cont2=0
+            print("d")
             cabeceras=list(file.columns)
             headers=['IP','Dispositivo','Puerto','ptp']
             for header in headers:
@@ -360,12 +364,19 @@ class MiApp(QtWidgets.QMainWindow):
         try:    
                     
                     if  self.flag==1:
-                        self.last_saved_index=self.index_stop
-                        count=self.count3
-                        print(f"count==>{count}")
-                        print(f"L1==>{self.last_saved_index}")
-                        self.flag=0
-                        print(self.flag==1)
+                        if self.c_up>1:
+                             self.last_saved_index=0
+                             count=0
+                             print(f"count==>{count}")
+                             print(f"L1==>{self.last_saved_index}")
+                             self.flag=0
+                        else:     
+                            self.last_saved_index=self.index_stop
+                            count=self.count3
+                            print(f"count==>{count}")
+                            print(f"L1==>{self.last_saved_index}")
+                            self.flag=0
+                            print(self.flag==1)
                     while self.last_saved_index < len(data): 
                         
                         if  self.index_saved==False:
@@ -380,17 +391,18 @@ class MiApp(QtWidgets.QMainWindow):
                         for d in chunk:
                             if flag==1:
                                 item_pro = {'CMTS': d['CMTS'],'Mac':d['Mac'],'Total': d['Total'], 'Description': d['Description']}     
-                            elif flag==2:
+                            elif flag==2:            
                                 item_pro = {'CMTS': d['CMTS'],'Upstream':d['Upstream'],'Total': d['Total'], 'Description': d['Description']}    
                             elif flag==3:
                                 item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'], 'Unnamed: 5': d['Unnamed: 5']}  
-                            elif flag==4:
+                            elif flag==4:                     
                                 item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'], 'ptp': d['ptp']}      
                             c=c+1
                             item_properties=item_pro
                             
                             for i in range(max_attempts):
                                 try:
+                                    
                                     item=Sp_list.add_item(item_properties)
                                     
                                     commit_count += 1
@@ -420,18 +432,21 @@ class MiApp(QtWidgets.QMainWindow):
                                         print(f"No se pudo agregar el elemento #{c} después de {max_attempts} intentos. Saliendo del programa...")
                                         break
                             
-                            self.show()                
+                            self.show()  
+                                         
                             #progress_bar_thread.start()
                             if commit_count==commit_interval:
+                                print("h")
                                 self.ctx.execute_batch()       
                                     
                                 print("Se realizo Commit")
                                 print(f"El último ID guardado en la lista es: {self.last_saved_index}")
-                            
+                                
                                 Sp_list.clear()
+                                
                                 commit_count=0
                             self.show()
-                        
+                            
                         
                         if commit_count> commit_interval:
                             print("Valor reestablecido :)")

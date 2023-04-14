@@ -6,18 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>814</width>
-    <height>600</height>
+    <width>914</width>
+    <height>598</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <property name="spacing">
-     <number>0</number>
-    </property>
+   <layout class="QGridLayout" name="gridLayout">
     <property name="leftMargin">
      <number>0</number>
     </property>
@@ -30,205 +27,7 @@
     <property name="bottomMargin">
      <number>0</number>
     </property>
-    <item>
-     <widget class="QFrame" name="frame_Sup">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>40</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>40</height>
-       </size>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 0, 0);</string>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <property name="spacing">
-        <number>2</number>
-       </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="QPushButton" name="bt_menu">
-         <property name="minimumSize">
-          <size>
-           <width>200</width>
-           <height>35</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>35</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton{
-backgroud-color:#aa00ff;
-font:87 12pt &quot;Arial Black&quot;;
-border radius:0px;
-}
-
-QPushButton:hover{
-font:87 12pt &quot;Arial Black&quot;;
-background-color:white;
-}</string>
-         </property>
-         <property name="text">
-          <string>MENU</string>
-         </property>
-         <property name="icon">
-          <iconset>
-           <normaloff>../images/menu.png</normaloff>../images/menu.png</iconset>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>519</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QPushButton" name="bt_minimizar">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>35</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton{
-border:0px;
-}
-
-QPushButton:hover{
-border:5px solid #aa00ff;
-background-color:white;
-}</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset>
-           <normaloff>../images/minimizar.png</normaloff>../images/minimizar.png</iconset>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="bt_restaurar">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>35</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton{
-border:0px;
-}
-
-QPushButton:hover{
-border:5px solid #aa00ff;
-background-color:white;
-}</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset>
-           <normaloff>../images/cuadricula.png</normaloff>../images/cuadricula.png</iconset>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="bt_max">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>35</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton{
-border:0px;
-}
-
-QPushButton:hover{
-border:5px solid #aa00ff;
-background-color:white;
-}</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset>
-           <normaloff>../images/expandir.png</normaloff>../images/expandir.png</iconset>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="bt_close">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>35</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton{
-border:0px;
-}
-
-QPushButton:hover{
-border:5px solid #aa00ff;
-background-color:white;
-}</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset>
-           <normaloff>../images/cerrar-el-simbolo-de-la-cruz-en-un-circulo (1).png</normaloff>../images/cerrar-el-simbolo-de-la-cruz-en-un-circulo (1).png</iconset>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
+    <item row="0" column="0">
      <widget class="QFrame" name="frame_Inf">
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
@@ -256,35 +55,29 @@ background-color:white;
         <widget class="QFrame" name="frame_lateral">
          <property name="minimumSize">
           <size>
-           <width>0</width>
+           <width>200</width>
            <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
            <width>0</width>
-           <height>16777215</height>
+           <height>12000</height>
+          </size>
+         </property>
+         <property name="sizeIncrement">
+          <size>
+           <width>0</width>
+           <height>0</height>
           </size>
          </property>
          <property name="styleSheet">
           <string notr="true">QFrame{
-background-color:#d50000;
+background-color: rgb(255, 0, 0);
+border-radius:15px;
 }
 
-QPushButton{
-background-color:#d50000;
-boder-top-left-radius:20px;
-border-bottom-left-radius:20px;
 
-font:75 12pt &quot;Arial Narrow&quot;;
-}
-QPushButton:hover{
-background-color:white;
-boder-top-left-radius:20px;
-border-bottom-left-radius:20px;
-
-font:75 12pt &quot;Arial Narrow&quot;;
-}
 </string>
          </property>
          <property name="frameShape">
@@ -310,6 +103,201 @@ font:75 12pt &quot;Arial Narrow&quot;;
            <number>0</number>
           </property>
           <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>10</number>
+            </property>
+            <property name="topMargin">
+             <number>10</number>
+            </property>
+            <property name="rightMargin">
+             <number>120</number>
+            </property>
+            <property name="bottomMargin">
+             <number>10</number>
+            </property>
+            <item>
+             <widget class="QPushButton" name="bt_restaurar">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>35</height>
+               </size>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QPushButton{
+border:0px;
+}
+QPushButton#bt_restaurar:pressed{
+padding-left:1px;
+padding-top:1px;
+
+}</string>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset>
+                <normaloff>../images/fullscreen.png</normaloff>../images/fullscreen.png</iconset>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="bt_close">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>35</height>
+               </size>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QPushButton{
+border:0px;
+}
+QPushButton#bt_close:pressed{
+padding-left:1px;
+padding-top:1px;
+
+}</string>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset>
+                <normaloff>../images/cerca.png</normaloff>../images/cerca.png</iconset>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="bt_minimizar">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>35</height>
+               </size>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QPushButton{
+border:0px;
+}
+QPushButton#bt_minimizar:pressed{
+padding-left:1px;
+padding-top:1px;
+
+}</string>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset>
+                <normaloff>../images/minus.png</normaloff>../images/minus.png</iconset>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="bt_max">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>35</height>
+               </size>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QPushButton{
+border:0px;
+}
+QPushButton#bt_max:pressed{
+padding-left:1px;
+padding-top:1px;
+
+}</string>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset>
+                <normaloff>../images/minimize.png</normaloff>../images/minimize.png</iconset>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QPushButton" name="bt_menu">
+            <property name="minimumSize">
+             <size>
+              <width>200</width>
+              <height>35</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>35</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Arial Black</family>
+              <pointsize>10</pointsize>
+              <weight>10</weight>
+              <italic>false</italic>
+              <bold>false</bold>
+              <kerning>true</kerning>
+             </font>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::LeftToRight</enum>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton#bt_menu:pressed{
+padding-left:5px;
+padding-top:5px;
+background-color:rgba(105, 118, 132, 200);
+
+}
+
+QPushButton#bt_menu:hover{
+font:87 10pt &quot;Arial Black&quot;;
+background-color:white;
+
+}
+QPushButton#bt_menu{
+backgroud-color:#aa00ff;
+font:87 10pt &quot;Arial Black&quot;;
+border-radius:15px;
+text-align: left;
+padding-left: 8px;
+
+}
+ </string>
+            </property>
+            <property name="text">
+             <string>MENU</string>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>../images/menu.png</normaloff>../images/menu.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>15</width>
+              <height>15</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="bt_inicio">
             <property name="minimumSize">
              <size>
@@ -323,35 +311,31 @@ font:75 12pt &quot;Arial Narrow&quot;;
               <height>40</height>
              </size>
             </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton#bt_inicio:pressed{
+padding-left:5px;
+padding-top:5px;
+background-color:rgba(105, 118, 132, 200);
+}
+
+QPushButton#bt_inicio:hover{
+font:87 10pt &quot;Arial Black&quot;;
+background-color:white;
+}
+QPushButton#bt_inicio{
+backgroud-color:#aa00ff;
+font:87 10pt &quot;Arial Black&quot;;
+border-radius:15px;
+text-align: left;
+padding-left: 8px;
+}</string>
+            </property>
             <property name="text">
              <string>INICIO</string>
             </property>
             <property name="icon">
              <iconset>
               <normaloff>../images/hogar.png</normaloff>../images/hogar.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="bt_list">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>40</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>40</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>DESCARGA LISTA</string>
-            </property>
-            <property name="icon">
-             <iconset>
-              <normaloff>../images/flecha-hacia-abajo.png</normaloff>../images/flecha-hacia-abajo.png</iconset>
             </property>
            </widget>
           </item>
@@ -369,8 +353,36 @@ font:75 12pt &quot;Arial Narrow&quot;;
               <height>40</height>
              </size>
             </property>
+            <property name="font">
+             <font>
+              <family>Arial Black</family>
+              <pointsize>10</pointsize>
+              <weight>10</weight>
+              <italic>false</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton#bt_base_datos:pressed{
+padding-left:5px;
+padding-top:5px;
+background-color:rgba(105, 118, 132, 200);
+}
+
+QPushButton#bt_base_datos:hover{
+font:87 10pt &quot;Arial Black&quot;;
+background-color:white;
+}
+QPushButton#bt_base_datos{
+backgroud-color:#aa00ff;
+font:87 10pt &quot;Arial Black&quot;;
+border-radius:15px;
+text-align: left;
+padding-left: 8px;
+}</string>
+            </property>
             <property name="text">
-             <string>SUBIR A BASE DE DATOS</string>
+             <string>SUBIR LISTA</string>
             </property>
             <property name="icon">
              <iconset>
@@ -379,7 +391,7 @@ font:75 12pt &quot;Arial Narrow&quot;;
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="bt_congif">
+           <widget class="QPushButton" name="bt_list">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -392,12 +404,31 @@ font:75 12pt &quot;Arial Narrow&quot;;
               <height>40</height>
              </size>
             </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton#bt_list:pressed{
+padding-left:5px;
+padding-top:5px;
+background-color:rgba(105, 118, 132, 200);
+}
+
+QPushButton#bt_list:hover{
+font:87 10pt &quot;Arial Black&quot;;
+background-color:white;
+}
+QPushButton#bt_list{
+backgroud-color:#aa00ff;
+font:87 10pt &quot;Arial Black&quot;;
+border-radius:15px;
+text-align: left;
+padding-left: 8px;
+}</string>
+            </property>
             <property name="text">
-             <string>CONFIGURACIONES</string>
+             <string>DESCARGA LISTA</string>
             </property>
             <property name="icon">
              <iconset>
-              <normaloff>../images/configuraciones.png</normaloff>../images/configuraciones.png</iconset>
+              <normaloff>../images/flecha-hacia-abajo.png</normaloff>../images/flecha-hacia-abajo.png</iconset>
             </property>
            </widget>
           </item>
@@ -415,14 +446,59 @@ font:75 12pt &quot;Arial Narrow&quot;;
            </spacer>
           </item>
           <item>
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>AUTOMATIZACION</string>
+           <widget class="QPushButton" name="bt_config">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>40</height>
+             </size>
             </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>40</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton#bt_config:pressed{
+padding-left:5px;
+padding-top:5px;
+background-color:rgba(105, 118, 132, 200);
+}
+
+QPushButton#bt_config:hover{
+font:87 10pt &quot;Arial Black&quot;;
+background-color:white;
+}
+QPushButton#bt_config{
+backgroud-color:#aa00ff;
+font:87 10pt &quot;Arial Black&quot;;
+border-radius:15px;
+text-align: left;
+padding-left: 8px;
+}</string>
+            </property>
+            <property name="text">
+             <string>Configuraciones</string>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>../images/configuraciones.png</normaloff>../images/configuraciones.png</iconset>
             </property>
            </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </widget>
@@ -454,7 +530,7 @@ font:75 12pt &quot;Arial Narrow&quot;;
           <item>
            <widget class="QStackedWidget" name="stackedWidget">
             <property name="currentIndex">
-             <number>2</number>
+             <number>3</number>
             </property>
             <widget class="QWidget" name="page_uno">
              <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -642,7 +718,24 @@ font:75 12pt &quot;Arial Narrow&quot;;
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="lineEdit_buscar"/>
+               <widget class="QLineEdit" name="lineEdit_buscar">
+                <property name="font">
+                 <font>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">border-radius:15px;
+
+padding-bottom:3px;
+border:1.5px solid rgb(0,0,0);
+padding-left: 8px;</string>
+                </property>
+                <property name="placeholderText">
+                 <string>Buscar Nodo</string>
+                </property>
+               </widget>
               </item>
               <item>
                <widget class="QPushButton" name="bt_filtrar">
@@ -674,7 +767,17 @@ font:75 12pt &quot;Arial Narrow&quot;;
                </widget>
               </item>
               <item>
-               <widget class="QTableWidget" name="tableWidget"/>
+               <widget class="QTableWidget" name="tableWidget">
+                <property name="styleSheet">
+                 <string notr="true">QTableView {border: 1px solid black ;
+background-color: white; color: black; }
+QTableView::item { border-bottom: 1px solid black; border-right: 1px solid black;
+ height: 50px; width: 100px; 
+}
+QHeaderView::section { background-color: gray; color: white; }
+QTableView::item:selected { background-color: blue; color: white;	}</string>
+                </property>
+               </widget>
               </item>
               <item>
                <widget class="QLabel" name="label_7">
@@ -697,7 +800,242 @@ font:75 12pt &quot;Arial Narrow&quot;;
               </item>
              </layout>
             </widget>
-            <widget class="QWidget" name="page_cuatro"/>
+            <widget class="QWidget" name="page_cuatro">
+             <widget class="QWidget" name="widget" native="true">
+              <property name="geometry">
+               <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>821</width>
+                <height>581</height>
+               </rect>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">background-color: rgb(255, 255, 255);
+border-radius:15px;</string>
+              </property>
+              <widget class="QLineEdit" name="lineEdit">
+               <property name="geometry">
+                <rect>
+                 <x>40</x>
+                 <y>100</y>
+                 <width>280</width>
+                 <height>30</height>
+                </rect>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>8</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">
+border-radius:15px;
+
+padding-bottom:3px;
+border:1.5px solid rgb(0,0,0);
+padding-left: 8px;</string>
+               </property>
+               <property name="placeholderText">
+                <string>Link del sitio de Sharepoint</string>
+               </property>
+              </widget>
+              <widget class="QLineEdit" name="lineEdit_2">
+               <property name="geometry">
+                <rect>
+                 <x>40</x>
+                 <y>200</y>
+                 <width>280</width>
+                 <height>30</height>
+                </rect>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>8</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="cursor">
+                <cursorShape>IBeamCursor</cursorShape>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">border-radius:15px;
+
+padding-bottom:3px;
+border:1.5px solid rgb(0,0,0);
+padding-left: 8px;</string>
+               </property>
+               <property name="placeholderText">
+                <string>Ruta para la descarga de listas</string>
+               </property>
+              </widget>
+              <widget class="QLabel" name="label_14">
+               <property name="geometry">
+                <rect>
+                 <x>40</x>
+                 <y>20</y>
+                 <width>261</width>
+                 <height>41</height>
+                </rect>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Lucida Sans Unicode</family>
+                 <pointsize>20</pointsize>
+                 <weight>50</weight>
+                 <bold>false</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>CONFIGURACION</string>
+               </property>
+              </widget>
+              <widget class="QPushButton" name="bt_save_con">
+               <property name="geometry">
+                <rect>
+                 <x>40</x>
+                 <y>440</y>
+                 <width>200</width>
+                 <height>35</height>
+                </rect>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>200</width>
+                 <height>35</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>35</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Arial Black</family>
+                 <pointsize>10</pointsize>
+                 <weight>10</weight>
+                 <italic>false</italic>
+                 <bold>false</bold>
+                 <kerning>true</kerning>
+                </font>
+               </property>
+               <property name="layoutDirection">
+                <enum>Qt::LeftToRight</enum>
+               </property>
+               <property name="autoFillBackground">
+                <bool>false</bool>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QPushButton#bt_save_con:pressed{
+padding-left:5px;
+padding-top:5px;
+background-color:#505050;
+
+}
+
+QPushButton#bt_save_con:hover{
+font:87 10pt &quot;Arial Black&quot;;
+background-color:white;
+
+}
+QPushButton#bt_save_con{
+backgroud-color:#505050;
+font:87 10pt &quot;Arial Black&quot;;
+border-radius:15px;
+border:1.5px solid rgb(0,0,0);
+}
+
+
+
+</string>
+               </property>
+               <property name="text">
+                <string>Guardar</string>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>15</width>
+                 <height>15</height>
+                </size>
+               </property>
+              </widget>
+              <widget class="QLineEdit" name="lineEdit_3">
+               <property name="geometry">
+                <rect>
+                 <x>40</x>
+                 <y>340</y>
+                 <width>280</width>
+                 <height>30</height>
+                </rect>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>8</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="cursor">
+                <cursorShape>IBeamCursor</cursorShape>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">border-radius:15px;
+
+padding-bottom:3px;
+border:1.5px solid rgb(0,0,0);
+padding-left: 8px;</string>
+               </property>
+               <property name="placeholderText">
+                <string>Ruta de carpeta a subir en Sharepoint</string>
+               </property>
+              </widget>
+              <widget class="QLabel" name="label">
+               <property name="geometry">
+                <rect>
+                 <x>40</x>
+                 <y>140</y>
+                 <width>461</width>
+                 <height>16</height>
+                </rect>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>7</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>Ejemplo: https://claromovilco.sharepoint.com/sites/nombre_sitio_SharePoint/&quot; </string>
+               </property>
+              </widget>
+              <widget class="QLabel" name="label_13">
+               <property name="geometry">
+                <rect>
+                 <x>40</x>
+                 <y>250</y>
+                 <width>541</width>
+                 <height>16</height>
+                </rect>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>7</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>Adicione una vez mas este caracter '\' , a la ruta como este ejemplo: C:--&gt;\\&lt;--Users\PC\Desktop</string>
+               </property>
+              </widget>
+             </widget>
+            </widget>
            </widget>
           </item>
          </layout>
@@ -710,6 +1048,8 @@ font:75 12pt &quot;Arial Narrow&quot;;
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
+ <resources>
+  <include location="../images/images/fondo_prin.qrc"/>
+ </resources>
  <connections/>
 </ui>

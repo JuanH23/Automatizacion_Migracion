@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>870</width>
+    <width>871</width>
     <height>630</height>
    </rect>
   </property>
@@ -99,7 +99,7 @@ border-radius:15px;
          <number>10</number>
         </property>
         <item>
-         <widget class="QPushButton" name="bt_restaurar_2">
+         <widget class="QPushButton" name="bt_restaurar">
           <property name="maximumSize">
            <size>
             <width>16777215</width>
@@ -110,7 +110,7 @@ border-radius:15px;
            <string notr="true">QPushButton{
 border:0px;
 }
-QPushButton#bt_restaurar_2:pressed{
+QPushButton#bt_restaurar:pressed{
 padding-left:1px;
 padding-top:1px;
 
@@ -126,7 +126,7 @@ padding-top:1px;
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="bt_close_2">
+         <widget class="QPushButton" name="bt_close">
           <property name="maximumSize">
            <size>
             <width>16777215</width>
@@ -137,7 +137,7 @@ padding-top:1px;
            <string notr="true">QPushButton{
 border:0px;
 }
-QPushButton#bt_close_2:pressed{
+QPushButton#bt_close:pressed{
 padding-left:1px;
 padding-top:1px;
 
@@ -153,7 +153,7 @@ padding-top:1px;
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="bt_minimizar_2">
+         <widget class="QPushButton" name="bt_minimizar">
           <property name="maximumSize">
            <size>
             <width>16777215</width>
@@ -164,7 +164,7 @@ padding-top:1px;
            <string notr="true">QPushButton{
 border:0px;
 }
-QPushButton#bt_minimizar_2:pressed{
+QPushButton#bt_minimizar:pressed{
 padding-left:1px;
 padding-top:1px;
 
@@ -180,7 +180,7 @@ padding-top:1px;
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="bt_max_2">
+         <widget class="QPushButton" name="bt_max">
           <property name="maximumSize">
            <size>
             <width>16777215</width>
@@ -191,7 +191,7 @@ padding-top:1px;
            <string notr="true">QPushButton{
 border:0px;
 }
-QPushButton#bt_max_2:pressed{
+QPushButton#bt_max:pressed{
 padding-left:1px;
 padding-top:1px;
 
@@ -209,7 +209,7 @@ padding-top:1px;
        </layout>
       </item>
       <item>
-       <widget class="QPushButton" name="bt_menu_2">
+       <widget class="QPushButton" name="bt_menu">
         <property name="minimumSize">
          <size>
           <width>200</width>
@@ -239,19 +239,19 @@ padding-top:1px;
          <bool>false</bool>
         </property>
         <property name="styleSheet">
-         <string notr="true">QPushButton#bt_menu_2:pressed{
+         <string notr="true">QPushButton#bt_menu:pressed{
 padding-left:5px;
 padding-top:5px;
 background-color:rgba(105, 118, 132, 200);
 
 }
 
-QPushButton#bt_menu_2:hover{
+QPushButton#bt_menu:hover{
 font:87 10pt &quot;Arial Black&quot;;
 background-color:white;
 
 }
-QPushButton#bt_menu_2{
+QPushButton#bt_menu{
 backgroud-color:#aa00ff;
 font:87 10pt &quot;Arial Black&quot;;
 border-radius:15px;
@@ -277,7 +277,7 @@ padding-left: 8px;
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="bt_inicio_2">
+       <widget class="QPushButton" name="bt_inicio">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -291,17 +291,17 @@ padding-left: 8px;
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">QPushButton#bt_inicio_2:pressed{
+         <string notr="true">QPushButton#bt_inicio:pressed{
 padding-left:5px;
 padding-top:5px;
 background-color:rgba(105, 118, 132, 200);
 }
 
-QPushButton#bt_inicio_2:hover{
+QPushButton#bt_inicio:hover{
 font:87 10pt &quot;Arial Black&quot;;
 background-color:white;
 }
-QPushButton#bt_inicio_2{
+QPushButton#bt_inicio{
 backgroud-color:#aa00ff;
 font:87 10pt &quot;Arial Black&quot;;
 border-radius:15px;
@@ -319,7 +319,7 @@ padding-left: 8px;
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="bt_base_datos_2">
+       <widget class="QPushButton" name="bt_base_datos">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -342,17 +342,17 @@ padding-left: 8px;
          </font>
         </property>
         <property name="styleSheet">
-         <string notr="true">QPushButton#bt_base_datos_2:pressed{
+         <string notr="true">QPushButton#bt_base_datos:pressed{
 padding-left:5px;
 padding-top:5px;
 background-color:rgba(105, 118, 132, 200);
 }
 
-QPushButton#bt_base_datos_2:hover{
+QPushButton#bt_base_datos:hover{
 font:87 10pt &quot;Arial Black&quot;;
 background-color:white;
 }
-QPushButton#bt_base_datos_2{
+QPushButton#bt_base_datos{
 backgroud-color:#aa00ff;
 font:87 10pt &quot;Arial Black&quot;;
 border-radius:15px;
@@ -370,7 +370,7 @@ padding-left: 8px;
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="bt_list_2">
+       <widget class="QPushButton" name="bt_list">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -384,17 +384,17 @@ padding-left: 8px;
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">QPushButton#bt_list_2:pressed{
+         <string notr="true">QPushButton#bt_list:pressed{
 padding-left:5px;
 padding-top:5px;
 background-color:rgba(105, 118, 132, 200);
 }
 
-QPushButton#bt_list_2:hover{
+QPushButton#bt_list:hover{
 font:87 10pt &quot;Arial Black&quot;;
 background-color:white;
 }
-QPushButton#bt_list_2{
+QPushButton#bt_list{
 backgroud-color:#aa00ff;
 font:87 10pt &quot;Arial Black&quot;;
 border-radius:15px;
@@ -425,7 +425,7 @@ padding-left: 8px;
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="bt_config_2">
+       <widget class="QPushButton" name="bt_config">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -439,17 +439,17 @@ padding-left: 8px;
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">QPushButton#bt_config_2:pressed{
+         <string notr="true">QPushButton#bt_config:pressed{
 padding-left:5px;
 padding-top:5px;
 background-color:rgba(105, 118, 132, 200);
 }
 
-QPushButton#bt_config_2:hover{
+QPushButton#bt_config:hover{
 font:87 10pt &quot;Arial Black&quot;;
 background-color:white;
 }
-QPushButton#bt_config_2{
+QPushButton#bt_config{
 backgroud-color:#aa00ff;
 font:87 10pt &quot;Arial Black&quot;;
 border-radius:15px;
@@ -495,7 +495,7 @@ padding-left: 8px;
 border-radius:15px;</string>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="page">
       <widget class="QLabel" name="label_21">
@@ -512,6 +512,9 @@ border-radius:15px;</string>
          <family>Lucida Bright</family>
          <pointsize>14</pointsize>
         </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color:red;</string>
        </property>
        <property name="text">
         <string>DESPUES</string>
@@ -535,6 +538,9 @@ border-radius:15px;</string>
          <pointsize>14</pointsize>
         </font>
        </property>
+       <property name="styleSheet">
+        <string notr="true">color:red;</string>
+       </property>
        <property name="text">
         <string>ANTES</string>
        </property>
@@ -542,7 +548,7 @@ border-radius:15px;</string>
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
-      <widget class="QTableView" name="tableView_2">
+      <widget class="QTableView" name="tableView">
        <property name="geometry">
         <rect>
          <x>30</x>
@@ -561,7 +567,7 @@ QHeaderView::section { background-color: gray; color: white; }
 QTableView::item:selected { background-color: blue; color: white;	}</string>
        </property>
       </widget>
-      <widget class="QTableWidget" name="tableWidget_2">
+      <widget class="QTableWidget" name="tableWidget">
        <property name="geometry">
         <rect>
          <x>30</x>
@@ -595,6 +601,9 @@ QTableView::item:selected { background-color: blue; color: white;	}</string>
          <pointsize>16</pointsize>
         </font>
        </property>
+       <property name="styleSheet">
+        <string notr="true">color:red;</string>
+       </property>
        <property name="text">
         <string>DISEÑO NODOS</string>
        </property>
@@ -602,7 +611,7 @@ QTableView::item:selected { background-color: blue; color: white;	}</string>
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_buscar_3">
+      <widget class="QLineEdit" name="lineEdit_buscar_2">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -623,14 +632,14 @@ QTableView::item:selected { background-color: blue; color: white;	}</string>
 border-radius:15px;
 
 padding-bottom:3px;
-border:1.5px solid rgb(0,0,0);
+border:1.5px solid red;
 padding-left: 8px;</string>
        </property>
        <property name="placeholderText">
         <string>BUSCAR NODO</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="bt_filtrar_3">
+      <widget class="QPushButton" name="bt_filtrar_2">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -668,23 +677,24 @@ padding-left: 8px;</string>
         <bool>false</bool>
        </property>
        <property name="styleSheet">
-        <string notr="true">QPushButton#bt_filtrar_3:pressed{
+        <string notr="true">QPushButton#bt_filtrar_2:pressed{
 padding-left:5px;
 padding-top:5px;
 background-color:#505050;
 
 }
 
-QPushButton#bt_filtrar_3:hover{
+QPushButton#bt_filtrar_2:hover{
 font:50 10pt &quot;Arial Black&quot;;
 background-color:white;
 
 }
-QPushButton#bt_filtrar_3{
+QPushButton#bt_filtrar_2{
 backgroud-color:#505050;
 font:50 10pt &quot;Arial Black&quot;;
 border-radius:15px;
-border:1.5px solid rgb(0,0,0);
+border:1.5px solid red;
+color:red;
 }
 
 
@@ -755,7 +765,8 @@ QPushButton#bt_search_files{
 backgroud-color:#505050;
 font:50 10pt &quot;Arial Black&quot;;
 border-radius:15px;
-border:1.5px solid rgb(0,0,0);
+border:1.5px solid red;
+color:red;
 }
 
 
@@ -798,7 +809,8 @@ QPushButton#bt_upload_file{
 backgroud-color:#505050;
 font:50 10pt &quot;Arial Black&quot;;
 border-radius:15px;
-border:1.5px solid rgb(0,0,0);
+border:1.5px solid red;
+color:red;
 }
 </string>
        </property>
@@ -811,8 +823,8 @@ border:1.5px solid rgb(0,0,0);
       <widget class="QLabel" name="label_27">
        <property name="geometry">
         <rect>
-         <x>210</x>
-         <y>30</y>
+         <x>230</x>
+         <y>20</y>
          <width>221</width>
          <height>41</height>
         </rect>
@@ -824,6 +836,9 @@ border:1.5px solid rgb(0,0,0);
          <bold>true</bold>
         </font>
        </property>
+       <property name="styleSheet">
+        <string notr="true">color:red;</string>
+       </property>
        <property name="text">
         <string>DESCARGA DE LISTAS</string>
        </property>
@@ -831,9 +846,9 @@ border:1.5px solid rgb(0,0,0);
       <widget class="QLineEdit" name="lineEdit_10">
        <property name="geometry">
         <rect>
-         <x>40</x>
-         <y>90</y>
-         <width>581</width>
+         <x>70</x>
+         <y>80</y>
+         <width>531</width>
          <height>31</height>
         </rect>
        </property>
@@ -847,7 +862,7 @@ border:1.5px solid rgb(0,0,0);
         <string notr="true">border-radius:15px;
 
 padding-bottom:3px;
-border:1.5px solid rgb(0,0,0);
+border:1.5px solid red;
 padding-left: 8px;</string>
        </property>
        <property name="placeholderText">
@@ -857,8 +872,8 @@ padding-left: 8px;</string>
       <widget class="QLabel" name="label_28">
        <property name="geometry">
         <rect>
-         <x>240</x>
-         <y>160</y>
+         <x>250</x>
+         <y>150</y>
          <width>181</width>
          <height>31</height>
         </rect>
@@ -870,6 +885,9 @@ padding-left: 8px;</string>
          <bold>true</bold>
         </font>
        </property>
+       <property name="styleSheet">
+        <string notr="true">color:red;</string>
+       </property>
        <property name="text">
         <string>GUARDAR COMO:</string>
        </property>
@@ -878,7 +896,7 @@ padding-left: 8px;</string>
        <property name="geometry">
         <rect>
          <x>230</x>
-         <y>290</y>
+         <y>250</y>
          <width>211</width>
          <height>31</height>
         </rect>
@@ -900,7 +918,8 @@ QPushButton#download_list{
 backgroud-color:#505050;
 font:87 10pt &quot;Arial Black&quot;;
 border-radius:15px;
-border:1.5px solid rgb(0,0,0);
+border:1.5px solid red;
+color:red;
 }
 
 
@@ -911,11 +930,11 @@ border:1.5px solid rgb(0,0,0);
         <string>Descargar lista</string>
        </property>
       </widget>
-      <widget class="QProgressBar" name="progressBar_3">
+      <widget class="QProgressBar" name="progressBar">
        <property name="geometry">
         <rect>
-         <x>110</x>
-         <y>350</y>
+         <x>120</x>
+         <y>380</y>
          <width>421</width>
          <height>31</height>
         </rect>
@@ -940,22 +959,22 @@ QProgressBar::chunk {
       <widget class="QComboBox" name="comboBox">
        <property name="geometry">
         <rect>
-         <x>180</x>
-         <y>210</y>
-         <width>291</width>
-         <height>35</height>
+         <x>210</x>
+         <y>200</y>
+         <width>251</width>
+         <height>31</height>
         </rect>
        </property>
        <property name="styleSheet">
         <string notr="true">QComboBox {
                 font: 16px;
                 color: #555555;
-                border: 2px solid black;
+                border: 2px solid red;
                 border-radius: 8px;
                 padding: 5px;
             }
 QComboBox:hover {
-                border-color:black;
+                border-color:red;
             }
             
 QComboBox::drop-down {
@@ -1035,8 +1054,8 @@ QComboBox:disabled {
       <widget class="QLabel" name="label_29">
        <property name="geometry">
         <rect>
-         <x>170</x>
-         <y>40</y>
+         <x>180</x>
+         <y>80</y>
          <width>291</width>
          <height>21</height>
         </rect>
@@ -1048,17 +1067,20 @@ QComboBox:disabled {
          <bold>true</bold>
         </font>
        </property>
+       <property name="styleSheet">
+        <string notr="true">color:red;</string>
+       </property>
        <property name="text">
         <string>SUBIR LISTA A SHAREPOINT</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_buscar_5">
+      <widget class="QLineEdit" name="lineEdit_buscar_3">
        <property name="geometry">
         <rect>
-         <x>70</x>
-         <y>90</y>
-         <width>231</width>
-         <height>20</height>
+         <x>150</x>
+         <y>150</y>
+         <width>341</width>
+         <height>31</height>
         </rect>
        </property>
        <property name="font">
@@ -1067,57 +1089,143 @@ QComboBox:disabled {
          <bold>true</bold>
         </font>
        </property>
+       <property name="styleSheet">
+        <string notr="true">border-radius:15px;
+padding-bottom:3px;
+border:1.5px solid red;
+padding-left: 8px;</string>
+       </property>
        <property name="placeholderText">
         <string>NOMBRE DE LISTA DE SHAREPOINT</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="bt_upload_list">
        <property name="geometry">
         <rect>
-         <x>410</x>
-         <y>100</y>
-         <width>75</width>
-         <height>23</height>
+         <x>230</x>
+         <y>240</y>
+         <width>141</width>
+         <height>31</height>
         </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton#bt_upload_list:pressed{
+padding-left:5px;
+padding-top:5px;
+background-color:#505050;
+
+}
+
+QPushButton#bt_upload_list:hover{
+font:87 10pt &quot;Arial Black&quot;;
+background-color:white;
+
+}
+QPushButton#bt_upload_list{
+backgroud-color:#505050;
+font:87 10pt &quot;Arial Black&quot;;
+border-radius:15px;
+color:red;
+border:1.5px solid red;
+}</string>
        </property>
        <property name="text">
         <string>SUBIR</string>
        </property>
       </widget>
-      <widget class="QProgressBar" name="progressBar_4">
+      <widget class="QProgressBar" name="progressBar_2">
        <property name="geometry">
         <rect>
-         <x>120</x>
-         <y>210</y>
-         <width>401</width>
+         <x>100</x>
+         <y>370</y>
+         <width>411</width>
          <height>31</height>
         </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QProgressBar {
+    border: 2px solid grey;
+    border-radius: 5px;
+    text-align: center;
+}
+
+QProgressBar::chunk {
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+        stop:0 #FFDAB9, stop:1 #CD5C5C);
+    border-radius: 5px;
+}</string>
        </property>
        <property name="value">
         <number>24</number>
        </property>
       </widget>
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="search_files">
        <property name="geometry">
         <rect>
-         <x>340</x>
-         <y>140</y>
-         <width>111</width>
-         <height>23</height>
+         <x>60</x>
+         <y>240</y>
+         <width>141</width>
+         <height>31</height>
         </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton#search_files:pressed{
+padding-left:5px;
+padding-top:5px;
+border-color:red;
+background-color:#505050;
+
+}
+
+QPushButton#search_files:hover{
+font:87 10pt &quot;Arial Black&quot;;
+background-color:white;
+
+}
+QPushButton#search_files{
+backgroud-color:#505050;
+font:87 10pt &quot;Arial Black&quot;;
+border-radius:15px;
+border-color:red;
+color:red;
+border:1.5px solid red;
+}
+
+</string>
        </property>
        <property name="text">
         <string>BUSCAR ARCHIVO</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="pushButton_3">
+      <widget class="QPushButton" name="bt_stop">
        <property name="geometry">
         <rect>
-         <x>520</x>
-         <y>120</y>
-         <width>75</width>
-         <height>23</height>
+         <x>400</x>
+         <y>240</y>
+         <width>141</width>
+         <height>31</height>
         </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton#bt_stop:pressed{
+padding-left:5px;
+padding-top:5px;
+background-color:#505050;
+
+}
+
+QPushButton#bt_stop:hover{
+font:87 10pt &quot;Arial Black&quot;;
+background-color:white;
+
+}
+QPushButton#bt_stop{
+backgroud-color:#505050;
+font:87 10pt &quot;Arial Black&quot;;
+border-radius:15px;
+border:1.5px solid red;
+color:red;
+}</string>
        </property>
        <property name="text">
         <string>DETENER</string>
@@ -1145,7 +1253,7 @@ QComboBox:disabled {
         <string>Adicione una vez mas este caracter '\' , a la ruta como este ejemplo: C:--&gt;\\&lt;--Users\PC\Desktop</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_4">
+      <widget class="QLineEdit" name="lineEdit_site_Sharepoint">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -1166,14 +1274,14 @@ QComboBox:disabled {
 border-radius:15px;
 
 padding-bottom:3px;
-border:1.5px solid rgb(0,0,0);
+border:1.5px solid red;
 padding-left: 8px;</string>
        </property>
        <property name="placeholderText">
         <string>Link del sitio de Sharepoint</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_5">
+      <widget class="QLineEdit" name="lineEdit_folder_subir_archivo">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -1196,14 +1304,14 @@ padding-left: 8px;</string>
         <string notr="true">border-radius:15px;
 
 padding-bottom:3px;
-border:1.5px solid rgb(0,0,0);
+border:1.5px solid red;
 padding-left: 8px;</string>
        </property>
        <property name="placeholderText">
         <string>Ruta de carpeta a subir en Sharepoint</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_6">
+      <widget class="QLineEdit" name="lineEdit_Path_lists">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -1226,14 +1334,14 @@ padding-left: 8px;</string>
         <string notr="true">border-radius:15px;
 
 padding-bottom:3px;
-border:1.5px solid rgb(0,0,0);
+border:1.5px solid red;
 padding-left: 8px;</string>
        </property>
        <property name="placeholderText">
         <string>Ruta para la descarga de listas</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="bt_save_con_2">
+      <widget class="QPushButton" name="bt_save_con">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -1271,23 +1379,24 @@ padding-left: 8px;</string>
         <bool>false</bool>
        </property>
        <property name="styleSheet">
-        <string notr="true">QPushButton#bt_save_con_2:pressed{
+        <string notr="true">QPushButton#bt_save_con:pressed{
 padding-left:5px;
 padding-top:5px;
 background-color:#505050;
 
 }
 
-QPushButton#bt_save_con_2:hover{
+QPushButton#bt_save_con:hover{
 font:87 10pt &quot;Arial Black&quot;;
 background-color:white;
 
 }
-QPushButton#bt_save_con_2{
+QPushButton#bt_save_con{
 backgroud-color:#505050;
 font:87 10pt &quot;Arial Black&quot;;
 border-radius:15px;
-border:1.5px solid rgb(0,0,0);
+border:1.5px solid red;
+color:red;
 }
 
 
@@ -1320,6 +1429,9 @@ border:1.5px solid rgb(0,0,0);
          <weight>50</weight>
          <bold>false</bold>
         </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color:red;</string>
        </property>
        <property name="text">
         <string>CONFIGURACION</string>

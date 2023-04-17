@@ -225,7 +225,7 @@ class Ui_MainWindow(object):
         self.page_tres = QtWidgets.QWidget()
         self.page_tres.setObjectName("page_tres")
         self.label_21 = QtWidgets.QLabel(self.page_tres)
-        self.label_21.setGeometry(QtCore.QRect(200, 390, 221, 22))
+        self.label_21.setGeometry(QtCore.QRect(210, 385, 221, 22))
         font = QtGui.QFont()
         font.setFamily("Lucida Bright")
         font.setPointSize(14)
@@ -233,6 +233,27 @@ class Ui_MainWindow(object):
         self.label_21.setStyleSheet("color:red;")
         self.label_21.setAlignment(QtCore.Qt.AlignCenter)
         self.label_21.setObjectName("label_21")
+        ###################
+        self.label_22 = QtWidgets.QLabel(self.page_tres)
+        self.label_22.setGeometry(QtCore.QRect(60, 400, 215, 20))
+        font = QtGui.QFont()
+        font.setFamily("Lucida Bright")
+        font.setPointSize(12)
+        self.label_22.setFont(font)
+        self.label_22.setStyleSheet("color:red;")
+        self.label_22.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_22.setObjectName("label_22")
+        ###################
+        self.label_23 = QtWidgets.QLabel(self.page_tres)
+        self.label_23.setGeometry(QtCore.QRect(359, 400, 210, 20))
+        font = QtGui.QFont()
+        font.setFamily("Lucida Bright")
+        font.setPointSize(12)
+        self.label_23.setFont(font)
+        self.label_23.setStyleSheet("color:red;")
+        self.label_23.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_23.setObjectName("label_23")        
+        ###################
         self.label_17 = QtWidgets.QLabel(self.page_tres)
         self.label_17.setGeometry(QtCore.QRect(200, 170, 231, 22))
         font = QtGui.QFont()
@@ -244,7 +265,7 @@ class Ui_MainWindow(object):
         self.label_17.setObjectName("label_17")
         #############
         self.tabla = QtWidgets.QTableWidget(self.page_tres)
-        self.tabla.setGeometry(QtCore.QRect(30, 420, 570, 180))
+        self.tabla.setGeometry(QtCore.QRect(30, 420, 280, 180))
         self.tabla.setStyleSheet("QTableView {border: 1px solid black ;\n"
 "background-color: white; color: black; }\n"
 "QTableView::item { border-bottom: 1px solid black; border-right: 1px solid black;\n"
@@ -255,6 +276,19 @@ class Ui_MainWindow(object):
         self.tabla.setObjectName("tableView")
         self.tabla.setColumnCount(0)
         self.tabla.setRowCount(0)
+        #############
+        self.tabla2 = QtWidgets.QTableWidget(self.page_tres)
+        self.tabla2.setGeometry(QtCore.QRect(320, 420, 280, 180))
+        self.tabla2.setStyleSheet("QTableView {border: 1px solid black ;\n"
+"background-color: white; color: black; }\n"
+"QTableView::item { border-bottom: 1px solid black; border-right: 1px solid black;\n"
+" height: 50px; width: 100px; \n"
+"}\n"
+"QHeaderView::section { background-color: gray; color: white; }\n"
+"QTableView::item:selected { background-color: blue; color: white;    }")
+        self.tabla2.setObjectName("tableView")
+        self.tabla2.setColumnCount(0)
+        self.tabla2.setRowCount(0)        
         #############
         self.tableWidget = QtWidgets.QTableWidget(self.page_tres) 
         self.tableWidget.setGeometry(QtCore.QRect(30, 200, 570, 180))
@@ -763,6 +797,8 @@ class Ui_MainWindow(object):
         self.bt_list.setText(_translate("MainWindow", "DESCARGA LISTA"))
         self.bt_config.setText(_translate("MainWindow", "Configuraciones"))
         self.label_21.setText(_translate("MainWindow", "DESPUES"))
+        self.label_22.setText(_translate("MainWindow", "COS"))
+        self.label_23.setText(_translate("MainWindow", "DAAS"))
         self.label_17.setText(_translate("MainWindow", "ANTES"))
         self.label_19.setText(_translate("MainWindow", "DISEÑO NODOS"))
         self.lineEdit_buscar.setPlaceholderText(_translate("MainWindow", "BUSCAR NODO"))

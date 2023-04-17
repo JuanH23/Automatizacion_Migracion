@@ -284,22 +284,28 @@ class MiApp(QtWidgets.QMainWindow):
             print(self.FINAL_FILTRADO )    
             final.to_excel("out8.xlsx")
             self.FINAL_FILTRADO.to_excel("out11.xlsx")##RETORNAR FINAL_FILTRADO PARA LA VISUALIZACION DE LA TABLA DEL DESPUES
-            return self.filtro,self.FINAL_FILTRADO
+            COS=self.FINAL_FILTRADO.loc[:,['Dispositivo COS','Puerto COS','ptp']]
+            DAAS=self.FINAL_FILTRADO.loc[:,['Dispositivo DAAS','Puerto DAAS','Unnamed: 5']]
+            print(COS)
+            print(DAAS)
+            return self.filtro,COS,DAAS
          except KeyError as e:
               print(e)
 
     def mostrar_tabla(self):
         tabla_thread = threading.Thread(target=self.crear_tabla)
         tabla_thread.start()
-        despues_thread=threading.Thread(target=self.crear_despues)
-        despues_thread.start()
+        despues_DAAS_thread=threading.Thread(target=self.crear_despues_COS)
+        despues_DAAS_thread.start()
+        despues_COS_thread=threading.Thread(target=self.crear_despues_DAAS)
+        despues_COS_thread.start()
 
     def crear_tabla(self):#*Esta función filtra los datos del Dataframe requeridos y hace la tabla para mostrarla en la interfaz grafica
         self.variable =""
         try:
             self.variable=self.ui.lineEdit_buscar.text()#*Toma lo que se ingrese en el LineEdit y lo pasa como texto almacenandolo en una variable
             self.variable=self.variable.upper()#*Debido a que todas las letras en la columna esta en mayuscula no importa lo que se digite en el LineEdit, lo transforma a mayuscula para facilitar el filtrado
-            filtro,x=self.filtrado_COS_DAAS()
+            filtro,COS,DAAS=self.filtrado_COS_DAAS()
             
             if not (filtro['Description'].str.contains(self.variable,case=False,na=False,regex=True)!=self.variable).any() == (self.filtro['Description'].str.contains(self.variable,case=False,na=False,regex=True)==self.variable).any():#*Revisa con contains si lo ingresado en variable existe dentro del dataframe, si no existe continua sin realizar ningun proceso
                     #print(self.filtro)
@@ -333,9 +339,9 @@ class MiApp(QtWidgets.QMainWindow):
             QMessageBox.about(self,'Informacion', 'El archivo esta \n malogrado')
             return None
 
-    def crear_despues(self):
+    def crear_despues_COS(self):
         try:
-            x,FINAL_DESPUES=self.filtrado_COS_DAAS()
+            x,FINAL_DESPUES,DAAS=self.filtrado_COS_DAAS()
             print(FINAL_DESPUES)
             columnas2=list(FINAL_DESPUES.columns)#*Toma solo las columnas del Dataframe            
             df_fila2=FINAL_DESPUES.to_numpy().tolist()#*lo transforma en una lista para revisar las filas del Dataframe                  
@@ -360,7 +366,35 @@ class MiApp(QtWidgets.QMainWindow):
                 if dato2 == 'nan':#*Revisa si hay algun dato vacio y si es asi colocarlo en blanco
                     dato2=''
                 self.ui.tabla.setItem(ii,jj,QTableWidgetItem(dato2))#*Inserta posicion a posicion en el tableWidget    
-       
+    
+    
+    def crear_despues_DAAS(self):
+        try:
+            x,y,DAAS=self.filtrado_COS_DAAS()
+            print(DAAS)
+            columnas2=list(DAAS.columns)#*Toma solo las columnas del Dataframe            
+            df_fila2=DAAS.to_numpy().tolist()#*lo transforma en una lista para revisar las filas del Dataframe                  
+            xx=len(columnas2)#*Toma el tamaño o longitud de la variable para luego recorrerlo en un for              
+            yy=len(df_fila2)#*Toma el tamaño o longitud de la variable para luego recorrerlo en un for 
+        except ValueError:#*si hay un error de formato de archivo captura el archivo y lo muestra en un MessageBox
+            QMessageBox.about (self,'Informacion', 'Formato incorrecto')
+            return None
+        except FileNotFoundError:#*si hay un error con el archivo, si esta dañado o no corresponde algo, captura el error y lo muestra en un MessageBox
+            QMessageBox.about(self,'Informacion', 'El archivo esta \n malogrado')
+            return None                         
+
+        self.ui.tabla2.setRowCount(yy)#*inserta en el tableWidget la cantidad de filas que se van a mostrar                        
+        self.ui.tabla2.setColumnCount(xx)#*inserta en el tableWidget la cantidad de columnas que se van a mostrar                         
+            
+        for jj in range(xx):#*Recorre las columnas 
+            encabezado2=QtWidgets.QTableWidgetItem(columnas2[jj])#*Guarda los encabezados de cada columna
+            self.ui.tabla2.setHorizontalHeaderItem(jj,encabezado2)#*Insterta en la tabla los encabezados guardados anteriormente
+                                
+            for ii in range (yy):#*Recorre las filas
+                dato2= str(df_fila2[ii][jj])#*guarda en una lista posicion a posicion de los datos filtrados
+                if dato2 == 'nan':#*Revisa si hay algun dato vacio y si es asi colocarlo en blanco
+                    dato2=''
+                self.ui.tabla2.setItem(ii,jj,QTableWidgetItem(dato2))#*Inserta posicion a posicion en el tableWidget          
     def control_bt_minimizar(self):#*Función para minimizar el programa
         self.showMinimized()
       

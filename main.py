@@ -1,5 +1,6 @@
 import sys
-from estructura_principal import*
+#from estructura_principal import*
+from Estructura_principal_FINAL import *
 from PyQt5.QtWidgets import QTableWidgetItem,QFileDialog,QMessageBox
 from PyQt5.QtCore import QPropertyAnimation
 from PyQt5 import QtCore
@@ -47,7 +48,7 @@ EXPORT_TYPE='Excel'
 
 ##############################################################################################################
 name_files=["Arris_SCMSummary.xlsx","Casa_SCMSummary.xlsx","Ocupacion - Marcacion RPHY Harmonic.xlsx"]
-ruta_de_busqueda=['C:\\Users\\IC0167A\\Desktop\\Documents','C\\Users']
+
 sheet_names=[None,None,'Hoja2','Hoja5']
 ##############################################################################################################
 
@@ -62,26 +63,26 @@ class MiApp(QtWidgets.QMainWindow):
         self.gripSize=10
         self.grip=QtWidgets.QSizeGrip(self)
         self.grip.resize(self.gripSize,self.gripSize)
-        self.ui.frame_Sup.mouseMoveEvent=self.mover_ventana
-        self.ui.bt_restaurar.hide()
+        #self.ui.frame_Sup.mouseMoveEvent=self.mover_ventana
+        
         #*Funciones con los botones para cada uno de los eventos
         self.ui.bt_filtrar.clicked.connect(self.mostrar_tabla)
         self.ui.download_LIST.clicked.connect(self.download_LISTS)
-        self.ui.bt_inicio.clicked.connect(lambda: self.ui.stackedWidget.setCurrentWidget(self.ui.page_tres))
-        self.ui.bt_list.clicked.connect(lambda: self.ui.stackedWidget.setCurrentWidget(self.ui.page_uno))	
-        self.ui.bt_base_datos.clicked.connect(lambda: self.ui.stackedWidget.setCurrentWidget(self.ui.page_dos))	
-        self.ui.bt_congif.clicked.connect(lambda: self.ui.stackedWidget.setCurrentWidget(self.ui.page_cuatro))		
-        self.ui.bt_restaurar.clicked.connect(self.control_normal)
+        self.ui.bt_inicio.clicked.connect(lambda: self.ui.stackedWidget_2.setCurrentWidget(self.ui.page_tres))
+        self.ui.bt_list.clicked.connect(lambda: self.ui.stackedWidget_2.setCurrentWidget(self.ui.page_uno))	
+        self.ui.bt_base_datos.clicked.connect(lambda: self.ui.stackedWidget_2.setCurrentWidget(self.ui.page_dos))	
+        self.ui.bt_config.clicked.connect(lambda: self.ui.stackedWidget_2.setCurrentWidget(self.ui.page_cuatro))		
+        #self.ui.bt_restaurar.clicked.connect(self.control_normal)
         self.ui.bt_minimizar.clicked.connect(self.control_bt_minimizar)
-        self.ui.bt_max.clicked.connect(self.control_max)
+        #self.ui.bt_max.clicked.connect(self.control_max)
         self.ui.bt_close.clicked.connect(self.control_close)
-        self.ui.bt_menu.clicked.connect(self.mover_menu)
-        self.ui.bt_buscar_archivo.clicked.connect(self.abrir_archivo)
+        #self.ui.bt_menu.clicked.connect(self.mover_menu)
+        self.ui.search_files.clicked.connect(self.abrir_archivo)
         self.ui.bt_filtrar_2.clicked.connect(self.upload_LIST)
-        self.ui.bt_cancelar.clicked.connect(self.cancelar_stop)
+        self.ui.bt_stop.clicked.connect(self.cancelar_stop)
         self.ui.bt_upload_file.clicked.connect(self.upload_file)
         self.ui.bt_search_files.clicked.connect(self.search_file_filter)
-        self.ui.bt_save_path_list.clicked.connect(self.save_path_list)
+        self.ui.bt_save_con.clicked.connect(self.save_path_list)
         self.ui.comboBox.currentIndexChanged.connect(self.seleccion_archivo)
 
         self.index_stop=0
@@ -94,7 +95,10 @@ class MiApp(QtWidgets.QMainWindow):
         self.c_up=0
         self.continuar_subida=True
         self.update_progressBar.connect(self.ui.progressBar_2.setValue)
-
+        self.FOLDER_DEST=""
+        
+        self.ruta_de_busqueda=[]
+        
     def update_progress_bar_Slot(self,value):
         self.ui.progressBar_2.setValue(value)
 
@@ -343,6 +347,7 @@ class MiApp(QtWidgets.QMainWindow):
         except FileNotFoundError:#*si hay un error con el archivo, si esta dañado o no corresponde algo, captura el error y lo muestra en un MessageBox
             QMessageBox.about(self,'Informacion', 'El archivo esta \n malogrado')
             return None                         
+
         self.ui.tabla.setRowCount(yy)#*inserta en el tableWidget la cantidad de filas que se van a mostrar                        
         self.ui.tabla.setColumnCount(xx)#*inserta en el tableWidget la cantidad de columnas que se van a mostrar                         
             
@@ -358,35 +363,25 @@ class MiApp(QtWidgets.QMainWindow):
        
     def control_bt_minimizar(self):#*Función para minimizar el programa
         self.showMinimized()
-
-    def control_normal(self):#*Función para restaurar los resize originales del programa
-        self.showNormal()
-
-        self.ui.bt_restaurar.hide()
-        self.ui.bt_max.show()
-
-    def control_max(self):#*Función para ampliar completamente la pantalla
-        self.showMaximized()
-        self.ui.bt_max.hide()
-        self.ui.bt_restaurar.show()
+      
 
     def control_close(self):#*Función para cerrar el programa
         self.close()
-    def mover_menu(self):
+    '''def mover_menu(self):
         if True:
-                width=self.ui.frame_lateral.width()
+                width=self.ui.frame_lateral_2.width()
                 normal=0
                 if width==0:
                         extender=200
                 else:
                         extender=normal
-                self.animacion=QPropertyAnimation(self.ui.frame_lateral, b'minimumWidth' )
+                self.animacion=QPropertyAnimation(self.ui.frame_lateral_2, b'minimumWidth' )
                 self.animacion.setProperty("minimuWidth",200)
                 self.animacion.setDuration(300)
                 self.animacion.setStartValue(width)
                 self.animacion.setEndValue(extender)
                 self.animacion.setEasingCurve(QtCore.QEasingCurve.InOutQuart)
-                self.animacion.start()
+                self.animacion.start()'''
 
     def resizeEven(self,event):
         rect=self.rect()
@@ -427,13 +422,14 @@ class MiApp(QtWidgets.QMainWindow):
         return seleccion
 
     def download_LISTS(self):
-        
+
         LIST_NAME=self.ui.lineEdit_descargar_lista.text()
         FILE_NAME=self.seleccion_archivo()
-        FOLDER_DEST=self.save_path_list()
-        print(FOLDER_DEST)
+        
+        print(self.FOLDER_DEST)
+        ssl._create_default_https_context=ssl._create_unverified_context
         file_name= download_lists.Type_file(FILE_NAME,EXPORT_TYPE)
-        downloader_thread = threading.Thread(target=download_lists.download_list(LIST_NAME,EXPORT_TYPE,FOLDER_DEST,file_name))
+        downloader_thread = threading.Thread(target=download_lists.download_list(LIST_NAME,EXPORT_TYPE,self.FOLDER_DEST,file_name))
         downloader_thread.start()
     def upload_LIST(self):
         
@@ -470,31 +466,37 @@ class MiApp(QtWidgets.QMainWindow):
                                 
             return dfs
     def read_data(self):
-            arris_df=None
-            ocupacion_Cos=None
-            ocupacion_Daas=None
-            Casa_df=None
-            #if __name__=='__main__':  
-            dataframes=self.obtener_dataframes(name_files,ruta_de_busqueda)
-            arris_df=dataframes['Arris_SCMSummary.xlsx']
-            Casa_df=dataframes['Casa_SCMSummary.xlsx']
-            for key in dataframes.keys():
-                print(key)  # Imprimir las claves del diccionario
-            if 'Hoja5_Ocupacion - Marcacion RPHY Harmonic.xlsx' in dataframes.keys():
-                ocupacion_Cos = dataframes['Hoja5_Ocupacion - Marcacion RPHY Harmonic.xlsx']
-                print(ocupacion_Cos)
-            if 'Hoja2_Ocupacion - Marcacion RPHY Harmonic.xlsx' in dataframes.keys():
-                    ocupacion_Daas = dataframes['Hoja2_Ocupacion - Marcacion RPHY Harmonic.xlsx']
-                    
-            return arris_df,ocupacion_Daas,ocupacion_Cos,Casa_df    
+           
+                arris_df=None
+                ocupacion_Cos=None
+                ocupacion_Daas=None
+                Casa_df=None
+                #if __name__=='__main__':  
+                dataframes=self.obtener_dataframes(name_files,self.ruta_de_busqueda)
+                arris_df=dataframes['Arris_SCMSummary.xlsx']
+                Casa_df=dataframes['Casa_SCMSummary.xlsx']
+                for key in dataframes.keys():
+                    print(key)  # Imprimir las claves del diccionario
+                if 'Hoja5_Ocupacion - Marcacion RPHY Harmonic.xlsx' in dataframes.keys():
+                    ocupacion_Cos = dataframes['Hoja5_Ocupacion - Marcacion RPHY Harmonic.xlsx']
+                    print(ocupacion_Cos)
+                if 'Hoja2_Ocupacion - Marcacion RPHY Harmonic.xlsx' in dataframes.keys():
+                        ocupacion_Daas = dataframes['Hoja2_Ocupacion - Marcacion RPHY Harmonic.xlsx']
+                        
+                return arris_df,ocupacion_Daas,ocupacion_Cos,Casa_df
+  
     def search_file_filter(self):
-    
+         try:
+            old_path_list_download = env.get('path_list_download', '')
+            self.ruta_de_busqueda.append(old_path_list_download)
+            print(self.ruta_de_busqueda)
             self.file_arris,self.file_despues_DAAS,self.file_despues_COS,self.file_casa=self.read_data()
             print(f"file_arris==>{self.file_arris}")
             print(f"file_despues_DAAS==>{self.file_despues_DAAS}")
             print(f"file_depues_COS==>{self.file_despues_COS}")
             print(f"file_casa==>{self.file_casa}")
-      
+         except KeyError as e:
+                print(f"Error:{e}")  
 ##########################################################################################
 
     def subir_list(self):
@@ -701,26 +703,32 @@ class MiApp(QtWidgets.QMainWindow):
                     print("Se han excedido el número máximo de intentos. Saliendo del programa...")
                                  
     def save_path_list(self):
-        path_list = self.ui.lineEdit_path_list.text()
+        path_list = self.ui.lineEdit_Path_lists.text()
         # Obtenemos el valor anterior de path_list_download del archivo .env
         old_path_list_download = env.get('path_list_download', '')
         print(f"path_list==>{path_list}")
 
-        if self.ui.lineEdit_path_list.text()=='':
+        if path_list=='':
+            print("a")
             new_path_list_download = old_path_list_download
-            self.ui.lineEdit_path_list.setText('')
+            self.ui.lineEdit_Path_lists.setText('')
+            self.ruta_de_busqueda.append(old_path_list_download)  
             
         else:
+            print("b")
             new_path_list_download = path_list + "\\descarga"
-            self.ui.lineEdit_path_list.setText('')
+            self.ui.lineEdit_Path_lists.setText('')
+            self.ruta_de_busqueda.append(path_list)  
+
 
         print(f"new_path_list_download==>{new_path_list_download}")
         set_key(".env", "path_list_download", new_path_list_download)
         print(set_key(".env", "path_list_download", new_path_list_download))
-        FOLDER_DEST=new_path_list_download
-        print(f"FOLDER_DEST==>{FOLDER_DEST}")
-        return FOLDER_DEST
-    
+        self.FOLDER_DEST=new_path_list_download 
+        print(f"s_files==>{self.ruta_de_busqueda}")
+        print(f"FOLDER_DEST==>{self.FOLDER_DEST}")
+        
+
 if __name__=="__main__":
     app=QtWidgets.QApplication(sys.argv)
     mi_app=MiApp()

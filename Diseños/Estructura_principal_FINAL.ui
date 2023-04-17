@@ -495,9 +495,9 @@ padding-left: 8px;
 border-radius:15px;</string>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
-     <widget class="QWidget" name="page">
+     <widget class="QWidget" name="page_tres">
       <widget class="QLabel" name="label_21">
        <property name="geometry">
         <rect>
@@ -611,7 +611,7 @@ QTableView::item:selected { background-color: blue; color: white;	}</string>
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_buscar_2">
+      <widget class="QLineEdit" name="lineEdit_buscar">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -639,7 +639,7 @@ padding-left: 8px;</string>
         <string>BUSCAR NODO</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="bt_filtrar_2">
+      <widget class="QPushButton" name="bt_filtrar">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -677,19 +677,19 @@ padding-left: 8px;</string>
         <bool>false</bool>
        </property>
        <property name="styleSheet">
-        <string notr="true">QPushButton#bt_filtrar_2:pressed{
+        <string notr="true">QPushButton#bt_filtrar:pressed{
 padding-left:5px;
 padding-top:5px;
 background-color:#505050;
 
 }
 
-QPushButton#bt_filtrar_2:hover{
+QPushButton#bt_filtrar:hover{
 font:50 10pt &quot;Arial Black&quot;;
 background-color:white;
 
 }
-QPushButton#bt_filtrar_2{
+QPushButton#bt_filtrar{
 backgroud-color:#505050;
 font:50 10pt &quot;Arial Black&quot;;
 border-radius:15px;
@@ -819,7 +819,7 @@ color:red;
        </property>
       </widget>
      </widget>
-     <widget class="QWidget" name="page_5">
+     <widget class="QWidget" name="page_uno">
       <widget class="QLabel" name="label_27">
        <property name="geometry">
         <rect>
@@ -843,7 +843,7 @@ color:red;
         <string>DESCARGA DE LISTAS</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_10">
+      <widget class="QLineEdit" name="lineEdit_descargar_lista">
        <property name="geometry">
         <rect>
          <x>70</x>
@@ -892,7 +892,7 @@ padding-left: 8px;</string>
         <string>GUARDAR COMO:</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="download_list">
+      <widget class="QPushButton" name="download_LIST">
        <property name="geometry">
         <rect>
          <x>230</x>
@@ -953,7 +953,7 @@ QProgressBar::chunk {
 }</string>
        </property>
        <property name="value">
-        <number>24</number>
+        <number>0</number>
        </property>
       </widget>
       <widget class="QComboBox" name="comboBox">
@@ -1050,7 +1050,7 @@ QComboBox:disabled {
        </item>
       </widget>
      </widget>
-     <widget class="QWidget" name="page_6">
+     <widget class="QWidget" name="page_dos">
       <widget class="QLabel" name="label_29">
        <property name="geometry">
         <rect>
@@ -1074,7 +1074,7 @@ QComboBox:disabled {
         <string>SUBIR LISTA A SHAREPOINT</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_buscar_3">
+      <widget class="QLineEdit" name="lineEdit_buscar_2">
        <property name="geometry">
         <rect>
          <x>150</x>
@@ -1099,7 +1099,7 @@ padding-left: 8px;</string>
         <string>NOMBRE DE LISTA DE SHAREPOINT</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="bt_upload_list">
+      <widget class="QPushButton" name="bt_filtrar_2">
        <property name="geometry">
         <rect>
          <x>230</x>
@@ -1156,7 +1156,7 @@ QProgressBar::chunk {
 }</string>
        </property>
        <property name="value">
-        <number>24</number>
+        <number>0</number>
        </property>
       </widget>
       <widget class="QPushButton" name="search_files">
@@ -1232,7 +1232,7 @@ color:red;
        </property>
       </widget>
      </widget>
-     <widget class="QWidget" name="page_2">
+     <widget class="QWidget" name="page_cuatro">
       <widget class="QLabel" name="label_15">
        <property name="geometry">
         <rect>

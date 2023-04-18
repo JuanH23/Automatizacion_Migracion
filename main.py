@@ -12,6 +12,7 @@ from office365_api import SharePoint
 import download_lists
 from Advertencia import*
 from search_files import Search
+from Prueba_formato import diseño
 ##########################################################################################################
 #*Librerias utilizadas en la función de subir lista a SharePoint
 from office365.sharepoint.lists.template_type import ListTemplateType
@@ -208,17 +209,21 @@ class MiApp(QtWidgets.QMainWindow):
     def filtrado_COS_DAAS(self):
          try:
             df=pd.DataFrame(self.file_arris)
+            print(f"df==>{df}")
             df_casa=pd.DataFrame(self.file_casa)
-            df_casa=df_casa.loc[:,['CMTS','Upstream','Total','Description']]
-            df_casa=df_casa.rename(columns={'Upstream':'S'})
-            file_2=df.loc[:,['CMTS','Mac','Total','Description']]
-            file_2[['Mac','Total','Description']] = file_2[['Mac','Total','Description']].astype(str)
+            print(f"df_casa==>{df_casa}")
+            df_casa=df_casa.loc[:,['CMTS','Upstream','Total','Description']].astype(str).fillna('No data')
+            
+            df_casa=df_casa.rename(columns={'Upstream':'S/CG/CH'})
+            file_2=df.loc[:,['CMTS','S/CG/CH','Total','Description']].astype(str).fillna('No data')
             df_concat = pd.concat([file_2, df_casa])
             #variable="39g1"
             #variable="fas1"
             variable=self.ui.lineEdit_buscar.text()
             variable=variable.upper()#*Debido a que todas las letras en la columna esta en mayuscula no importa lo que se digite en el LineEdit, lo transforma a mayuscula para facilitar el filtrado
             self.filtro=df_concat[df_concat['Description'].str.contains(variable,case=False,na=False,regex=True)]#*con el argumento contains revisa lo que se guarde en la varible,filtre y en la variable filtro guarde todo.
+            
+            diseño(self.filtro)
             ciudad=self.filtro['CMTS']
             valor=ciudad.index
             valor_list=valor.to_list()

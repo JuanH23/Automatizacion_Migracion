@@ -2,12 +2,15 @@ from office365_api import SharePoint
 import re
 import sys,os
 from pathlib import PurePath
+from dotenv import set_key,dotenv_values
 #Ruta a donde se va a subir
 #ROOT_DIR=sys.argv[1]#Path de computador de desde donde se va a subir el archivo
 ROOT_DIR=""
 #Nombre del archivo, incluye subfolders para subir
 #SHAREPOINT_FOLDER__NAME=sys.argv[2]#Ruta de SharePoint a donde se va a subir 
-SHAREPOINT_FOLDER__NAME="PRUEBA_STORAGE"
+env=dotenv_values(".env")
+ROOT_DIR="C:\\Users\IC0167A\Desktop\Proyecto_final\prueba_s"#!CONFIGURAR PATH DEL PC DE DONDE SE VAN A SUBIR LOS ARCHIVOS, UNA VEZ TERMINADO LOS DISEÑOS
+SHAREPOINT_FOLDER__NAME=env["sharepoint_name_folder"]
 #archivo nombre pattern, si se quiere subir un archivo en especifico colocar en ese parametro el nombre sin extension
 #FILE_NAME_PATTERN=sys.argv[3]
 FILE_NAME_PATTERN='None'

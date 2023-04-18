@@ -83,6 +83,8 @@ class MiApp(QtWidgets.QMainWindow):
         self.ui.bt_upload_file.clicked.connect(self.upload_file)
         self.ui.bt_search_files.clicked.connect(self.search_file_filter)
         self.ui.bt_save_con.clicked.connect(self.save_path_list)
+        self.ui.bt_save_con.clicked.connect(self.save_parameters_url_sharepoint)
+        self.ui.bt_save_con.clicked.connect(self.save_parameters_name_folder_Sharepoint)
         self.ui.comboBox.currentIndexChanged.connect(self.seleccion_archivo)
 
         self.index_stop=0
@@ -293,12 +295,15 @@ class MiApp(QtWidgets.QMainWindow):
               print(e)
 
     def mostrar_tabla(self):
-        tabla_thread = threading.Thread(target=self.crear_tabla)
-        tabla_thread.start()
-        despues_DAAS_thread=threading.Thread(target=self.crear_despues_COS)
-        despues_DAAS_thread.start()
-        despues_COS_thread=threading.Thread(target=self.crear_despues_DAAS)
-        despues_COS_thread.start()
+        try:
+            tabla_thread = threading.Thread(target=self.crear_tabla)
+            tabla_thread.start()
+            despues_DAAS_thread=threading.Thread(target=self.crear_despues_COS)
+            despues_DAAS_thread.start()
+            despues_COS_thread=threading.Thread(target=self.crear_despues_DAAS)
+            despues_COS_thread.start()
+        except NameError as e:
+            print(e)    
 
     def crear_tabla(self):#*Esta función filtra los datos del Dataframe requeridos y hace la tabla para mostrarla en la interfaz grafica
         self.variable =""
@@ -459,12 +464,16 @@ class MiApp(QtWidgets.QMainWindow):
 
         LIST_NAME=self.ui.lineEdit_descargar_lista.text()
         FILE_NAME=self.seleccion_archivo()
-        
-        print(self.FOLDER_DEST)
+        FOLDER_DEST=env["path_list_download"]
+        print(f"FOLDER_DEST==>{FOLDER_DEST}")
         ssl._create_default_https_context=ssl._create_unverified_context
         file_name= download_lists.Type_file(FILE_NAME,EXPORT_TYPE)
-        downloader_thread = threading.Thread(target=download_lists.download_list(LIST_NAME,EXPORT_TYPE,self.FOLDER_DEST,file_name))
+        downloader_thread = threading.Thread(target=download_lists.download_list(LIST_NAME,EXPORT_TYPE,FOLDER_DEST,file_name))
         downloader_thread.start()
+        msg_box = QMessageBox()
+        msg_box.setText("La operación se ha completado correctamente")
+        msg_box.setStandardButtons(QMessageBox.Ok)
+        msg_box.exec_()
     def upload_LIST(self):
         
         self.upload_thread = threading.Thread(target=self.subir_list)
@@ -529,6 +538,10 @@ class MiApp(QtWidgets.QMainWindow):
             print(f"file_despues_DAAS==>{self.file_despues_DAAS}")
             print(f"file_depues_COS==>{self.file_despues_COS}")
             print(f"file_casa==>{self.file_casa}")
+            msg_box = QMessageBox()
+            msg_box.setText("La operación se ha completado correctamente")
+            msg_box.setStandardButtons(QMessageBox.Ok)
+            msg_box.exec_()
          except KeyError as e:
                 print(f"Error:{e}")  
 ##########################################################################################
@@ -572,30 +585,44 @@ class MiApp(QtWidgets.QMainWindow):
         if "Arris_SCMSummary" in excel_file:
             df = pd.read_excel(excel_file)
             file=pd.DataFrame(df)
+            cont1=0
             print("a")
-            file_2=file.loc[:,['CMTS','Mac','Total','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
-            file_2[['Mac','Total','Description']] = file_2[['Mac','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
-            data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario
-            flag=1
+            cabeceras=list(file.columns)
+            headers=['CMTS','Mac','Total','Description']
+            for header in headers:
+                if header in cabeceras:
+                    cont1+=1
+                    if cont1==4:
+                        file_2=file.loc[:,['CMTS','Mac','Total','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+                        file_2[['Mac','Total','Description']] = file_2[['Mac','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
+                        data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario
+                        flag=1
         elif "Casa_SCMSummary" in excel_file :
             df = pd.read_excel(excel_file)
             file=pd.DataFrame(df)
+            cont2=0
             print("b")
-            file_2=file.loc[:,['CMTS','Upstream','Total','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
-            file_2[['Upstream','Total','Description']] = file_2[['Upstream','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
-            data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
-            flag=2
+            cabeceras=list(file.columns)
+            headers=['CMTS','Upstream','Total','Description']
+            for header in headers:
+                if header in cabeceras:
+                    cont2+=1
+                    if cont2==4:
+                        file_2=file.loc[:,['CMTS','Upstream','Total','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+                        file_2[['Upstream','Total','Description']] = file_2[['Upstream','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
+                        data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
+                        flag=2
         elif "Ocupacion - Marcacion RPHY Harmonic" in excel_file :
             df = pd.read_excel(excel_file,sheet_name='Hoja2',engine='openpyxl')
             file=pd.DataFrame(df)
-            cont1=0
+            cont3=0
             print("c")
             cabeceras=list(file.columns)
             headers=['IP','Dispositivo','Puerto','Unnamed: 5']
             for header in headers:
                 if header in cabeceras:
-                    cont1+=1
-                    if cont1==4:
+                    cont3+=1
+                    if cont3==4:
                         file_2=file.loc[:,['IP','Dispositivo','Puerto','Unnamed: 5']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
                         file_2[['IP','Dispositivo','Puerto','Unnamed: 5']] = file_2[['IP','Dispositivo','Puerto','Unnamed: 5']].astype(str)#*Convierte los valores de estas columnas a tipo str
                         data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
@@ -603,14 +630,14 @@ class MiApp(QtWidgets.QMainWindow):
         elif "Ocupacion - Marcacion RPHY Harmoni" in excel_file :
             df = pd.read_excel(excel_file,sheet_name='Hoja5',engine='openpyxl')
             file=pd.DataFrame(df)
-            cont2=0
+            cont4=0
             print("d")
             cabeceras=list(file.columns)
             headers=['IP','Dispositivo','Puerto','ptp']
             for header in headers:
                 if header in cabeceras:
-                    cont2+=1
-            if cont2==2:
+                    cont4+=1
+            if cont4==4:
                 file_2=file.loc[:,['IP','Dispositivo','Puerto','ptp']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
                 file_2[['IP','Dispositivo','Puerto','ptp']] = file_2[['IP','Dispositivo','Puerto','ptp']].astype(str)#*Convierte los valores de estas columnas a tipo str
                 data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
@@ -672,11 +699,19 @@ class MiApp(QtWidgets.QMainWindow):
                             except requests.exceptions.HTTPError as http_error:
                                 
                                 print(f"Error de HTTP al agregar el elemento #{c}: {http_error}")
+                                QMessageBox.warning(self,"Error Message",
+                                f"Error de HTTP al agregar el elemento #{c}: {http_error}",
+                                QMessageBox.StandardButton.Close,
+                                QMessageBox.StandardButton.Close)
                                 time.sleep(5)  #* Esperar 5 segundos antes de intentar de nuevo
                                 count=self.last_saved_index
                             except Exception as e:
                                 
                                 print(f"Error en el intento {i+1} de inserción para el elemento #{c}: {e}")
+                                QMessageBox.warning(self,"Error Message",
+                                f"Error en el intento {i+1} de inserción para el elemento #{c}: {e}",
+                                QMessageBox.StandardButton.Close,
+                                QMessageBox.StandardButton.Close)                                
                                 time.sleep(5)  #*Esperar 5 segundos antes de intentar de nuevo
                                 if i == max_attempts - 1:
                                     # Si se alcanza el número máximo de intentos sin éxito, salir del programa
@@ -720,8 +755,11 @@ class MiApp(QtWidgets.QMainWindow):
                     Sp_list.clear()
                     commit_count=0  
                 self.show()
-        except (requests.exceptions.ConnectionError, requests.exceptions.ChunkedEncodingError):
-
+        except (requests.exceptions.ConnectionError, requests.exceptions.ChunkedEncodingError) as e:
+                QMessageBox.warning(self,"Error Message",
+                f"No hay conexión a internet. Esperando...",
+                QMessageBox.StandardButton.Close,
+                QMessageBox.StandardButton.Close)
                 print("No hay conexión a internet. Esperando...")
                 time.sleep(5)  # Esperar 5 segundos antes de volver a intentar
                 
@@ -731,6 +769,10 @@ class MiApp(QtWidgets.QMainWindow):
                 attempt_count += 1
                
                 print(f"Error al Agregar el elemento a la lista #{c} error: {e}")
+                QMessageBox.warning(self,"Error Message",
+                f"Error al Agregar el elemento a la lista #{c} - Reintentando en 5 segundo...",
+                QMessageBox.StandardButton.Close,
+                QMessageBox.StandardButton.Close)
                 print("Reintentando en 5 segundo...")
                 time.sleep(5)
                 if attempt_count >= max_attempts:
@@ -761,7 +803,47 @@ class MiApp(QtWidgets.QMainWindow):
         self.FOLDER_DEST=new_path_list_download 
         print(f"s_files==>{self.ruta_de_busqueda}")
         print(f"FOLDER_DEST==>{self.FOLDER_DEST}")
-        
+
+    def save_parameters_url_sharepoint(self):
+        path_Sharepoint=self.ui.lineEdit_site_Sharepoint.text()
+        old_path_path_sharepoint = env.get('sharepoint_url_site', '')
+
+        if path_Sharepoint=='':
+            print("a")
+            new_path_Sharepoint = old_path_path_sharepoint
+            self.ui.lineEdit_site_Sharepoint.setText('')
+             
+            
+        else:
+            print("b")
+            new_path_Sharepoint = path_Sharepoint 
+            self.ui.lineEdit_site_Sharepoint.setText('')
+        print(f"path_SHAREPOINT==>{new_path_Sharepoint}")    
+        set_key(".env","sharepoint_url_site",new_path_Sharepoint)
+        S_path_share=new_path_Sharepoint.find("/")
+        Sl_path_share=new_path_Sharepoint.find("/",S_path_share+1)
+        SLI_path_share=new_path_Sharepoint.find("/",Sl_path_share+1)
+        SLIC_path_share=new_path_Sharepoint.find("/",SLI_path_share+1)
+        site_name=new_path_Sharepoint[SLIC_path_share+1:-1]
+        print(site_name)
+        set_key(".env","sharepoint_site_name",site_name)
+
+
+    def save_parameters_name_folder_Sharepoint(self):
+        folder_Sharepoint=self.ui.lineEdit_folder_subir_archivo.text()
+        old_path_name_folder=env.get('sharepoint_name_folder', '')
+        if folder_Sharepoint=='':
+            print("a")
+            new_path_folder_name = old_path_name_folder
+            self.ui.lineEdit_folder_subir_archivo.setText('')
+             
+            
+        else:
+            print("b")
+            new_path_folder_name = folder_Sharepoint 
+            self.ui.lineEdit_folder_subir_archivo.setText('')
+        print(f"name_folder_Sharepoint==>{new_path_folder_name}")    
+        set_key(".env","sharepoint_name_folder",new_path_folder_name)   
 
 if __name__=="__main__":
     app=QtWidgets.QApplication(sys.argv)

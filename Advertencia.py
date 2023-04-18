@@ -12,9 +12,12 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QDialog
 import Upload_Files
 import threading
-ROOT_DIR="C:\\Users\IC0167A\Desktop\Proyecto_final\prueba_s"
-FILE_NAME_PATTERN="PRUEBA_STORAGE"
-FILE_NAME_PATTERN='PRUEBA_4'
+from dotenv import set_key,dotenv_values
+env=dotenv_values(".env")
+ROOT_DIR="C:\\Users\IC0167A\Desktop\Proyecto_final\prueba_s"#!CONFIGURAR PATH DEL PC DE DONDE SE VAN A SUBIR LOS ARCHIVOS, UNA VEZ TERMINADO LOS DISEÑOS
+SHAREPOINT_FOLDER__NAME=env["sharepoint_name_folder"]
+FILE_NAME_PATTERN='PRUEBA_4'#!CONFIGURAR ARCHIVO QUE SE VA A SUBIR, UNA VEZ TERMINADO LOS DISEÑOS
+#FILE_NAME_PATTERN=None
 class Ui_ADVERTENCIA(QDialog):
 
     def __init__(self):
@@ -26,7 +29,7 @@ class Ui_ADVERTENCIA(QDialog):
         self.setObjectName("ADVERTENCIA")
         self.setWindowTitle("ADVERTENCIA")
         self.resize(374, 138)
-        self.setStyleSheet("background-color:white;")
+        self.setStyleSheet("background-color:#cbcbcb;")
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
         self.setWindowOpacity(1)
         
@@ -59,8 +62,11 @@ class Ui_ADVERTENCIA(QDialog):
     def upload_file(self):
         upload_Thread=threading.Thread(target=Upload_Files.upload_files(ROOT_DIR,FILE_NAME_PATTERN))
         upload_Thread.start()
+        self.close()
     def no(self):
-        self.close()    
+        print(FILE_NAME_PATTERN)  
+        self.close()
+         
         
 
 

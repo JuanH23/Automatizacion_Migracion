@@ -223,11 +223,11 @@ class MiApp(QtWidgets.QMainWindow):
             variable=variable.upper()#*Debido a que todas las letras en la columna esta en mayuscula no importa lo que se digite en el LineEdit, lo transforma a mayuscula para facilitar el filtrado
             self.filtro=df_concat[df_concat['Description'].str.contains(variable,case=False,na=False,regex=True)]#*con el argumento contains revisa lo que se guarde en la varible,filtre y en la variable filtro guarde todo.
             
-            diseño(self.filtro)
+            
             ciudad=self.filtro['CMTS']
             valor=ciudad.index
             valor_list=valor.to_list()
-            indice=valor_list[1]
+            indice=valor_list[0]
             v = self.filtro.loc[indice, "CMTS"]
             print(v)
             sep=v.find("-")
@@ -295,7 +295,10 @@ class MiApp(QtWidgets.QMainWindow):
             DAAS=self.FINAL_FILTRADO.loc[:,['Dispositivo DAAS','Puerto DAAS','Unnamed: 5']]
             print(COS)
             print(DAAS)
+            
+            diseño(self.filtro,self.FINAL_FILTRADO,variable)
             return self.filtro,COS,DAAS
+            
          except KeyError as e:
               print(e)
 

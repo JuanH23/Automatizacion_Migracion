@@ -14,10 +14,10 @@ import Upload_Files
 import threading
 from dotenv import set_key,dotenv_values
 env=dotenv_values(".env")
-ROOT_DIR="C:\\Users\IC0167A\Desktop\Proyecto_final\prueba_s"#!CONFIGURAR PATH DEL PC DE DONDE SE VAN A SUBIR LOS ARCHIVOS, UNA VEZ TERMINADO LOS DISEÑOS
+
 SHAREPOINT_FOLDER__NAME=env["sharepoint_name_folder"]
-FILE_NAME_PATTERN='PRUEBA_4'#!CONFIGURAR ARCHIVO QUE SE VA A SUBIR, UNA VEZ TERMINADO LOS DISEÑOS
-#FILE_NAME_PATTERN=None
+#FILE_NAME_PATTERN='PRUEBA_4'
+FILE_NAME_PATTERN=None
 class Ui_ADVERTENCIA(QDialog):
 
     def __init__(self):
@@ -28,7 +28,7 @@ class Ui_ADVERTENCIA(QDialog):
     def window(self):
         self.setObjectName("ADVERTENCIA")
         self.setWindowTitle("ADVERTENCIA")
-        self.resize(374, 138)
+        self.resize(380, 140)
         self.setStyleSheet("background-color:#cbcbcb;")
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
         self.setWindowOpacity(1)
@@ -44,8 +44,8 @@ class Ui_ADVERTENCIA(QDialog):
         self.pushButton_2.setObjectName("pushButton_2")
         self.pushButton_2.clicked.connect(self.no)
         self.label = QtWidgets.QLabel(self)
-        self.label.setText( "¿ Esta seguro que quiere subir este diseño ?")
-        self.label.setGeometry(QtCore.QRect(80, 50, 261, 16))
+        self.label.setText( "¿ Esta seguro que quiere subir estos diseños ?")
+        self.label.setGeometry(QtCore.QRect(80, 50, 265, 16))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.label.setFont(font)
@@ -60,11 +60,13 @@ class Ui_ADVERTENCIA(QDialog):
         QtCore.QMetaObject.connectSlotsByName(self)
 
     def upload_file(self):
+        ROOT_DIR=env["path_list_download"]+ "/Diseños_NODOS"
         upload_Thread=threading.Thread(target=Upload_Files.upload_files(ROOT_DIR,FILE_NAME_PATTERN))
         upload_Thread.start()
         self.close()
     def no(self):
         print(FILE_NAME_PATTERN)  
+        print(env["path_list_download"]+ "/Diseños_NODOS")
         self.close()
          
         

@@ -4,15 +4,34 @@ from openpyxl.styles import Alignment
 from openpyxl.styles import Border, Side
 from openpyxl.styles import Color,Font
 import openpyxl
+import os
+from dotenv import set_key,dotenv_values 
+from Advertencia import*
 # Crear DataFrame con información
-def diseño(df):
+def diseño(df,df_cos_daas,name_file):
+
+    ###########
+    env=dotenv_values(".env")
+    ruth_list_download= env["path_list_download"]
+    ruta_nueva_carpeta = ruth_list_download + "/Diseños_NODOS"
+    os.makedirs(ruta_nueva_carpeta, exist_ok=True)
+    ruta_archivo = os.path.join(ruta_nueva_carpeta,'Diseño Segmentaciones RPHY-NODO '+ name_file +'.xlsx')
+    set_key(".env","path_files_upload",ruta_nueva_carpeta)
+    ###########
+    
 
     # Crear archivo Excel desde cero y escribir información del DataFrame
-    archivo_excel = pd.ExcelWriter('archivo.xlsx', engine='openpyxl')
+    archivo_excel = pd.ExcelWriter(ruta_archivo, engine='openpyxl')
 
 
     # Escribir el DataFrame en el archivo Excel
-    df.to_excel(archivo_excel, sheet_name='Hoja1', index=False)
+    df_cd=pd.DataFrame(df_cos_daas)
+    print(f"df_cd==>{df_cd}")
+    ################################################################
+    
+    df.to_excel(archivo_excel,sheet_name='Hoja1' ,index=False)
+
+    ################################################################
     hoja = archivo_excel.sheets['Hoja1']
     # Obtener el libro de trabajo y la hoja
     workbook = archivo_excel.book
@@ -88,7 +107,7 @@ def diseño(df):
     hoja.merge_cells(start_row=1, start_column=1, end_row=1, end_column=7)
     hoja.merge_cells(start_row=4, start_column=7, end_row=7, end_column=7)
     hoja.row_dimensions[1].height=20
-    hoja.column_dimensions['A'].width=25
+    hoja.column_dimensions['A'].width=28
     hoja.column_dimensions['F'].width=40
     fuente=Font(size=14)
     fuente.bold=True
@@ -165,7 +184,9 @@ def diseño(df):
 
     rango=hoja['E4:E7']
     
-    suma_columna = sum([celda.value for fila in rango for celda in fila])
+    #suma_columna = sum([celda.value for fila in rango for celda in fila ])
+    suma_columna = sum([0 if celda.value is None else celda.value for fila in rango for celda in fila])
+
     celda_resultado = hoja['G4']
     celda_resultado.value = suma_columna
     cell = worksheet.cell(row=4, column=7)
@@ -176,18 +197,23 @@ def diseño(df):
     ########################################TABLA_DEPUES##########################################
     hoja.merge_cells(start_row=1, start_column=9, end_row=1, end_column=17)
     hoja.column_dimensions['I'].width=20
+    hoja.column_dimensions['J'].width=25
     hoja.column_dimensions['K'].width=15
-    hoja.column_dimensions['L'].width=30
+    hoja.column_dimensions['L'].width=25
     hoja.column_dimensions['N'].width=15
     hoja.column_dimensions['Q'].width=45
 
     fuente=Font(size=14)
     fuente.bold=True
     hoja.cell(row=1,column=9).font=fuente
-    texto="BOGO-FONT-H-09-COS"
+    Dispositivo_cos_valor=df_cos_daas['Dispositivo COS']
+    Dispositivo_cos_index=Dispositivo_cos_valor.index
+    Dispositivo_cos_list=Dispositivo_cos_index.to_list()
+    indice_Dispositivo_cos=Dispositivo_cos_list[1]
+    texto_dispositivo_cos=df_cos_daas.loc[indice_Dispositivo_cos,"Dispositivo COS"]
+    #texto_dispositivo_cos="BOGO-FONT-H-09-COS"
     celda=hoja.cell(row=1,column=9)
-    celda.value=texto
-
+    celda.value=texto_dispositivo_cos
     hoja.merge_cells(start_row=2, start_column=9, end_row=2, end_column=17)
     hoja.merge_cells(start_row=4, start_column=9, end_row=8, end_column=9)
     fuente=Font(size=12)
@@ -241,6 +267,16 @@ def diseño(df):
     texto="CHASIS"
     celda=hoja.cell(row=3,column=12)
     celda.value=texto
+    ################################!
+    celda=hoja.cell(row=4,column=12)
+    celda.value=texto_dispositivo_cos
+    celda=hoja.cell(row=5,column=12)
+    celda.value=texto_dispositivo_cos
+    celda=hoja.cell(row=7,column=12)
+    celda.value=texto_dispositivo_cos
+    celda=hoja.cell(row=8,column=12)
+    celda.value=texto_dispositivo_cos
+    ################################!CAMBIAR DEPENDIENDO DE QUE NODO SEA DESPUES DE LA EXPLICACION
     texto="RPD"
     celda=hoja.cell(row=3,column=13)
     celda.value=texto
@@ -292,7 +328,28 @@ def diseño(df):
             cell.fill=relleno 
     for cells in cell_range_row8:
         for cell in cells:
-            cell.fill=relleno_pink 
+            cell.fill=relleno_pink
+    Puerto_COS=df_cd['Puerto COS'].dropna()
+
+    Puerto_DAAS=df_cd['Puerto DAAS'].dropna()
+    print(f"Puerto_COS==>{Puerto_COS}")
+    print(f"puertos_DAAS==>{Puerto_DAAS}")
+    df_cd['num cos']=df_cd['Puerto COS'].astype(str)
+    df_cd['num das']=df_cd['Puerto DAAS'].astype(str)
+    df_cd['num cos']=df_cd['Puerto COS'].str.split(':')
+    df_cd['num das']=df_cd['Puerto DAAS'].str.split('/')
+    print(f"num das==>{df_cd['num das']}")
+    print(f"num cos==>{df_cd['num cos']}")
+    
+    #coincidentes = df_cd[df_cd.apply(lambda x: set(str(x['num cos'])).intersection(str(x['num das'])), axis=1).astype(bool)]
+    #coincidentes = df_cd[df_cd.apply(lambda x: any([i.split(':')[2] == x['num das'].split('/')[0] for i in x['num cos'] if len(i.split(':')) >= 3]) and any([i.split('/')[2] == x['num cos'].split(':')[0] for i in x['num das'] if len(i.split('/')) >= 3]), axis=1).astype(bool)]
+
+    #coincidentes = df_cd[df_cd.apply(lambda x: set([i.split(':')[0] for i in x['num cos']]).intersection([i.split('/')[2] for i in x['num das']]), axis=1).astype(bool)]
+
+    #print(f"coincidentes1==>{coincidentes}")
+    #coincidentes = coincidentes.drop(['num cos', 'num das'], axis=1)
+    #print(f"coincidentes2==>{coincidentes}")
+    #coincidentes.to_excel("coincidentes.xlsx")
     ########################################SCRIPTANTES-NOC CABLE##########################################
     texto="SCRIPT  ANTES-NOC CABLE"
     celda=hoja.cell(row=17,column=6)
@@ -305,62 +362,141 @@ def diseño(df):
     texto="config"
     celda=hoja.cell(row=19,column=6)
     celda.value=texto
-    texto="interface upstream + add rest parts"
+
+    sep=0
+    sep2=0
+    text_script=""
+    slot_valor=df['S/CG/CH']
+    slot_index=slot_valor.index
+    slot_list=slot_index.to_list()
+    print(f"slot_valor==>{slot_valor}")
+    print(f"slot_list==>{slot_list}")
+    indice_slot=slot_list[0]
+    texto_slot=df.loc[indice_slot,"S/CG/CH"]
+    print(texto_slot)
+    if "U" in texto_slot:
+        sep=texto_slot.find("/")
+        sep2=texto_slot.find("/",sep+1)
+        text_script=texto_slot[:sep2+2]
+        text_script_a=text_script
+        text_script_b=text_script
+        text_script_c=text_script
+        text_script_d=text_script
+    else:
+        print(f"len_slot_list==>{len(slot_list)}")
+        if len(slot_list)==4:
+            a=df.loc[slot_list[0],"S/CG/CH"]
+            b=df.loc[slot_list[1],"S/CG/CH"]
+            c=df.loc[slot_list[2],"S/CG/CH"]
+            d=df.loc[slot_list[3],"S/CG/CH"]
+            print(f"a==>{a}")
+            print(f"b==>{b}")
+            print(f"c==>{c}")
+            print(f"d==>{d}")
+            sepa=a.find("/")
+            sepa2=a.find("/",sepa+1)
+            text_script_a=a[:sepa2]
+            sepb=b.find("/")
+            sepb2=b.find("/",sepb+1)
+            text_script_b=b[:sepb2]
+            sepc=c.find("/")
+            sepc2=c.find("/",sepc+1)
+            text_script_c=c[:sepc2]
+            sepd=d.find("/")
+            sepd2=d.find("/",sepd+1)
+            text_script_d=d[:sepd2]
+            print(f"text_script_a==>{text_script_a}")
+            print(f"text_script_b==>{text_script_b}")
+            print(f"text_script_c==>{text_script_c}")
+            print(f"text_script_d==>{text_script_d}")                                  
+        else:
+            a=df.loc[slot_list[0],"S/CG/CH"]
+            b=df.loc[slot_list[1],"S/CG/CH"]
+            c=df.loc[slot_list[2],"S/CG/CH"]
+            print(f"a==>{a}")
+            print(f"b==>{b}")
+            print(f"c==>{c}")
+            sepa=a.find("/")
+            sepa2=a.find("/",sepa+1)
+            text_script_a=a[:sepa2]
+            sepb=b.find("/")
+            sepb2=b.find("/",sepb+1)
+            text_script_b=b[:sepb2]
+            sepc=c.find("/")
+            sepc2=c.find("/",sepc+1)
+            text_script_c=c[:sepc2]
+            text_script_d=""
+            print(f"text_script_a==>{text_script_a}")
+            print(f"text_script_b==>{text_script_b}")
+            print(f"text_script_c==>{text_script_c}") 
+
+    texto="interface upstream "+text_script_a
     celda=hoja.cell(row=20,column=6)
     celda.value=texto
-    texto="description ""PUERTO LIBRE"
+    texto='  description "PUERTO LIBRE"'
     celda=hoja.cell(row=21,column=6)
     celda.value=texto
-    texto="logical-channel 0 description ""PUERTO LIBRE"
+    texto='  logical-channel 0 description "PUERTO LIBRE"'
     celda=hoja.cell(row=22,column=6)
     celda.value=texto
     texto="end"
     celda=hoja.cell(row=23,column=6)
     celda.value=texto
-    texto="interface upstream + add rest parts"
+    texto="interface upstream "+text_script_b
     celda=hoja.cell(row=24,column=6)
     celda.value=texto
-    texto="description ""PUERTO LIBRE"
+    texto='  description "PUERTO LIBRE"'
     celda=hoja.cell(row=25,column=6)
     celda.value=texto
-    texto="logical-channel 0 description ""PUERTO LIBRE"
+    texto='  logical-channel 0 description "PUERTO LIBRE"'
     celda=hoja.cell(row=26,column=6)
     celda.value=texto
     texto="end"
     celda=hoja.cell(row=27,column=6)
     celda.value=texto
-    texto="interface upstream + add rest parts"
+    texto="interface upstream "+text_script_c
     celda=hoja.cell(row=28,column=6)
     celda.value=texto
-    texto="description ""PUERTO LIBRE"
+    texto='  description "PUERTO LIBRE"'
     celda=hoja.cell(row=29,column=6)
     celda.value=texto
-    texto="logical-channel 0 description ""PUERTO LIBRE"
+    texto='  logical-channel 0 description "PUERTO LIBRE"'
     celda=hoja.cell(row=30,column=6)
     celda.value=texto
     texto="end"
     celda=hoja.cell(row=31,column=6)
     celda.value=texto
-    texto="interface upstream + add rest parts"
+    texto="interface upstream "+text_script_d
     celda=hoja.cell(row=32,column=6)
     celda.value=texto
-    texto="description ""PUERTO LIBRE"
+    texto='  description "PUERTO LIBRE"'
     celda=hoja.cell(row=33,column=6)
     celda.value=texto
-    texto="logical-channel 0 description ""PUERTO LIBRE"
+    texto='  logical-channel 0 description "PUERTO LIBRE"'
     celda=hoja.cell(row=34,column=6)
     celda.value=texto
+
+    description_valor=df['Description']
+    description_index=description_valor.index
+    description_list=description_index.to_list()
+    print(f"slot_valor==>{description_valor}")
+    print(f"slot_list==>{description_list}")
+    indice_description=description_list[0]
+    text_description=df.loc[indice_description,"Description"]
+
+    sep=text_description.find("DO")
+    sep2=text_description.find("(")
+    text_script=text_description[sep+2:sep2]   
 
     texto="config"
     celda=hoja.cell(row=38,column=6)
     celda.value=texto
-    texto="no service group + add rests parts less"
+    texto="no service group "+text_script
     celda=hoja.cell(row=39,column=6)
     celda.value=texto
     texto="exit"
     celda=hoja.cell(row=40,column=6)
     celda.value=texto
-
 
     texto="NOTA: SI HAY CAMBIO DE IP"
     hoja.merge_cells(start_row=16, start_column=7, end_row=16, end_column=10)
@@ -376,7 +512,8 @@ def diseño(df):
     celda.font=white_font
     for cells in cell_range_row16:
         for cell in cells:
-            cell.fill=relleno_2
-                
+            cell.fill=relleno_2                
     # Guardar archivo Excel
+    
     archivo_excel.save()
+    

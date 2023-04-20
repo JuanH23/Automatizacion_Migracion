@@ -206,6 +206,10 @@ class MiApp(QtWidgets.QMainWindow):
 
         return Dispositivo,filter_IP,filter_IP2
 
+# The code defines a method called "filtrado_COS_DAAS" that takes no arguments. Within the method, it
+# performs various data manipulations and filtering on input data stored in instance variables of the
+# class. The method then returns the filtered data as well as two dataframes called "COS" and "DAAS".
+# Finally, it calls a function called "diseño" with some of the filtered data as arguments.
     def filtrado_COS_DAAS(self):
          try:
             df=pd.DataFrame(self.file_arris)
@@ -453,6 +457,7 @@ class MiApp(QtWidgets.QMainWindow):
         self.ad.show()
         
     def cancelar_stop(self):
+
         self.index_stop=self.saved_index
         self.count3=self.count2
         self.index_saved=True
@@ -514,7 +519,7 @@ class MiApp(QtWidgets.QMainWindow):
                 else:
                     df=pd.read_excel(ruta_file)
                     dfs[ruta_file.name]=df
-                                
+                    
             return dfs
     def read_data(self):
            
@@ -555,6 +560,10 @@ class MiApp(QtWidgets.QMainWindow):
 ##########################################################################################
 
     def subir_list(self):
+        """
+        This function uploads data from an Excel file to a SharePoint list, handling interruptions and
+        disconnections, and retrying failed attempts.
+        """
         self.continuar_subida=True
         self.count2=0
         self.flag=1

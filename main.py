@@ -281,7 +281,7 @@ class MiApp(QtWidgets.QMainWindow):
             three=UNO.find("-",second+1)
             four=UNO.find("-",three+1)
             UN_COS=UNO[three+1:four]           
-            if final['Dispositivo COS'].str.contains(UN_COS,case=False,na=False,regex=True).any():
+            if final['Dispositivo COS'].str.contains(UN_COS,case=False,na=False,regex=True).any():#!REVISAR PARA QUE SOLO SALGAN DOS DAAS 
                 NO_dos_COS=final['Dispositivo COS'].str.contains(UN_COS,case=False,na=False,regex=True)
                 self.FINAL_FILTRADO=final[NO_dos_COS]
                 self.FINAL_FILTRADO=self.FINAL_FILTRADO.loc[:,['Dispositivo COS','Puerto COS','ptp','Dispositivo DAAS','Puerto DAAS','Unnamed: 5']]

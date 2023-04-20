@@ -329,8 +329,10 @@ def diseño(df,df_cos_daas,name_file):
     for cells in cell_range_row8:
         for cell in cells:
             cell.fill=relleno_pink
-    Puerto_COS=df_cd['Puerto COS'].dropna()
 
+    DISPOSITIVO_DAAS = df_cd['Dispositivo DAAS'].unique()
+    simil=[]
+    Puerto_COS=df_cd['Puerto COS'].dropna()
     Puerto_DAAS=df_cd['Puerto DAAS'].dropna()
     print(f"Puerto_COS==>{Puerto_COS}")
     print(f"puertos_DAAS==>{Puerto_DAAS}")
@@ -340,7 +342,14 @@ def diseño(df,df_cos_daas,name_file):
     df_cd['num das']=df_cd['Puerto DAAS'].str.split('/')
     print(f"num das==>{df_cd['num das']}")
     print(f"num cos==>{df_cd['num cos']}")
-    
+    print(df_cd)
+    for dispositivo in DISPOSITIVO_DAAS:
+            puertos = df_cd[df_cd['Dispositivo DAAS'] == dispositivo]['Puerto DAAS'].apply(lambda x: int(x.split('/')[-1]))
+            simil.append(puertos)
+    df_simil=pd.DataFrame(simil)
+    df_cd.to_excel("complete2.xlsx")
+    df_simil.to_excel("simil2.xlsx")         
+    print(f"simil==>{simil}")
     #coincidentes = df_cd[df_cd.apply(lambda x: set(str(x['num cos'])).intersection(str(x['num das'])), axis=1).astype(bool)]
     #coincidentes = df_cd[df_cd.apply(lambda x: any([i.split(':')[2] == x['num das'].split('/')[0] for i in x['num cos'] if len(i.split(':')) >= 3]) and any([i.split('/')[2] == x['num cos'].split(':')[0] for i in x['num das'] if len(i.split('/')) >= 3]), axis=1).astype(bool)]
 
@@ -369,11 +378,11 @@ def diseño(df,df_cos_daas,name_file):
     slot_valor=df['S/CG/CH']
     slot_index=slot_valor.index
     slot_list=slot_index.to_list()
-    print(f"slot_valor==>{slot_valor}")
-    print(f"slot_list==>{slot_list}")
+    #print(f"slot_valor==>{slot_valor}")
+    #print(f"slot_list==>{slot_list}")
     indice_slot=slot_list[0]
     texto_slot=df.loc[indice_slot,"S/CG/CH"]
-    print(texto_slot)
+    #print(texto_slot)
     if "U" in texto_slot:
         sep=texto_slot.find("/")
         sep2=texto_slot.find("/",sep+1)
@@ -383,16 +392,16 @@ def diseño(df,df_cos_daas,name_file):
         text_script_c=text_script
         text_script_d=text_script
     else:
-        print(f"len_slot_list==>{len(slot_list)}")
+        #print(f"len_slot_list==>{len(slot_list)}")
         if len(slot_list)==4:
             a=df.loc[slot_list[0],"S/CG/CH"]
             b=df.loc[slot_list[1],"S/CG/CH"]
             c=df.loc[slot_list[2],"S/CG/CH"]
             d=df.loc[slot_list[3],"S/CG/CH"]
-            print(f"a==>{a}")
-            print(f"b==>{b}")
-            print(f"c==>{c}")
-            print(f"d==>{d}")
+            #print(f"a==>{a}")
+            #print(f"b==>{b}")
+            #print(f"c==>{c}")
+            #print(f"d==>{d}")
             sepa=a.find("/")
             sepa2=a.find("/",sepa+1)
             text_script_a=a[:sepa2]
@@ -405,17 +414,17 @@ def diseño(df,df_cos_daas,name_file):
             sepd=d.find("/")
             sepd2=d.find("/",sepd+1)
             text_script_d=d[:sepd2]
-            print(f"text_script_a==>{text_script_a}")
-            print(f"text_script_b==>{text_script_b}")
-            print(f"text_script_c==>{text_script_c}")
-            print(f"text_script_d==>{text_script_d}")                                  
+            #print(f"text_script_a==>{text_script_a}")
+            #print(f"text_script_b==>{text_script_b}")
+            #print(f"text_script_c==>{text_script_c}")
+            #print(f"text_script_d==>{text_script_d}")                                  
         else:
             a=df.loc[slot_list[0],"S/CG/CH"]
             b=df.loc[slot_list[1],"S/CG/CH"]
             c=df.loc[slot_list[2],"S/CG/CH"]
-            print(f"a==>{a}")
-            print(f"b==>{b}")
-            print(f"c==>{c}")
+            #print(f"a==>{a}")
+            #print(f"b==>{b}")
+            #print(f"c==>{c}")
             sepa=a.find("/")
             sepa2=a.find("/",sepa+1)
             text_script_a=a[:sepa2]
@@ -426,9 +435,9 @@ def diseño(df,df_cos_daas,name_file):
             sepc2=c.find("/",sepc+1)
             text_script_c=c[:sepc2]
             text_script_d=""
-            print(f"text_script_a==>{text_script_a}")
-            print(f"text_script_b==>{text_script_b}")
-            print(f"text_script_c==>{text_script_c}") 
+            #print(f"text_script_a==>{text_script_a}")
+            #print(f"text_script_b==>{text_script_b}")
+            #print(f"text_script_c==>{text_script_c}") 
 
     texto="interface upstream "+text_script_a
     celda=hoja.cell(row=20,column=6)
@@ -479,8 +488,8 @@ def diseño(df,df_cos_daas,name_file):
     description_valor=df['Description']
     description_index=description_valor.index
     description_list=description_index.to_list()
-    print(f"slot_valor==>{description_valor}")
-    print(f"slot_list==>{description_list}")
+    #print(f"slot_valor==>{description_valor}")
+    #print(f"slot_list==>{description_list}")
     indice_description=description_list[0]
     text_description=df.loc[indice_description,"Description"]
 

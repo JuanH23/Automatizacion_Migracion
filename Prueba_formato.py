@@ -7,8 +7,9 @@ import openpyxl
 import os
 from dotenv import set_key,dotenv_values 
 from Advertencia import*
+import numpy as np
 # Crear DataFrame con información
-def diseño(df,df_cos_daas,name_file):
+def diseño(df,df_cos_daas,name_file,filter_daas):
 
     ###########
     env=dotenv_values(".env")
@@ -73,13 +74,13 @@ def diseño(df,df_cos_daas,name_file):
         celda_actual.value = valor
     
     columna = worksheet["C"]
-    rango=columna[3:7]
+    rango=columna[3:12]
     # bucle para establecer el valor de cada celda en None
     for celda in rango:
         celda.value = None
         
     columna = worksheet["D"]
-    rango=columna[3:7]
+    rango=columna[3:12]
     # bucle para establecer el valor de cada celda en None
     for celda in rango:
         celda.value = None             
@@ -182,7 +183,7 @@ def diseño(df,df_cos_daas,name_file):
             cell.font=white_font
             cell.fill=relleno
 
-    rango=hoja['E4:E7']
+    rango=hoja['E4:E12']
     
     #suma_columna = sum([celda.value for fila in rango for celda in fila ])
     suma_columna = sum([0 if celda.value is None else celda.value for fila in rango for celda in fila])
@@ -329,37 +330,80 @@ def diseño(df,df_cos_daas,name_file):
     for cells in cell_range_row8:
         for cell in cells:
             cell.fill=relleno_pink
-
+    ###############################################
     DISPOSITIVO_DAAS = df_cd['Dispositivo DAAS'].unique()
     simil=[]
-    Puerto_COS=df_cd['Puerto COS'].dropna()
-    Puerto_DAAS=df_cd['Puerto DAAS'].dropna()
-    print(f"Puerto_COS==>{Puerto_COS}")
-    print(f"puertos_DAAS==>{Puerto_DAAS}")
-    df_cd['num cos']=df_cd['Puerto COS'].astype(str)
-    df_cd['num das']=df_cd['Puerto DAAS'].astype(str)
-    df_cd['num cos']=df_cd['Puerto COS'].str.split(':')
-    df_cd['num das']=df_cd['Puerto DAAS'].str.split('/')
-    print(f"num das==>{df_cd['num das']}")
-    print(f"num cos==>{df_cd['num cos']}")
-    print(df_cd)
-    for dispositivo in DISPOSITIVO_DAAS:
-            puertos = df_cd[df_cd['Dispositivo DAAS'] == dispositivo]['Puerto DAAS'].apply(lambda x: int(x.split('/')[-1]))
-            simil.append(puertos)
-    df_simil=pd.DataFrame(simil)
-    df_cd.to_excel("complete2.xlsx")
-    df_simil.to_excel("simil2.xlsx")         
-    print(f"simil==>{simil}")
-    #coincidentes = df_cd[df_cd.apply(lambda x: set(str(x['num cos'])).intersection(str(x['num das'])), axis=1).astype(bool)]
-    #coincidentes = df_cd[df_cd.apply(lambda x: any([i.split(':')[2] == x['num das'].split('/')[0] for i in x['num cos'] if len(i.split(':')) >= 3]) and any([i.split('/')[2] == x['num cos'].split(':')[0] for i in x['num das'] if len(i.split('/')) >= 3]), axis=1).astype(bool)]
 
-    #coincidentes = df_cd[df_cd.apply(lambda x: set([i.split(':')[0] for i in x['num cos']]).intersection([i.split('/')[2] for i in x['num das']]), axis=1).astype(bool)]
+    if df_cd['Dispositivo DAAS'].str.contains(str(filter_daas+1)).any():
+            print("ENTRO AL DAAS")
+            print(f"filter_DAAS==>{filter_daas+1}")
+            
+            mask_range = df_cd['Puerto DAAS'].between('xe-0/0/0', 'xe-0/0/48')
+            mask_name = df_cd['Dispositivo DAAS'].str.contains(str(filter_daas+1))
+            mask_range_name = mask_name & mask_range
+            df_cd.loc[mask_range_name, 'Puerto DAAS'] = (
+                df_cd.loc[mask_range_name, 'Puerto DAAS']
+                .str.replace(r'xe-0/0/(\d+)', lambda x: 'xe-0/0/' + str(int(x.group(1))+49))
+            )
+            df_cd.to_excel("new_numbers.xlsx")
+            df_cd['Puerto DAAS']=df_cd['Puerto DAAS'].astype(str)
+            df_cd['ultimo_num_DAAS'] = df_cd['Puerto DAAS'].apply(lambda x: get_x(x, 0))
 
-    #print(f"coincidentes1==>{coincidentes}")
-    #coincidentes = coincidentes.drop(['num cos', 'num das'], axis=1)
-    #print(f"coincidentes2==>{coincidentes}")
-    #coincidentes.to_excel("coincidentes.xlsx")
-    ########################################SCRIPTANTES-NOC CABLE##########################################
+                # Extraer el primer número de cada entrada en la columna puerto_COS
+            df_cd['primer_num_COS'] = df_cd['Puerto COS'].str.split(':').str[0]
+
+            # Crear una máscara booleana que seleccione las filas donde los primeros números coinciden
+            mask_coincide = df_cd['primer_num_COS'].isin(df_cd['ultimo_num_DAAS'])
+            mask_coincide_2= df_cd['ultimo_num_DAAS'].isin(df_cd['ultimo_num_DAAS'])
+            mask_coincide_range=mask_coincide & mask_coincide_2
+            # Seleccionar las filas que cumplen con la máscara booleana
+            df_coincidente = df_cd.loc[mask_coincide_range]
+            df_coincidente=df_coincidente.reset_index(drop=True)
+            df_coincidente=df_coincidente.loc[:,['Dispositivo COS','Puerto COS','ptp']].dropna()
+            df_cd2=df_cd.copy()
+            df_cd2=df_cd2.loc[:,['Dispositivo DAAS','Puerto DAAS','Unnamed: 5']].dropna()
+            df_cd2=df_cd2.reset_index(drop=True)
+            df_cd2.rename(columns={'Dispositivo DAAS': 'Dispositivo COS', 'Puerto DAAS': 'Puerto COS', 'Unnamed: 5': 'ptp'}, inplace=True)
+            #df_out[['Dispositivo COS', 'Puerto COS', 'ptp']] = df_cd2[['Dispositivo COS', 'Puerto COS', 'ptp']]
+            df_out = pd.concat([df_coincidente, df_cd2],axis=1)
+            #df_out = df_out.sort_values(by=['Puerto COS'])
+            print(f"df_out==>{df_out}")
+            df_out=df_out.reset_index(drop=True)    
+            df_out.to_excel("simil_new_numbers.xlsx")  
+            
+
+  
+                    
+            #print(f"simil==>{simil}")
+    else:
+        df_cd['Puerto DAAS']=df_cd['Puerto DAAS'].astype(str)
+        df_cd['ultimo_num_DAAS'] = df_cd['Puerto DAAS'].apply(lambda x: get_x(x, 0))
+
+        # Extraer el primer número de cada entrada en la columna puerto_COS
+        df_cd['primer_num_COS'] = df_cd['Puerto COS'].str.split(':').str[0]
+        df_cd.to_excel("same_new_numbers.xlsx")
+        # Crear una máscara booleana que seleccione las filas donde los primeros números coinciden
+        mask_coincide = df_cd['primer_num_COS'].isin(df_cd['ultimo_num_DAAS'])
+        mask_coincide_2= df_cd['ultimo_num_DAAS'].isin(df_cd['ultimo_num_DAAS'])
+        mask_coincide_range=mask_coincide & mask_coincide_2
+        # Seleccionar las filas que cumplen con la máscara booleana
+        df_coincidente = df_cd.loc[mask_coincide_range]
+        df_coincidente=df_coincidente.reset_index(drop=True)
+        df_coincidente=df_coincidente.loc[:,['Dispositivo COS','Puerto COS','ptp']].dropna()
+        df_cd2=df_cd.copy()
+        df_cd2=df_cd2.loc[:,['Dispositivo DAAS','Puerto DAAS','Unnamed: 5']].dropna()
+        df_cd2=df_cd2.reset_index(drop=True)
+        df_cd2.rename(columns={'Dispositivo DAAS': 'Dispositivo COS', 'Puerto DAAS': 'Puerto COS', 'Unnamed: 5': 'ptp'}, inplace=True)
+        #df_out[['Dispositivo COS', 'Puerto COS', 'ptp']] = df_cd2[['Dispositivo COS', 'Puerto COS', 'ptp']]
+        df_out = pd.concat([df_coincidente, df_cd2],axis=1)
+        #df_out = df_out.sort_values(by=['Puerto COS'])
+        print(f"df_out==>{df_out}")
+        df_out=df_out.reset_index(drop=True)                
+        df_out.to_excel("simil_same_numbers.xlsx")         
+        print(f"simil==>{simil}")
+
+
+
     texto="SCRIPT  ANTES-NOC CABLE"
     celda=hoja.cell(row=17,column=6)
     celda.value=texto
@@ -525,4 +569,10 @@ def diseño(df,df_cos_daas,name_file):
     # Guardar archivo Excel
     
     archivo_excel.save()
-    
+
+def get_x(s, n=2):
+    elements = s.split('/')
+    if len(elements) >= n+1:
+        return elements[-(n+1)]
+    else:
+        return None

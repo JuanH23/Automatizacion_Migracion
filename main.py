@@ -183,16 +183,24 @@ class MiApp(QtWidgets.QMainWindow):
     def simpli_DAAS(self,df):
         Valor_Dispositivo=df['Dispositivo']
         Valor_Ip=df['IP']
-        print(Valor_Ip)
+        #print(f"Valor_Ip==>{valor_IP}")
         valor_dispositivo=Valor_Dispositivo.index
         valor_list_dispositivo=valor_dispositivo.to_list()
         valor_IP=Valor_Ip.index
         valor__list_IP=valor_IP.to_list()
-        print(valor__list_IP)      
+        #print(f"valor__list_IP==>{valor__list_IP}")      
         indice_IP=valor__list_IP[0]
         indice_IP2=valor__list_IP[0]
         indice_Dispositivo=valor_list_dispositivo[0]
         Dispositivo= df.loc[indice_Dispositivo, "Dispositivo"]
+        print(f"DISPOSITIVOOO==>{Dispositivo}")
+
+        se_daas=Dispositivo.find("-")
+        sel_daas=Dispositivo.find("-",se_daas+1)
+        sele_daas=Dispositivo.find("-",sel_daas+1)
+        fin_sele_daas=Dispositivo.find("-",sele_daas+1)
+        filter_Daas=Dispositivo[sele_daas+1:fin_sele_daas]
+        print(f"filter_Daas==>{filter_Daas}")        
         IP=df.loc[indice_IP,"IP"]
         IP2=df.loc[indice_IP2,"IP"]
         Sli_IP=IP.find(".")
@@ -203,8 +211,9 @@ class MiApp(QtWidgets.QMainWindow):
         SLICE_IP2=IP2.find(".",Slic_IP2+1)
         filter_IP=int(IP[SLICE_IP+1:])
         filter_IP2=int(IP2[SLICE_IP2+1:])
-
-        return Dispositivo,filter_IP,filter_IP2
+        print(f"filter_IP==>{filter_IP}")
+        print(f"filter_IP2==>{filter_IP2}")
+        return Dispositivo,filter_IP,filter_IP2,int(filter_Daas)
 
 # The code defines a method called "filtrado_COS_DAAS" that takes no arguments. Within the method, it
 # performs various data manipulations and filtering on input data stored in instance variables of the
@@ -245,7 +254,7 @@ class MiApp(QtWidgets.QMainWindow):
             filtro2=file_3[file_3['Unnamed: 5'].str.contains(variable2,case=False,na=False,regex=True)].fillna(value='No Data')     
             filtro3=filtro2[filtro2['Dispositivo'].str.contains(variable3,case=False,na=False,regex=True)].fillna(value='No Data')
             filtro3_sin_duplicados = filtro3.drop_duplicates()
-            variable_disp,variable_ip,variable_ip2=self.simpli_DAAS(filtro3)
+            variable_disp,variable_ip,variable_ip2,filter_daas=self.simpli_DAAS(filtro3)
             filtro4=filtro3_sin_duplicados[filtro3_sin_duplicados['Dispositivo'].str.contains(variable_disp,case=False,na=False,regex=True)]#!Opcion 1
             ############!Opcion2
             if filtro3_sin_duplicados['IP'].str.contains(str(variable_ip)).any():
@@ -260,6 +269,16 @@ class MiApp(QtWidgets.QMainWindow):
                 en_tempo=filtro3_sin_duplicados['IP'].str.contains(str(variable_ip2+1),case=False,na=False,regex=True)
                 CON_DAAS_COS=filtro3_sin_duplicados[in_colum | en_tempo]
                 CON_DAAS_COS.to_excel("out10.xlsx")
+            if CON_DAAS_COS['Dispositivo'].str.contains(str(filter_daas+1)).any():
+                if CON_DAAS_COS['Dispositivo'].str.contains(str(filter_daas)).any():
+                    print("ENTRO AL DAAS")
+                    column_daas=CON_DAAS_COS['Dispositivo'].str.contains(str(filter_daas),case=False,na=False,regex=True)
+                    en_tempo_daas=CON_DAAS_COS['Dispositivo'].str.contains(str(filter_daas+1),case=False,na=False,regex=True)
+                    DOS_DAAS=CON_DAAS_COS[column_daas | en_tempo_daas]
+                    
+            else:
+                 DOS_DAAS=CON_DAAS_COS[CON_DAAS_COS['Dispositivo'].str.contains(str(filter_daas),case=False,na=False,regex=True)]
+                 
 
             df_cos=pd.DataFrame(self.file_despues_COS)
             df_out=self.complet_COS(df_cos)
@@ -269,12 +288,12 @@ class MiApp(QtWidgets.QMainWindow):
             df_out2=df_out2.loc[:,['Dispositivo','Puerto','ptp']]
             df_out2=df_out2.rename(columns={'Dispositivo':'Dispositivo COS'})
             df_out2=df_out2.rename(columns={'Puerto':'Puerto COS'})  
-            CON_DAAS_COS=CON_DAAS_COS.loc[:,['Dispositivo','Puerto','Unnamed: 5']]
-            CON_DAAS_COS=CON_DAAS_COS.rename(columns={'Dispositivo':'Dispositivo DAAS'})
-            CON_DAAS_COS=CON_DAAS_COS.rename(columns={'Puerto':'Puerto DAAS'})
+            DOS_DAAS=DOS_DAAS.loc[:,['Dispositivo','Puerto','Unnamed: 5']]
+            DOS_DAAS=DOS_DAAS.rename(columns={'Dispositivo':'Dispositivo DAAS'})
+            DOS_DAAS=DOS_DAAS.rename(columns={'Puerto':'Puerto DAAS'})
             df_out2=pd.concat([df_out2, pd.Series([None] * len(df_out2.columns), index=df_out2.columns)], ignore_index=True)
-            CON_DAAS_COS=pd.concat([CON_DAAS_COS, pd.Series([None] * len(CON_DAAS_COS.columns), index=CON_DAAS_COS.columns)], ignore_index=True)
-            final=pd.concat([df_out2,CON_DAAS_COS],axis=1)
+            DOS_DAAS=pd.concat([DOS_DAAS, pd.Series([None] * len(DOS_DAAS.columns), index=DOS_DAAS.columns)], ignore_index=True)
+            final=pd.concat([df_out2,DOS_DAAS],axis=1)
             DIS_COS=final['Dispositivo COS']
             index_DIS_COS=DIS_COS.index
             index_DIS_COS_list=index_DIS_COS.to_list()
@@ -285,7 +304,7 @@ class MiApp(QtWidgets.QMainWindow):
             three=UNO.find("-",second+1)
             four=UNO.find("-",three+1)
             UN_COS=UNO[three+1:four]           
-            if final['Dispositivo COS'].str.contains(UN_COS,case=False,na=False,regex=True).any():#!REVISAR PARA QUE SOLO SALGAN DOS DAAS 
+            if final['Dispositivo COS'].str.contains(UN_COS,case=False,na=False,regex=True).any():
                 NO_dos_COS=final['Dispositivo COS'].str.contains(UN_COS,case=False,na=False,regex=True)
                 self.FINAL_FILTRADO=final[NO_dos_COS]
                 self.FINAL_FILTRADO=self.FINAL_FILTRADO.loc[:,['Dispositivo COS','Puerto COS','ptp','Dispositivo DAAS','Puerto DAAS','Unnamed: 5']]
@@ -300,7 +319,7 @@ class MiApp(QtWidgets.QMainWindow):
             print(COS)
             print(DAAS)
             
-            diseño(self.filtro,self.FINAL_FILTRADO,variable)
+            diseño(self.filtro,self.FINAL_FILTRADO,variable,filter_daas)
             return self.filtro,COS,DAAS
             
          except KeyError as e:

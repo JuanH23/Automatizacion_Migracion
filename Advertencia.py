@@ -26,6 +26,10 @@ class Ui_ADVERTENCIA(QDialog):
         self.window()
 
     def window(self):
+        """
+        Esta función crea una ventana con un mensaje de advertencia y dos botones para que el usuario elija
+        si desea cargar un archivo o no.
+        """
         self.setObjectName("ADVERTENCIA")
         self.setWindowTitle("ADVERTENCIA")
         self.resize(380, 140)
@@ -60,6 +64,7 @@ class Ui_ADVERTENCIA(QDialog):
         QtCore.QMetaObject.connectSlotsByName(self)
 
     def upload_file(self):
+
         ROOT_DIR=env["path_list_download"]+ "/Diseños_NODOS"
         upload_Thread=threading.Thread(target=Upload_Files.upload_files(ROOT_DIR,FILE_NAME_PATTERN))
         upload_Thread.start()
@@ -72,6 +77,10 @@ class Ui_ADVERTENCIA(QDialog):
         
 
 
+# Este bloque de código crea una instancia de la clase `Ui_ADVERTENCIA` y la muestra como una ventana
+# de diálogo usando PyQt5. También está iniciando el ciclo de eventos principal de la aplicación
+# usando `app.exec_()`. La declaración `if __name__ == "__main__":` garantiza que este bloque de
+# código solo se ejecute si el script se ejecuta directamente y no se importa como un módulo.
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)

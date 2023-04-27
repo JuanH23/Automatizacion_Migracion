@@ -8,15 +8,21 @@ import os
 from dotenv import set_key,dotenv_values 
 from Advertencia import*
 import numpy as np
+import random
 # Crear DataFrame con información
-def diseño(df,df_cos_daas,name_file,filter_daas):
+def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
 
     ###########
     env=dotenv_values(".env")
     ruth_list_download= env["path_list_download"]
     ruta_nueva_carpeta = ruth_list_download + "/Diseños_NODOS"
+    file_name=""  
     os.makedirs(ruta_nueva_carpeta, exist_ok=True)
-    ruta_archivo = os.path.join(ruta_nueva_carpeta,'Diseño Segmentaciones RPHY-NODO '+ name_file +'.xlsx')
+    if type_node == "1 x 2":
+        file_name='Diseño Segmentaciones RPHY-NODO '    
+    elif type_node =="2 x 4":
+        file_name='Diseño Segmentaciones RPHY 2x4-NODO '
+    ruta_archivo = os.path.join(ruta_nueva_carpeta,file_name+ name_file +'.xlsx')
     set_key(".env","path_files_upload",ruta_nueva_carpeta)
     ###########
     
@@ -268,16 +274,6 @@ def diseño(df,df_cos_daas,name_file,filter_daas):
     texto="CHASIS"
     celda=hoja.cell(row=3,column=12)
     celda.value=texto
-    ################################!
-    celda=hoja.cell(row=4,column=12)
-    celda.value=texto_dispositivo_cos
-    celda=hoja.cell(row=5,column=12)
-    celda.value=texto_dispositivo_cos
-    celda=hoja.cell(row=7,column=12)
-    celda.value=texto_dispositivo_cos
-    celda=hoja.cell(row=8,column=12)
-    celda.value=texto_dispositivo_cos
-    ################################!CAMBIAR DEPENDIENDO DE QUE NODO SEA DESPUES DE LA EXPLICACION
     texto="RPD"
     celda=hoja.cell(row=3,column=13)
     celda.value=texto
@@ -305,31 +301,32 @@ def diseño(df,df_cos_daas,name_file,filter_daas):
             cell.font=white_font
             cell.fill=relleno
             cell.alignment=alignment
-    texto="Nodo 2x4"
-    celda=hoja.cell(row=4,column=9)
-    celda.value=texto 
+
     cell = worksheet.cell(row=4, column=9)
     cell.alignment = Alignment(horizontal='center', vertical='center')
     yellow=Color(rgb='FFC000')
-    relleno = PatternFill(start_color=yellow, end_color=yellow, fill_type='solid')
+    relleno_yellow = PatternFill(start_color=yellow, end_color=yellow, fill_type='solid')
     pink=Color(rgb='FCD5B4')
     relleno_pink=PatternFill(start_color=pink,end_color=pink,fill_type='solid')
     cell_range_row4=worksheet['J4:Q4']
     cell_range_row5=worksheet['J5:Q5']
     cell_range_row7=worksheet['J7:Q7']
-    cell_range_row7=worksheet['J8:Q8']
+    cell_range_row8=worksheet['J8:Q8']
     for cells in cell_range_row4:
         for cell in cells:
-            cell.fill=relleno 
+            cell.fill=relleno_yellow 
     for cells in cell_range_row5:
         for cell in cells:
             cell.fill=relleno_pink         
     for cells in cell_range_row7:
         for cell in cells:
-            cell.fill=relleno 
+            cell.fill=relleno_yellow 
     for cells in cell_range_row8:
         for cell in cells:
             cell.fill=relleno_pink
+
+
+
     ###############################################
     DISPOSITIVO_DAAS = df_cd['Dispositivo DAAS'].unique()
     simil=[]
@@ -337,7 +334,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas):
     if df_cd['Dispositivo DAAS'].str.contains(str(filter_daas+1)).any():
             print("ENTRO AL DAAS")
             print(f"filter_DAAS==>{filter_daas+1}")
-            
+            df_cd = df_cd.sort_values('Puerto COS',inplace=False,ascending=True)
             mask_range = df_cd['Puerto DAAS'].between('xe-0/0/0', 'xe-0/0/48')
             mask_name = df_cd['Dispositivo DAAS'].str.contains(str(filter_daas+1))
             mask_range_name = mask_name & mask_range
@@ -345,64 +342,250 @@ def diseño(df,df_cos_daas,name_file,filter_daas):
                 df_cd.loc[mask_range_name, 'Puerto DAAS']
                 .str.replace(r'xe-0/0/(\d+)', lambda x: 'xe-0/0/' + str(int(x.group(1))+49))
             )
+            
+            df_cd['Puerto DAAS']=df_cd['Puerto DAAS'].astype(str)
+            df_cd['ultimo_num_DAAS'] = df_cd['Puerto DAAS'].apply(lambda x: get_x(x, 0))
+            # Extraer el primer número de cada entrada en la columna puerto_COS
+            df_cd['primer_num_COS'] = df_cd['Puerto COS'].str.split(':').str[0]
+            print(f"df_cd==>{df_cd}")
+            df_cd=df_cd.drop_duplicates(subset='primer_num_COS')
+            print(f"df_cd_sin_duplicados==>{df_cd}")
             df_cd.to_excel("new_numbers.xlsx")
+            ###############################!
+            numeros_coincidentes=df_cd['ultimo_num_DAAS'].unique()
+            coincidente_COS=df_cd[df_cd['primer_num_COS'].isin(numeros_coincidentes)]
+            #coincidente=df_cd.loc[df_cd['ultimo_num_DAAS'].isin(df_cd['primer_num_COS'])]
+            coincidente_COS.to_excel("coincidente.xlsx")
+            coincidente_DAAS=df_cd[df_cd['ultimo_num_DAAS'].isin(coincidente_COS['primer_num_COS'])]
+            coincidente_DAAS.to_excel("coincidente_2.xlsx")
+            coincidente_COS=coincidente_COS.loc[:,['Dispositivo COS','Puerto COS','primer_num_COS']]
+            coincidente_COS=coincidente_COS.reset_index(drop=True)
+            coincidente_DAAS=coincidente_DAAS.loc[:,['Dispositivo DAAS','Puerto DAAS']]
+            coincidente_DAAS=coincidente_DAAS.reset_index(drop=True)
+            merge_coincidente=pd.concat([coincidente_COS,coincidente_DAAS],axis=1)
+            merge_coincidente.to_excel('merge_coincidente.xlsx')
+
+            valores_unicos=merge_coincidente['primer_num_COS'].unique().tolist()
+            valor_aleatorio = random.choice(valores_unicos)
+            valores_unicos.remove(valor_aleatorio)
+            filas_aleatorias = merge_coincidente.loc[merge_coincidente['primer_num_COS'] == valor_aleatorio]
+            
+            print(f"numero_random_solo_UNA__VEZ==>{filas_aleatorias}")
+            print(f"TYPE_NODE==>{type_node}")
+            ###############################!
+ 
+                               
+            #print(f"simil==>{simil}")
+    else:
             df_cd['Puerto DAAS']=df_cd['Puerto DAAS'].astype(str)
             df_cd['ultimo_num_DAAS'] = df_cd['Puerto DAAS'].apply(lambda x: get_x(x, 0))
 
-                # Extraer el primer número de cada entrada en la columna puerto_COS
+            # Extraer el primer número de cada entrada en la columna puerto_COS
             df_cd['primer_num_COS'] = df_cd['Puerto COS'].str.split(':').str[0]
-
-            # Crear una máscara booleana que seleccione las filas donde los primeros números coinciden
-            mask_coincide = df_cd['primer_num_COS'].isin(df_cd['ultimo_num_DAAS'])
-            mask_coincide_2= df_cd['ultimo_num_DAAS'].isin(df_cd['ultimo_num_DAAS'])
-            mask_coincide_range=mask_coincide & mask_coincide_2
-            # Seleccionar las filas que cumplen con la máscara booleana
-            df_coincidente = df_cd.loc[mask_coincide_range]
-            df_coincidente=df_coincidente.reset_index(drop=True)
-            df_coincidente=df_coincidente.loc[:,['Dispositivo COS','Puerto COS','ptp']].dropna()
-            df_cd2=df_cd.copy()
-            df_cd2=df_cd2.loc[:,['Dispositivo DAAS','Puerto DAAS','Unnamed: 5']].dropna()
-            df_cd2=df_cd2.reset_index(drop=True)
-            df_cd2.rename(columns={'Dispositivo DAAS': 'Dispositivo COS', 'Puerto DAAS': 'Puerto COS', 'Unnamed: 5': 'ptp'}, inplace=True)
-            #df_out[['Dispositivo COS', 'Puerto COS', 'ptp']] = df_cd2[['Dispositivo COS', 'Puerto COS', 'ptp']]
-            df_out = pd.concat([df_coincidente, df_cd2],axis=1)
-            #df_out = df_out.sort_values(by=['Puerto COS'])
-            print(f"df_out==>{df_out}")
-            df_out=df_out.reset_index(drop=True)    
-            df_out.to_excel("simil_new_numbers.xlsx")  
+            df_cd=df_cd.drop_duplicates(subset='primer_num_COS')
+            df_cd.to_excel("same_new_numbers.xlsx")
+            ###############################!
+            numeros_coincidentes=df_cd['ultimo_num_DAAS'].unique()
+            coincidente_COS=df_cd[df_cd['primer_num_COS'].isin(numeros_coincidentes)]
+            #coincidente=df_cd.loc[df_cd['ultimo_num_DAAS'].isin(df_cd['primer_num_COS'])]
+            coincidente_COS.to_excel("coincidente.xlsx")
+            coincidente_DAAS=df_cd[df_cd['ultimo_num_DAAS'].isin(coincidente_COS['primer_num_COS'])]
+            coincidente_DAAS.to_excel("coincidente_2.xlsx")
+            coincidente_COS=coincidente_COS.loc[:,['Dispositivo COS','Puerto COS','primer_num_COS']]
+            coincidente_COS=coincidente_COS.reset_index(drop=True)
+            coincidente_DAAS=coincidente_DAAS.loc[:,['Dispositivo DAAS','Puerto DAAS']]
+            coincidente_DAAS=coincidente_DAAS.reset_index(drop=True)
+            merge_coincidente=pd.concat([coincidente_COS,coincidente_DAAS],axis=1)
+            merge_coincidente.to_excel('merge_coincidente.xlsx')
+            
+            print(f"TYPE_NODE==>{type_node}")
+            ###############################!    
+            merge_coincidente.to_excel("merge_same_numbers.xlsx")  
+            valores_unicos=merge_coincidente['primer_num_COS'].unique().tolist()
+            valor_aleatorio = random.choice(valores_unicos)
+            valores_unicos.remove(valor_aleatorio)
+            filas_aleatorias = merge_coincidente.loc[merge_coincidente['primer_num_COS'] == valor_aleatorio]
+            filas_aleatorias['primer_num_COS']=filas_aleatorias['primer_num_COS'].astype(str)
+            print(f"numero_random_solo_UNA__VEZ==>{filas_aleatorias}")
             
 
-  
-                    
-            #print(f"simil==>{simil}")
-    else:
-        df_cd['Puerto DAAS']=df_cd['Puerto DAAS'].astype(str)
-        df_cd['ultimo_num_DAAS'] = df_cd['Puerto DAAS'].apply(lambda x: get_x(x, 0))
+            print(f"TYPE_NODE==>{type_node}")       
+            print(f"simil==>{simil}")
+    ######################################!
+    if type_node == "1 x 2":
+        texto="Nodo 1x2"
+        celda=hoja.cell(row=4,column=9)
+        celda.value=texto
+    ################################!
+        slot_valor_DAAS=filas_aleatorias['Dispositivo DAAS']
+        slot_index_DAAS=slot_valor_DAAS.index
+        slot_list_DAAS=slot_index_DAAS.to_list()
+        indice_slot_DAAS=slot_list_DAAS[0]
+        texto_DAAS=filas_aleatorias.loc[indice_slot_DAAS,"Dispositivo DAAS"]    
+        celda=hoja.cell(row=4,column=10)
+        celda.value=texto_DAAS
+        celda=hoja.cell(row=7,column=10)
+        celda.value=texto_DAAS
 
-        # Extraer el primer número de cada entrada en la columna puerto_COS
-        df_cd['primer_num_COS'] = df_cd['Puerto COS'].str.split(':').str[0]
-        df_cd.to_excel("same_new_numbers.xlsx")
-        # Crear una máscara booleana que seleccione las filas donde los primeros números coinciden
-        mask_coincide = df_cd['primer_num_COS'].isin(df_cd['ultimo_num_DAAS'])
-        mask_coincide_2= df_cd['ultimo_num_DAAS'].isin(df_cd['ultimo_num_DAAS'])
-        mask_coincide_range=mask_coincide & mask_coincide_2
-        # Seleccionar las filas que cumplen con la máscara booleana
-        df_coincidente = df_cd.loc[mask_coincide_range]
-        df_coincidente=df_coincidente.reset_index(drop=True)
-        df_coincidente=df_coincidente.loc[:,['Dispositivo COS','Puerto COS','ptp']].dropna()
-        df_cd2=df_cd.copy()
-        df_cd2=df_cd2.loc[:,['Dispositivo DAAS','Puerto DAAS','Unnamed: 5']].dropna()
-        df_cd2=df_cd2.reset_index(drop=True)
-        df_cd2.rename(columns={'Dispositivo DAAS': 'Dispositivo COS', 'Puerto DAAS': 'Puerto COS', 'Unnamed: 5': 'ptp'}, inplace=True)
-        #df_out[['Dispositivo COS', 'Puerto COS', 'ptp']] = df_cd2[['Dispositivo COS', 'Puerto COS', 'ptp']]
-        df_out = pd.concat([df_coincidente, df_cd2],axis=1)
-        #df_out = df_out.sort_values(by=['Puerto COS'])
-        print(f"df_out==>{df_out}")
-        df_out=df_out.reset_index(drop=True)                
-        df_out.to_excel("simil_same_numbers.xlsx")         
-        print(f"simil==>{simil}")
+        slot_valor_PUERTO_DAAS=filas_aleatorias['primer_num_COS']
+        slot_index_PUERTO_DAAS=slot_valor_PUERTO_DAAS.index
+        slot_list_PUERTO_DAAS=slot_index_PUERTO_DAAS.to_list()
+        indice_slot_PUERTO_DAAS=slot_list_PUERTO_DAAS[0]
+        text_num_generic=filas_aleatorias.loc[indice_slot_PUERTO_DAAS,"primer_num_COS"]  
+        
+        
+        texto_Puerto_DAAS=str(text_num_generic)+"/0"
+        celda=hoja.cell(row=4,column=11)
+        celda.value=texto_Puerto_DAAS
+        celda=hoja.cell(row=7,column=11)
+        celda.value=texto_Puerto_DAAS
+        
+        slot_valor_CHASIS=filas_aleatorias['Dispositivo COS']
+        slot_index_CHASIS=slot_valor_CHASIS.index
+        slot_list_CHAIS=slot_index_CHASIS.to_list()
+        indice_slot_CHASIS=slot_list_CHAIS[0]
+        texto_CHASIS=filas_aleatorias.loc[indice_slot_CHASIS,"Dispositivo COS"]
+        celda=hoja.cell(row=4,column=12)
+        celda.value=texto_CHASIS
+        celda=hoja.cell(row=7,column=12)
+        celda.value=texto_CHASIS
+        texto_RPD=text_num_generic+":00"
+        celda=hoja.cell(row=4,column=13)
+        celda.value=texto_RPD
+        celda=hoja.cell(row=7,column=13)
+        celda.value=texto_RPD
+        #texto_UPSTREAM=":0/0"
+        #texto_UPSTREAM2=":0/1"        
+        texto_UPSTREAM=text_num_generic+":0/0"
+        texto_UPSTREAM2=text_num_generic+":0/1"
+        celda=hoja.cell(row=4,column=14)
+        celda.value=texto_UPSTREAM
+        celda=hoja.cell(row=7,column=14)
+        celda.value=texto_UPSTREAM2
+        #texto_DMAC=""
+        texto_DMAC=text_num_generic+":0/0.0"
+        celda=hoja.cell(row=4,column=15)
+        celda.value=texto_DMAC
+        celda=hoja.cell(row=7,column=15)
+        celda.value=texto_DMAC
 
+        nodo_valor=df['Description']
+        nodo_index=nodo_valor.index
+        nodo_list=nodo_index.to_list()
+        indice_nodo=nodo_list[1]
+        texto_NOMBRE=df.loc[indice_nodo,"Description"]
+        #texto_NOMBRE=""#!MIRAR COMO COLOCAR EL 3F
+        celda=hoja.cell(row=4,column=17)
+        celda.value=str(texto_NOMBRE)
+        celda=hoja.cell(row=7,column=17)
+        celda.value=str(texto_NOMBRE)
+    ################################!
+    elif type_node == "2 x 4":
+    ######################################!
+        texto="Nodo 2x4"
+        celda=hoja.cell(row=4,column=9)
+        celda.value=texto
+    ################################!
 
+        slot_valor_PUERTO_DAAS=filas_aleatorias['primer_num_COS']
+        slot_index_PUERTO_DAAS=slot_valor_PUERTO_DAAS.index
+        slot_list_PUERTO_DAAS=slot_index_PUERTO_DAAS.to_list()
+        indice_slot_PUERTO_DAAS=slot_list_PUERTO_DAAS[0]
+        text_num_generic=filas_aleatorias.loc[indice_slot_PUERTO_DAAS,"primer_num_COS"] 
+        
+
+        slot_valor_DAAS=filas_aleatorias['Dispositivo DAAS']
+        slot_index_DAAS=slot_valor_DAAS.index
+        slot_list_DAAS=slot_index_DAAS.to_list()
+        indice_slot_DAAS=slot_list_DAAS[0]
+        texto_DAAS=filas_aleatorias.loc[indice_slot_DAAS,"Dispositivo DAAS"]          
+        #texto_DAAS=""    
+        celda=hoja.cell(row=4,column=10)
+        celda.value=texto_DAAS
+        celda=hoja.cell(row=5,column=10)
+        celda.value=texto_DAAS
+        celda=hoja.cell(row=7,column=10)
+        celda.value=texto_DAAS
+        celda=hoja.cell(row=8,column=10)
+        celda.value=texto_DAAS
+        texto_Puerto_DAAS="3"
+        texto_Puerto_DAAS_2=str(text_num_generic)
+        #texto_Puerto_DAAS=str(text_num_generic)+"/0"#!REVISAR
+        celda=hoja.cell(row=4,column=11)
+        celda.value=texto_Puerto_DAAS_2 +"/0"
+        celda=hoja.cell(row=5,column=11)
+        celda.value=texto_Puerto_DAAS_2 +"/0"
+        celda=hoja.cell(row=7,column=11)
+        celda.value=texto_Puerto_DAAS_2 +"/0"
+        celda=hoja.cell(row=8,column=11)
+        celda.value=texto_Puerto_DAAS_2 +"/0"
+        slot_valor_CHASIS=filas_aleatorias['Dispositivo COS']
+        slot_index_CHASIS=slot_valor_CHASIS.index
+        slot_list_CHAIS=slot_index_CHASIS.to_list()
+        indice_slot_CHASIS=slot_list_CHAIS[0]
+        texto_CHASIS=filas_aleatorias.loc[indice_slot_CHASIS,"Dispositivo COS"]        
+        #texto_CHASIS=""
+        celda=hoja.cell(row=4,column=12)
+        celda.value=texto_CHASIS
+        celda=hoja.cell(row=5,column=12)
+        celda.value=texto_CHASIS
+        celda=hoja.cell(row=7,column=12)
+        celda.value=texto_CHASIS
+        celda=hoja.cell(row=8,column=12)
+        celda.value=texto_CHASIS
+        texto_RPD=":0"
+        texto_RPD2=":1"
+        texto_RPD_1=str(text_num_generic)+":0"
+        texto_RPD_2=str(text_num_generic)
+        #texto_RPD2=str(text_num_generic)+":1"#!REVISAR
+        celda=hoja.cell(row=4,column=13)
+        celda.value=texto_RPD_1
+        celda=hoja.cell(row=5,column=13)
+        celda.value=texto_RPD_1
+        celda=hoja.cell(row=7,column=13)
+        celda.value=texto_RPD_2 + ":1"
+        celda=hoja.cell(row=8,column=13)
+        celda.value=str(text_num_generic) +":1"#!REVISAR
+        texto_UPSTREAM=str(text_num_generic) + ":0/0"
+        texto_UPSTREAM_2=str(text_num_generic) + ":0/1"
+        texto_UPSTREAM3=str(text_num_generic) + ":1/0"
+        texto_UPSTREAM4=str(text_num_generic) + ":1/1"
+        celda=hoja.cell(row=4,column=14)
+        celda.value=texto_UPSTREAM
+        celda=hoja.cell(row=5,column=14)
+        celda.value=texto_UPSTREAM_2
+        celda=hoja.cell(row=7,column=14)
+        celda.value=texto_UPSTREAM3
+        celda=hoja.cell(row=8,column=14)
+        celda.value=texto_UPSTREAM4
+        texto_DMAC_2=str(text_num_generic)
+        texto_DMAC=":0/0.0"#!REVISAR
+        celda=hoja.cell(row=4,column=15)
+        celda.value=texto_DMAC_2 + ":0/0.0"
+        celda=hoja.cell(row=5,column=15)
+        celda.value=texto_DMAC
+        celda=hoja.cell(row=7,column=15)
+        celda.value=texto_DMAC
+        celda=hoja.cell(row=8,column=15)
+        celda.value=texto_DMAC
+
+        nodo_valor=df['Description']
+        nodo_index=nodo_valor.index
+        nodo_list=nodo_index.to_list()
+        indice_nodo=nodo_list[1]
+        text_NOMBRE=df.loc[indice_nodo,"Description"]
+        texto_NOMBRE_2=str(text_NOMBRE)
+        texto_NOMBRE="NODO"
+        celda=hoja.cell(row=4,column=17)
+        celda.value=texto_NOMBRE_2
+        celda=hoja.cell(row=5,column=17)
+        celda.value=texto_NOMBRE_2
+        celda=hoja.cell(row=7,column=17)
+        celda.value=texto_NOMBRE_2
+        celda=hoja.cell(row=8,column=17)
+        celda.value=texto_NOMBRE_2    
+    ######################################!
+ ###########################################SCRIPT  ANTES-NOC CABLE##########################################   
 
     texto="SCRIPT  ANTES-NOC CABLE"
     celda=hoja.cell(row=17,column=6)
@@ -422,21 +605,85 @@ def diseño(df,df_cos_daas,name_file,filter_daas):
     slot_valor=df['S/CG/CH']
     slot_index=slot_valor.index
     slot_list=slot_index.to_list()
-    #print(f"slot_valor==>{slot_valor}")
-    #print(f"slot_list==>{slot_list}")
     indice_slot=slot_list[0]
     texto_slot=df.loc[indice_slot,"S/CG/CH"]
     #print(texto_slot)
     if "U" in texto_slot:
-        sep=texto_slot.find("/")
-        sep2=texto_slot.find("/",sep+1)
-        text_script=texto_slot[:sep2+2]
-        text_script_a=text_script
-        text_script_b=text_script
-        text_script_c=text_script
-        text_script_d=text_script
+        if len(slot_list)==4:
+            sep=texto_slot.find("/")
+            sep2=texto_slot.find("/",sep+1)
+            text_script=texto_slot[:sep2+2]
+            text_script_a=text_script
+            text_script_b=text_script
+            text_script_c=text_script
+            text_script_d=text_script
+            text_script_e=""
+            text_script_f=""
+            text_script_g=""
+            text_script_h=""
+        elif len(slot_list)>4:
+            if slot_list[5]==None:
+                sep=texto_slot.find("/")
+                sep2=texto_slot.find("/",sep+1)
+                text_script=texto_slot[:sep2+2]
+                text_script_a=text_script
+                text_script_b=text_script
+                text_script_c=text_script
+                text_script_d=text_script
+                text_script_e=text_script
+                text_script_f=""
+                text_script_g=""
+                text_script_h=""
+            elif slot_index[6]==None:
+                sep=texto_slot.find("/")
+                sep2=texto_slot.find("/",sep+1)
+                text_script=texto_slot[:sep2+2]
+                text_script_a=text_script
+                text_script_b=text_script
+                text_script_c=text_script
+                text_script_d=text_script
+                text_script_e=text_script
+                text_script_f=text_script
+                text_script_g=""
+                text_script_h=""
+            elif slot_index[7]==None:
+                sep=texto_slot.find("/")
+                sep2=texto_slot.find("/",sep+1)
+                text_script=texto_slot[:sep2+2]
+                text_script_a=text_script
+                text_script_b=text_script
+                text_script_c=text_script
+                text_script_d=text_script
+                text_script_e=text_script
+                text_script_f=text_script
+                text_script_g=text_script
+                text_script_h=""
+            else:
+                sep=texto_slot.find("/")
+                sep2=texto_slot.find("/",sep+1)
+                text_script=texto_slot[:sep2+2]
+                text_script_a=text_script
+                text_script_b=text_script
+                text_script_c=text_script
+                text_script_d=text_script
+                text_script_e=text_script
+                text_script_f=text_script
+                text_script_g=text_script
+                text_script_h=text_script
+        else:
+                sep=texto_slot.find("/")
+                sep2=texto_slot.find("/",sep+1)
+                text_script=texto_slot[:sep2+2]
+                text_script_a=text_script
+                text_script_b=text_script
+                text_script_c=text_script
+                text_script_d=""
+                text_script_e=""
+                text_script_f=""
+                text_script_g=""
+                text_script_h=""
     else:
-        #print(f"len_slot_list==>{len(slot_list)}")
+        print(f"len_slot_list==>{len(slot_list)}")
         if len(slot_list)==4:
             a=df.loc[slot_list[0],"S/CG/CH"]
             b=df.loc[slot_list[1],"S/CG/CH"]
@@ -458,10 +705,148 @@ def diseño(df,df_cos_daas,name_file,filter_daas):
             sepd=d.find("/")
             sepd2=d.find("/",sepd+1)
             text_script_d=d[:sepd2]
-            #print(f"text_script_a==>{text_script_a}")
-            #print(f"text_script_b==>{text_script_b}")
-            #print(f"text_script_c==>{text_script_c}")
-            #print(f"text_script_d==>{text_script_d}")                                  
+            text_script_e=""
+            text_script_f=""
+            text_script_g=""
+            text_script_h=""
+
+        elif len(slot_list)>4:
+            if slot_list[5]==None:
+                a=df.loc[slot_list[0],"S/CG/CH"]
+                b=df.loc[slot_list[1],"S/CG/CH"]
+                c=df.loc[slot_list[2],"S/CG/CH"]
+                d=df.loc[slot_list[3],"S/CG/CH"]
+                e=df.loc[slot_list[4],"S/CG/CH"]
+                #print(f"a==>{a}")
+                #print(f"b==>{b}")
+                #print(f"c==>{c}")
+                #print(f"d==>{d}")
+                sepa=a.find("/")
+                sepa2=a.find("/",sepa+1)
+                text_script_a=a[:sepa2]
+                sepb=b.find("/")
+                sepb2=b.find("/",sepb+1)
+                text_script_b=b[:sepb2]
+                sepc=c.find("/")
+                sepc2=c.find("/",sepc+1)
+                text_script_c=c[:sepc2]
+                sepd=d.find("/")
+                sepd2=d.find("/",sepd+1)
+                text_script_d=d[:sepd2]
+
+                sepe=e.find("/")
+                sepe2=e.find("/",sepe+1)
+                text_script_e=e[:sepe2]
+                text_script_f=" "
+                text_script_g=" "                
+                text_script_h=" "
+            elif slot_list[6]==None:
+                a=df.loc[slot_list[0],"S/CG/CH"]
+                b=df.loc[slot_list[1],"S/CG/CH"]
+                c=df.loc[slot_list[2],"S/CG/CH"]
+                d=df.loc[slot_list[3],"S/CG/CH"]
+                e=df.loc[slot_list[4],"S/CG/CH"]
+                f=df.loc[slot_list[5],"S/CG/CH"]
+                #print(f"a==>{a}")
+                #print(f"b==>{b}")
+                #print(f"c==>{c}")
+                #print(f"d==>{d}")
+                sepa=a.find("/")
+                sepa2=a.find("/",sepa+1)
+                text_script_a=a[:sepa2]
+                sepb=b.find("/")
+                sepb2=b.find("/",sepb+1)
+                text_script_b=b[:sepb2]
+                sepc=c.find("/")
+                sepc2=c.find("/",sepc+1)
+                text_script_c=c[:sepc2]
+                sepd=d.find("/")
+                sepd2=d.find("/",sepd+1)
+                text_script_d=d[:sepd2]
+
+                sepe=e.find("/")
+                sepe2=e.find("/",sepe+1)
+                text_script_e=e[:sepe2]
+                sepf=f.find("/")
+                sepf2=f.find("/",sepf+1)
+                text_script_f=f[:sepf2]
+                text_script_g=" "                
+                text_script_h=" "
+            elif slot_list[7]==None:
+                a=df.loc[slot_list[0],"S/CG/CH"]
+                b=df.loc[slot_list[1],"S/CG/CH"]
+                c=df.loc[slot_list[2],"S/CG/CH"]
+                d=df.loc[slot_list[3],"S/CG/CH"]
+                e=df.loc[slot_list[4],"S/CG/CH"]
+                f=df.loc[slot_list[5],"S/CG/CH"]
+                g=df.loc[slot_list[6],"S/CG/CH"]
+                #print(f"a==>{a}")
+                #print(f"b==>{b}")
+                #print(f"c==>{c}")
+                #print(f"d==>{d}")
+                sepa=a.find("/")
+                sepa2=a.find("/",sepa+1)
+                text_script_a=a[:sepa2]
+                sepb=b.find("/")
+                sepb2=b.find("/",sepb+1)
+                text_script_b=b[:sepb2]
+                sepc=c.find("/")
+                sepc2=c.find("/",sepc+1)
+                text_script_c=c[:sepc2]
+                sepd=d.find("/")
+                sepd2=d.find("/",sepd+1)
+                text_script_d=d[:sepd2]
+
+                sepe=e.find("/")
+                sepe2=e.find("/",sepe+1)
+                text_script_e=e[:sepe2]
+                sepf=f.find("/")
+                sepf2=f.find("/",sepf+1)
+                text_script_f=f[:sepf2]
+                sepg=g.find("/")
+                sepg2=g.find("/",sepg+1)
+                text_script_g=g[:sepg2]              
+                text_script_h=" "
+            else:
+                
+                a=df.loc[slot_list[0],"S/CG/CH"]
+                b=df.loc[slot_list[1],"S/CG/CH"]
+                c=df.loc[slot_list[2],"S/CG/CH"]
+                d=df.loc[slot_list[3],"S/CG/CH"]
+                e=df.loc[slot_list[4],"S/CG/CH"]
+                f=df.loc[slot_list[5],"S/CG/CH"]
+                g=df.loc[slot_list[6],"S/CG/CH"]
+                h=df.loc[slot_list[7],"S/CG/CH"]
+                #print(f"a==>{a}")
+                #print(f"b==>{b}")
+                #print(f"c==>{c}")
+                #print(f"d==>{d}")
+                sepa=a.find("/")
+                sepa2=a.find("/",sepa+1)
+                text_script_a=a[:sepa2]
+                sepb=b.find("/")
+                sepb2=b.find("/",sepb+1)
+                text_script_b=b[:sepb2]
+                sepc=c.find("/")
+                sepc2=c.find("/",sepc+1)
+                text_script_c=c[:sepc2]
+                sepd=d.find("/")
+                sepd2=d.find("/",sepd+1)
+                text_script_d=d[:sepd2]
+
+                sepe=e.find("/")
+                sepe2=e.find("/",sepe+1)
+                text_script_e=e[:sepe2]
+                sepf=f.find("/")
+                sepf2=f.find("/",sepf+1)
+                text_script_f=f[:sepf2]
+                sepg=g.find("/")
+                sepg2=g.find("/",sepg+1)
+                text_script_g=g[:sepg2]
+                seph=h.find("/")
+                seph2=h.find("/",seph+1)
+                text_script_h=h[:seph2]        
+
         else:
             a=df.loc[slot_list[0],"S/CG/CH"]
             b=df.loc[slot_list[1],"S/CG/CH"]
@@ -479,9 +864,11 @@ def diseño(df,df_cos_daas,name_file,filter_daas):
             sepc2=c.find("/",sepc+1)
             text_script_c=c[:sepc2]
             text_script_d=""
-            #print(f"text_script_a==>{text_script_a}")
-            #print(f"text_script_b==>{text_script_b}")
-            #print(f"text_script_c==>{text_script_c}") 
+            text_script_e=""
+            text_script_f=""
+            text_script_g=""
+            text_script_h=""
+
 
     texto="interface upstream "+text_script_a
     celda=hoja.cell(row=20,column=6)
@@ -527,7 +914,58 @@ def diseño(df,df_cos_daas,name_file,filter_daas):
     celda.value=texto
     texto='  logical-channel 0 description "PUERTO LIBRE"'
     celda=hoja.cell(row=34,column=6)
+    celda.value=texto  
+
+    texto="end"
+    celda=hoja.cell(row=35,column=6)
     celda.value=texto
+    texto="interface upstream "+text_script_e
+    celda=hoja.cell(row=36,column=6)
+    celda.value=texto
+    texto='  description "PUERTO LIBRE"'
+    celda=hoja.cell(row=37,column=6)
+    celda.value=texto
+    texto='  logical-channel 0 description "PUERTO LIBRE"'
+    celda=hoja.cell(row=38,column=6)
+    celda.value=texto             
+    texto="end"
+    celda=hoja.cell(row=39,column=6)
+    celda.value=texto
+    texto="interface upstream "+text_script_f
+    celda=hoja.cell(row=40,column=6)
+    celda.value=texto
+    texto='  description "PUERTO LIBRE"'
+    celda=hoja.cell(row=41,column=6)
+    celda.value=texto
+    texto='  logical-channel 0 description "PUERTO LIBRE"'
+    celda=hoja.cell(row=42,column=6)
+    celda.value=texto 
+    texto="end"
+    celda=hoja.cell(row=43,column=6)
+    celda.value=texto
+    texto="interface upstream "+text_script_g
+    celda=hoja.cell(row=44,column=6)
+    celda.value=texto
+    texto='  description "PUERTO LIBRE"'
+    celda=hoja.cell(row=45,column=6)
+    celda.value=texto
+    texto='  logical-channel 0 description "PUERTO LIBRE"'
+    celda=hoja.cell(row=46,column=6)
+    celda.value=texto 
+    texto="end"
+    celda=hoja.cell(row=47,column=6)
+    celda.value=texto
+    texto="interface upstream "+text_script_h
+    celda=hoja.cell(row=48,column=6)
+    celda.value=texto
+    texto='  description "PUERTO LIBRE"'
+    celda=hoja.cell(row=49,column=6)
+    celda.value=texto
+    texto='  logical-channel 0 description "PUERTO LIBRE"'
+    celda=hoja.cell(row=50,column=6)
+    celda.value=texto 
+
+
 
     description_valor=df['Description']
     description_index=description_valor.index
@@ -542,13 +980,13 @@ def diseño(df,df_cos_daas,name_file,filter_daas):
     text_script=text_description[sep+2:sep2]   
 
     texto="config"
-    celda=hoja.cell(row=38,column=6)
+    celda=hoja.cell(row=54,column=6)
     celda.value=texto
     texto="no service group "+text_script
-    celda=hoja.cell(row=39,column=6)
+    celda=hoja.cell(row=55,column=6)
     celda.value=texto
     texto="exit"
-    celda=hoja.cell(row=40,column=6)
+    celda=hoja.cell(row=56,column=6)
     celda.value=texto
 
     texto="NOTA: SI HAY CAMBIO DE IP"

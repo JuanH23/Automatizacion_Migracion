@@ -16,6 +16,12 @@ SHAREPOINT_DOC=env['sharepoint_doc_library']
 class SharePoint:
     
     def _auth(self):
+        """
+        Esta función crea una conexión a un sitio de SharePoint utilizando un nombre de usuario y una
+        contraseña proporcionados.
+        :return: un objeto de conexión que se autentica con el nombre de usuario y la contraseña
+        proporcionados para un sitio de SharePoint.
+        """
         ssl._create_default_https_context=ssl._create_unverified_context
         conn=ClientContext(SHAREPOINT_SITE).with_credentials(
             UserCredential(
@@ -26,12 +32,28 @@ class SharePoint:
         return conn
 
     def _get_files_list(self,folder_name):
+        """
+        Esta función recupera una lista de archivos de una carpeta de SharePoint específica mediante la API
+        de Microsoft Graph.
+        
+        :param folder_name: El nombre de la carpeta en SharePoint para la que desea recuperar una lista de
+        archivos
+        :return: La función `_get_files_list` devuelve una lista de archivos en la carpeta de SharePoint
+        especificada.
+        """
         conn= self._auth()
         target_folder_url=f'{SHAREPOINT_DOC}/{folder_name}'
         root_folder=conn.web.get_folder_by_server_relative_url(target_folder_url)
         root_folder.expand(["Files","Folders"]).get().execute_query()
         return root_folder.files
     def get_folder_list(self,folder_name):
+        """
+        Esta función recupera una lista de carpetas dentro de una carpeta específica en SharePoint.
+        
+        :param folder_name: El nombre de la carpeta para la que desea recuperar una lista de subcarpetas
+        :return: La función `get_folder_list` devuelve una lista de carpetas dentro del nombre de carpeta
+        especificado en SharePoint.
+        """
         conn= self._auth()
         target_folder_url=f'{SHAREPOINT_DOC}/{folder_name}'
         root_folder=conn.web.get_folder_by_server_relative_url(target_folder_url)
@@ -40,6 +62,15 @@ class SharePoint:
 
 
     def download_file(self,file_name,folder_name):
+        """
+        Esta función descarga un archivo de un sitio de SharePoint dado el nombre del archivo y el nombre de
+        la carpeta.
+        
+        :param file_name: El nombre del archivo que debe descargarse de SharePoint
+        :param folder_name: El nombre de la carpeta en la que se encuentra el archivo en SharePoint
+        :return: Se devuelve el contenido del archivo con el nombre de archivo y el nombre de carpeta
+        especificados en el sitio de SharePoint.
+        """
         
         conn=self._auth()
         file_url=f'/sites/{SHAREPOINT_SITE_NAME}/{SHAREPOINT_DOC}/{folder_name}/{file_name}'
@@ -47,12 +78,28 @@ class SharePoint:
         return file.content
 
     def upload_file(self,file_name,folder_name,content):
+        """
+        Esta función carga un archivo en una carpeta específica en un sitio de SharePoint.
+        
+        :param file_name: El nombre del archivo que debe cargarse en SharePoint
+        :param folder_name: El nombre de la carpeta en la que se debe cargar el archivo
+        :param content: El parámetro de contenido es el contenido real del archivo que debe cargarse. Puede
+        ser en forma de bytes o una cadena, según el tipo de archivo que se cargue
+        :return: Se está devolviendo la respuesta de la operación de carga del archivo.
+        """
         conn=self._auth()
         target_folder_url=f'/sites/{SHAREPOINT_SITE_NAME}/{SHAREPOINT_DOC}/{folder_name}'
         target_folder=conn.web.get_folder_by_server_relative_path(target_folder_url)
         response= target_folder.upload_file(file_name,content).execute_query()   
         return response 
     def get_list(self,list_name):
+        """
+        Esta función recupera todos los elementos de una lista de SharePoint con un nombre dado.
+        
+        :param list_name: El nombre de la lista de SharePoint de la que desea recuperar datos
+        :return: La función `get_list` devuelve una lista de elementos de una lista de SharePoint
+        especificada por el parámetro `list_name`.
+        """
         conn=self._auth()
         target_list=conn.web.lists.get_by_title(list_name)
         items= target_list.items.get().execute_query()

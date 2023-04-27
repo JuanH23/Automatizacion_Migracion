@@ -1,3 +1,7 @@
+# El código anterior importa las bibliotecas y los módulos necesarios para un programa de Python que
+# implica la creación de una GUI usando PyQt5, la descarga y carga de archivos en SharePoint y la
+# realización de otras tareas, como buscar archivos y formatear datos. También incluye varias
+# funciones y clases de los módulos importados.
 import sys
 #from estructura_principal import*
 from Estructura_principal_FINAL import *
@@ -87,7 +91,7 @@ class MiApp(QtWidgets.QMainWindow):
         self.ui.bt_save_con.clicked.connect(self.save_parameters_url_sharepoint)
         self.ui.bt_save_con.clicked.connect(self.save_parameters_name_folder_Sharepoint)
         self.ui.comboBox.currentIndexChanged.connect(self.seleccion_archivo)
-
+        self.ui.comboBox2.currentIndexChanged.connect(self.seleccion_archivo_2)
         self.index_stop=0
         self.count3=0
         self.search=Search()
@@ -101,18 +105,30 @@ class MiApp(QtWidgets.QMainWindow):
         self.FOLDER_DEST=""
         
         self.ruta_de_busqueda=[]
-        
+        self.seleccion_2=""
     def update_progress_bar_Slot(self,value):
         self.ui.progressBar_2.setValue(value)
 
     #*Esta función abre desde el sistema solo archivos Excel  guarda la información en la variable direccion    
     def abrir_archivo(self):
+        """
+        Esta función abre un cuadro de diálogo de archivo para seleccionar un archivo de Excel y almacena la
+        ruta del archivo en la variable "dirección".
+        """
         file=QFileDialog.getOpenFileName(self,"Abrir Archivo Excel", "","Excel Files (*.xlsx) ;; All Files (*)")
         self.direccion=file[0]
     #*Esta función llama a la función crear tabla lo unico que hace es correrlo en forma de hilos para que 
     #*corra en paralelo con la interfaz y cualquier proceso que se este ejecutando en el mismo instante    
     
     def complet_COS(self,df):
+        """
+        La función agrega los puertos faltantes a un marco de datos y devuelve el marco de datos
+        actualizado.
+        
+        :param df: un DataFrame de pandas que contiene información sobre los dispositivos y sus puertos
+        :return: una versión modificada del marco de datos de entrada `df`, con filas adicionales agregadas
+        para completar los números de puerto que faltan para cada dispositivo.
+        """
         todos_valores_num1=pd.Series(range(1,113))
         todos_valores_num1=pd.concat([pd.Series([1]),todos_valores_num1,pd.Series([112])])
         todos_valores_num2=pd.Series(range(0,1))
@@ -145,6 +161,15 @@ class MiApp(QtWidgets.QMainWindow):
         return df
 
     def complete_DAAS(self,df):
+        """
+        La función agrega filas a un DataFrame para dispositivos a los que les faltan puertos y ordena el
+        DataFrame resultante por dispositivo y puerto.
+        
+        :param df: un DataFrame de pandas que contiene información sobre los dispositivos de red y sus
+        puertos
+        :return: un DataFrame modificado con nuevas filas agregadas para dispositivos a los que les faltan
+        puertos.
+        """
         # Crear una serie con todos los valores posibles de puerto
         todos_los_valores = pd.Series(range(1, 49))
         todos_los_valores = pd.concat([pd.Series([0]), todos_los_valores, pd.Series([48])])
@@ -219,7 +244,9 @@ class MiApp(QtWidgets.QMainWindow):
 # performs various data manipulations and filtering on input data stored in instance variables of the
 # class. The method then returns the filtered data as well as two dataframes called "COS" and "DAAS".
 # Finally, it calls a function called "diseño" with some of the filtered data as arguments.
+
     def filtrado_COS_DAAS(self):
+
          try:
             df=pd.DataFrame(self.file_arris)
             print(f"df==>{df}")
@@ -319,13 +346,16 @@ class MiApp(QtWidgets.QMainWindow):
             print(COS)
             print(DAAS)
             
-            diseño(self.filtro,self.FINAL_FILTRADO,variable,filter_daas)
+            diseño(self.filtro,self.FINAL_FILTRADO,variable,filter_daas,self.seleccion_2)
             return self.filtro,COS,DAAS
             
          except KeyError as e:
               print(e)
 
     def mostrar_tabla(self):
+        """
+        Esta función crea e inicia tres hilos para ejecutar diferentes métodos.
+        """
         try:
             tabla_thread = threading.Thread(target=self.crear_tabla)
             tabla_thread.start()
@@ -337,6 +367,10 @@ class MiApp(QtWidgets.QMainWindow):
             print(e)    
 
     def crear_tabla(self):#*Esta función filtra los datos del Dataframe requeridos y hace la tabla para mostrarla en la interfaz grafica
+        """
+        Esta función filtra datos de un DataFrame y crea una tabla para mostrarlos en una interfaz gráfica.
+        :return: La función no devuelve nada explícitamente, pero puede devolver Ninguno si hay un error.
+        """
         self.variable =""
         try:
             self.variable=self.ui.lineEdit_buscar.text()#*Toma lo que se ingrese en el LineEdit y lo pasa como texto almacenandolo en una variable
@@ -432,10 +466,16 @@ class MiApp(QtWidgets.QMainWindow):
                     dato2=''
                 self.ui.tabla2.setItem(ii,jj,QTableWidgetItem(dato2))#*Inserta posicion a posicion en el tableWidget          
     def control_bt_minimizar(self):#*Función para minimizar el programa
+        """
+        Esta función minimiza la ventana del programa.
+        """
         self.showMinimized()
       
 
     def control_close(self):#*Función para cerrar el programa
+        """
+        La función "control_close" cierra el programa.
+        """
         self.close()
     '''def mover_menu(self):
         if True:
@@ -476,6 +516,13 @@ class MiApp(QtWidgets.QMainWindow):
         self.ad.show()
         
     def cancelar_stop(self):
+        """
+        Esta función cancela una parada y restablece ciertas variables.
+        """
+
+# El código anterior es un fragmento de código de Python que establece el valor de algunas variables y
+# crea un nuevo objeto ClientContext. Luego ejecuta una consulta sobre el contexto e imprime el valor
+# de una variable. Finalmente, establece el valor de dos variables más en False y 0 respectivamente.
 
         self.index_stop=self.saved_index
         self.count3=self.count2
@@ -491,8 +538,16 @@ class MiApp(QtWidgets.QMainWindow):
         seleccion=self.ui.comboBox.itemText(self.ui.comboBox.currentIndex())
         print(seleccion)   
         return seleccion
+    
+    def seleccion_archivo_2(self):
+        self.seleccion_2=self.ui.comboBox2.itemText(self.ui.comboBox2.currentIndex())
+        print(self.seleccion_2)   
+        return self.seleccion_2    
 
     def download_LISTS(self):
+        """
+        Esta función descarga una lista específica y la guarda en una carpeta específica.
+        """
 
         LIST_NAME=self.ui.lineEdit_descargar_lista.text()
         FILE_NAME=self.seleccion_archivo()
@@ -507,6 +562,9 @@ class MiApp(QtWidgets.QMainWindow):
         msg_box.setStandardButtons(QMessageBox.Ok)
         msg_box.exec_()
     def upload_LIST(self):
+        """
+        La función crea un hilo para cargar una lista y establece una variable en 1.
+        """
         
         self.upload_thread = threading.Thread(target=self.subir_list)
         
@@ -520,6 +578,16 @@ class MiApp(QtWidgets.QMainWindow):
 ######################################################################################
 
     def obtener_dataframes(self,name_files,ruta_de_busqueda):            
+
+            """
+        Esta función busca archivos específicos en un directorio determinado y devuelve sus datos como
+        marcos de datos de pandas.
+        
+        :param name_files: Una lista de nombres de archivos para buscar en los directorios dados
+        :param ruta_de_busqueda: Las rutas de directorio donde la función buscará los archivos
+        :return: un diccionario de marcos de datos de pandas, donde las claves son una combinación del
+        nombre de la hoja (si se proporciona) y el nombre del archivo donde se obtuvo el marco de datos.
+            """
             #if __name__=='__main__':
             freeze_support()       
                 #with Pool(processes=os.cpu_count()) as pool:
@@ -541,6 +609,11 @@ class MiApp(QtWidgets.QMainWindow):
                     
             return dfs
     def read_data(self):
+                """
+                Esta función lee datos de archivos de Excel y devuelve cuatro marcos de datos.
+                :return: four variables: arris_df, ocupacion_Daas, ocupacion_Cos, and Casa_df.
+                """
+
            
                 arris_df=None
                 ocupacion_Cos=None
@@ -561,6 +634,16 @@ class MiApp(QtWidgets.QMainWindow):
                 return arris_df,ocupacion_Daas,ocupacion_Cos,Casa_df
   
     def search_file_filter(self):
+         """
+            Esta función busca archivos en función de un filtro y muestra los resultados en un cuadro de
+            mensaje.
+         """
+# El código anterior es un bloque de código de Python que intenta ejecutar un conjunto de
+# instrucciones. Primero obtiene el valor de una variable llamada `old_path_list_download` del
+# entorno, la agrega a una lista llamada `ruta_de_busqueda` y luego imprime el contenido de la lista y
+# los valores de otras cuatro variables. Luego muestra un cuadro de mensaje que indica que la
+# operación se completó con éxito. Si se genera una excepción `KeyError` durante la ejecución del
+# bloque de código, imprime un mensaje de error que indica la causa de la excepción.
          try:
             old_path_list_download = env.get('path_list_download', '')
             self.ruta_de_busqueda.append(old_path_list_download)
@@ -580,9 +663,10 @@ class MiApp(QtWidgets.QMainWindow):
 
     def subir_list(self):
         """
-        This function uploads data from an Excel file to a SharePoint list, handling interruptions and
-        disconnections, and retrying failed attempts.
+        Esta función carga datos de un archivo de Excel a una lista de SharePoint, maneja interrupciones y
+        desconexiones y vuelve a intentar intentos fallidos.
         """
+
         self.continuar_subida=True
         self.count2=0
         self.flag=1
@@ -618,6 +702,10 @@ class MiApp(QtWidgets.QMainWindow):
         data={}
         chunk=0
 
+# El código verifica si el archivo de Excel de entrada contiene hojas específicas con ciertos
+# encabezados de columna. Si encuentra una hoja con los encabezados requeridos, filtra las columnas,
+# convierte los valores al tipo de cadena y convierte el marco de datos resultante en un diccionario.
+# La variable indicadora se establece en un valor específico según la hoja que se haya encontrado.
         if "Arris_SCMSummary" in excel_file:
             df = pd.read_excel(excel_file)
             file=pd.DataFrame(df)
@@ -633,6 +721,11 @@ class MiApp(QtWidgets.QMainWindow):
                         file_2[['Mac','Total','Description']] = file_2[['Mac','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
                         data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario
                         flag=1
+# El código lee un archivo de Excel y verifica si contiene una hoja específica llamada
+# "Casa_SCMSummary". Si la hoja existe, filtra las columnas 'CMTS', 'Upstream', 'Total' y
+# 'Description' de la hoja y reemplaza los valores faltantes con 'Sin datos'. Luego convierte los
+# valores en las columnas 'Upstream', 'Total' y 'Description' en cadenas y convierte el marco de datos
+# filtrado en un diccionario. Finalmente, establece una variable de bandera en 2.
         elif "Casa_SCMSummary" in excel_file :
             df = pd.read_excel(excel_file)
             file=pd.DataFrame(df)
@@ -679,8 +772,20 @@ class MiApp(QtWidgets.QMainWindow):
                 data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
                 flag=4 
 
+# El código anterior es un script de Python que inserta datos en una lista de SharePoint mediante la
+# API REST de SharePoint. Incluye manejo de errores para errores HTTP y otras excepciones que pueden
+# ocurrir durante el proceso de inserción. El código también incluye una barra de progreso para
+# realizar un seguimiento del progreso de la inserción y un intervalo de confirmación para borrar la
+# lista y comenzar un nuevo lote de inserciones después de que se haya agregado una cierta cantidad de
+# elementos. El código también verifica el valor de ciertas variables y realiza diferentes acciones en
+# función de sus valores.
         try:    
                 print(self.flag==1)
+# El código anterior es un fragmento de código de Python que contiene una declaración if-else.
+# Comprueba el valor de la variable `self.flag` y realiza diferentes acciones en función de su valor.
+# Si `self.flag` es igual a 1, comprueba el valor de otra variable `self.c_up`. Si `self.c_up` es
+# mayor que 1, establece el valor de `self.last_saved_index` en 0 y establece el valor de `count` en
+# 0. Si `self.c_up` no es mayor que 1, establece el valor de `self.last_saved
                 if  self.flag==1:
                     if self.c_up>1:
                         self.last_saved_index=0
@@ -695,6 +800,7 @@ class MiApp(QtWidgets.QMainWindow):
                         print(f"L1==>{self.last_saved_index}")
                         self.flag=0
                         print(self.flag==1)
+
                 while self.last_saved_index < len(data): 
                     
                     if  self.index_saved==False:
@@ -704,6 +810,9 @@ class MiApp(QtWidgets.QMainWindow):
                     chunk=data[self.last_saved_index:self.last_saved_index+chunksize]
                     
                     for d in chunk:
+# El código define un diccionario `item_pro` basado en el valor de la variable `flag`. Dependiendo del
+# valor de `bandera`, se agregan diferentes pares clave-valor al diccionario. El valor de `c` se
+# incrementa en 1 y el diccionario `item_pro` resultante se asigna a la variable `item_properties`.
                         if flag==1:
                             item_pro = {'CMTS': d['CMTS'],'Mac':d['Mac'],'Total': d['Total'], 'Description': d['Description']}     
                         elif flag==2:
@@ -716,6 +825,12 @@ class MiApp(QtWidgets.QMainWindow):
                         item_properties=item_pro
 
                         for i in range(max_attempts):
+# El código anterior es un bloque de código de Python que intenta agregar elementos a una lista de
+# SharePoint mediante la API REST de SharePoint. Incluye manejo de errores para errores HTTP y otras
+# excepciones que pueden ocurrir durante el proceso de inserción. También incluye un intervalo de
+# compromiso para borrar la lista y comenzar un nuevo lote de inserciones después de que se haya
+# agregado una cierta cantidad de elementos. El código actualiza una barra de progreso a medida que se
+# agregan elementos y muestra mensajes de error mediante un QMessageBox.
                             try:
                                 item=Sp_list.add_item(item_properties)
                                 
@@ -815,6 +930,10 @@ class MiApp(QtWidgets.QMainWindow):
                     print("Se han excedido el número máximo de intentos. Saliendo del programa...")
                                  
     def save_path_list(self):
+        """
+        Esta función establece una nueva ruta de descarga para una lista de archivos y la guarda en un
+        archivo .env.
+        """
         path_list = self.ui.lineEdit_Path_lists.text()
         # Obtenemos el valor anterior de path_list_download del archivo .env
         old_path_list_download = env.get('path_list_download', '')

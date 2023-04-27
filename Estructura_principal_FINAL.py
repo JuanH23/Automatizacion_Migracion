@@ -313,7 +313,7 @@ class Ui_MainWindow(object):
         self.label_19.setAlignment(QtCore.Qt.AlignCenter)
         self.label_19.setObjectName("label_19")
         self.lineEdit_buscar = QtWidgets.QLineEdit(self.page_tres)
-        self.lineEdit_buscar.setGeometry(QtCore.QRect(10, 110, 611, 30))
+        self.lineEdit_buscar.setGeometry(QtCore.QRect(10, 110, 470, 30))
         font = QtGui.QFont()
         font.setPointSize(8)
         font.setBold(True)
@@ -560,6 +560,71 @@ class Ui_MainWindow(object):
         self.comboBox.addItem("")
         self.comboBox.addItem("")
         self.comboBox.addItem("")
+
+
+        self.comboBox2 = QtWidgets.QComboBox(self.page_tres)
+        self.comboBox2.setGeometry(QtCore.QRect(490, 110, 135, 31))
+        self.comboBox2.setStyleSheet("QComboBox {\n"
+"                font: 16px;\n"
+"                color: #555555;\n"
+"                border: 2px solid red;\n"
+"                border-radius: 8px;\n"
+"                padding: 5px;\n"
+"            }\n"
+"QComboBox:hover {\n"
+"                border-color:red;\n"
+"            }\n"
+"            \n"
+"QComboBox::drop-down {\n"
+"                subcontrol-origin: padding;\n"
+"                subcontrol-position: top right;\n"
+"                width: 25px;\n"
+"                border-left-width: 0px;\n"
+"                border-top-width: 0px;\n"
+"                border-bottom-width: 0px;\n"
+"                border-right-width: 0px;\n"
+"                border-color: black;\n"
+"                border-style: solid;\n"
+"                border-radius: 8px;\n"
+"            }\n"
+"            \n"
+"QComboBox::down-arrow {\n"
+"               \n"
+"                width: 16px;\n"
+"                height: 16px;\n"
+"            }\n"
+"            \n"
+"QComboBox::down-button {\n"
+"                border: 2px solid #888888;\n"
+"                border-radius: 8px;\n"
+"                padding: 5px;\n"
+"                background-color: #eeeeee;\n"
+"            }\n"
+"            \n"
+"QComboBox::up-button {\n"
+"                border: 2px solid #888888;\n"
+"                border-radius: 8px;\n"
+"                padding: 5px;\n"
+"                background-color: #eeeeee;\n"
+"            }\n"
+"            \n"
+"QComboBox:disabled {\n"
+"                color: black;\n"
+"            }            \n"
+"")
+        self.comboBox2.setEditable(False)
+        self.comboBox2.setMaxVisibleItems(10)
+        self.comboBox2.setObjectName("comboBox2")
+        icon9 = QtGui.QIcon()
+        icon9.addPixmap(QtGui.QPixmap("images/row_combo.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.comboBox2.addItem(icon9, "")
+        self.comboBox2.addItem("")
+        self.comboBox2.addItem("")
+
+
+
+
+
         self.stackedWidget_2.addWidget(self.page_uno)
         self.page_dos = QtWidgets.QWidget()
         self.page_dos.setObjectName("page_dos")
@@ -814,6 +879,10 @@ class Ui_MainWindow(object):
         self.comboBox.setItemText(1, _translate("MainWindow", "Arris_SCMSummary"))
         self.comboBox.setItemText(2, _translate("MainWindow", "Casa_SCMSummary"))
         self.comboBox.setItemText(3, _translate("MainWindow", "Ocupacion - Marcacion RPHY Harmonic"))
+        #self.comboBox2.setCurrentText(_translate("MainWindow", "nodo"))
+        self.comboBox2.setItemText(0, _translate("MainWindow", "Tipo nodo"))
+        self.comboBox2.setItemText(1, _translate("MainWindow", "1 x 2"))
+        self.comboBox2.setItemText(2, _translate("MainWindow", "2 x 4"))
         self.label_29.setText(_translate("MainWindow", "SUBIR LISTA A SHAREPOINT"))
         self.lineEdit_buscar_2.setPlaceholderText(_translate("MainWindow", "NOMBRE DE LISTA DE SHAREPOINT"))
         self.bt_filtrar_2.setText(_translate("MainWindow", "SUBIR"))

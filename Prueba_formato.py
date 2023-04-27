@@ -545,7 +545,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
         celda=hoja.cell(row=7,column=13)
         celda.value=texto_RPD_2 + ":1"
         celda=hoja.cell(row=8,column=13)
-        celda.value=str(text_num_generic) +":1"#!REVISAR
+        celda.value=str(text_num_generic) +":1"
         texto_UPSTREAM=str(text_num_generic) + ":0/0"
         texto_UPSTREAM_2=str(text_num_generic) + ":0/1"
         texto_UPSTREAM3=str(text_num_generic) + ":1/0"
@@ -563,11 +563,11 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
         celda=hoja.cell(row=4,column=15)
         celda.value=texto_DMAC_2 + ":0/0.0"
         celda=hoja.cell(row=5,column=15)
-        celda.value=texto_DMAC
+        celda.value=texto_DMAC_2 + ":0/0.0"
         celda=hoja.cell(row=7,column=15)
-        celda.value=texto_DMAC
+        celda.value=texto_DMAC_2 + ":1/0.0"
         celda=hoja.cell(row=8,column=15)
-        celda.value=texto_DMAC
+        celda.value=texto_DMAC_2 + ":1/0.0"
 
         nodo_valor=df['Description']
         nodo_index=nodo_valor.index

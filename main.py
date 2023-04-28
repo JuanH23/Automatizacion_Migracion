@@ -289,13 +289,13 @@ class MiApp(QtWidgets.QMainWindow):
                 temp_df=filtro3_sin_duplicados[in_colum]
                 en_tempo=filtro3_sin_duplicados['IP'].str.contains(str(variable_ip+1),case=False,na=False,regex=True)
                 CON_DAAS_COS=filtro3_sin_duplicados[in_colum | en_tempo]
-                CON_DAAS_COS.to_excel("out10.xlsx")
+                #CON_DAAS_COS.to_excel("out10.xlsx")
             elif filtro3_sin_duplicados['IP'].str.contains(str(variable_ip2)).any():
                 in_colum=filtro3_sin_duplicados['IP'].str.contains(str(variable_ip2),case=False,na=False,regex=True)
                 temp_df=filtro3_sin_duplicados[in_colum]
                 en_tempo=filtro3_sin_duplicados['IP'].str.contains(str(variable_ip2+1),case=False,na=False,regex=True)
                 CON_DAAS_COS=filtro3_sin_duplicados[in_colum | en_tempo]
-                CON_DAAS_COS.to_excel("out10.xlsx")
+                #CON_DAAS_COS.to_excel("out10.xlsx")
             if CON_DAAS_COS['Dispositivo'].str.contains(str(filter_daas+1)).any():
                 if CON_DAAS_COS['Dispositivo'].str.contains(str(filter_daas)).any():
                     print("ENTRO AL DAAS")
@@ -339,8 +339,8 @@ class MiApp(QtWidgets.QMainWindow):
                 self.FINAL_FILTRADO=final
                 self.FINAL_FILTRADO=self.FINAL_FILTRADO.loc[:,['Dispositivo COS','Puerto COS','ptp','Dispositivo DAAS','Puerto DAAS','Unnamed: 5']]
             print(self.FINAL_FILTRADO )    
-            final.to_excel("out8.xlsx")
-            self.FINAL_FILTRADO.to_excel("out11.xlsx")##RETORNAR FINAL_FILTRADO PARA LA VISUALIZACION DE LA TABLA DEL DESPUES
+            #final.to_excel("out8.xlsx")
+            #self.FINAL_FILTRADO.to_excel("out11.xlsx")##RETORNAR FINAL_FILTRADO PARA LA VISUALIZACION DE LA TABLA DEL DESPUES
             COS=self.FINAL_FILTRADO.loc[:,['Dispositivo COS','Puerto COS','ptp']]
             DAAS=self.FINAL_FILTRADO.loc[:,['Dispositivo DAAS','Puerto DAAS','Unnamed: 5']]
             print(COS)
@@ -850,19 +850,11 @@ class MiApp(QtWidgets.QMainWindow):
                             except requests.exceptions.HTTPError as http_error:
                                 
                                 print(f"Error de HTTP al agregar el elemento #{c}: {http_error}")
-                                QMessageBox.warning(self,"Error Message",
-                                f"Error de HTTP al agregar el elemento #{c}: {http_error}",
-                                QMessageBox.StandardButton.Close,
-                                QMessageBox.StandardButton.Close)
                                 time.sleep(5)  #* Esperar 5 segundos antes de intentar de nuevo
                                 count=self.last_saved_index
                             except Exception as e:
                                 
-                                print(f"Error en el intento {i+1} de inserción para el elemento #{c}: {e}")
-                                QMessageBox.warning(self,"Error Message",
-                                f"Error en el intento {i+1} de inserción para el elemento #{c}: {e}",
-                                QMessageBox.StandardButton.Close,
-                                QMessageBox.StandardButton.Close)                                
+                                print(f"Error en el intento {i+1} de inserción para el elemento #{c}: {e}")                              
                                 time.sleep(5)  #*Esperar 5 segundos antes de intentar de nuevo
                                 if i == max_attempts - 1:
                                     # Si se alcanza el número máximo de intentos sin éxito, salir del programa
@@ -907,10 +899,6 @@ class MiApp(QtWidgets.QMainWindow):
                     commit_count=0  
                 self.show()
         except (requests.exceptions.ConnectionError, requests.exceptions.ChunkedEncodingError) as e:
-                QMessageBox.warning(self,"Error Message",
-                f"No hay conexión a internet. Esperando...",
-                QMessageBox.StandardButton.Close,
-                QMessageBox.StandardButton.Close)
                 print("No hay conexión a internet. Esperando...")
                 time.sleep(5)  # Esperar 5 segundos antes de volver a intentar
                 
@@ -920,10 +908,6 @@ class MiApp(QtWidgets.QMainWindow):
                 attempt_count += 1
                
                 print(f"Error al Agregar el elemento a la lista #{c} error: {e}")
-                QMessageBox.warning(self,"Error Message",
-                f"Error al Agregar el elemento a la lista #{c} - Reintentando en 5 segundo...",
-                QMessageBox.StandardButton.Close,
-                QMessageBox.StandardButton.Close)
                 print("Reintentando en 5 segundo...")
                 time.sleep(5)
                 if attempt_count >= max_attempts:

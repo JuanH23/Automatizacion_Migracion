@@ -16,6 +16,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     env=dotenv_values(".env")
     ruth_list_download= env["path_list_download"]
     ruta_nueva_carpeta = ruth_list_download + "/Diseños_NODOS"
+    set_key(".env","path_files_upload",ruta_nueva_carpeta)
     file_name=""  
     os.makedirs(ruta_nueva_carpeta, exist_ok=True)
     if type_node == "1 x 2":
@@ -23,7 +24,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     elif type_node =="2 x 4":
         file_name='Diseño Segmentaciones RPHY 2x4-NODO '
     ruta_archivo = os.path.join(ruta_nueva_carpeta,file_name+ name_file +'.xlsx')
-    set_key(".env","path_files_upload",ruta_nueva_carpeta)
+    
     ###########
     
 
@@ -350,14 +351,14 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
             print(f"df_cd==>{df_cd}")
             df_cd=df_cd.drop_duplicates(subset='primer_num_COS')
             print(f"df_cd_sin_duplicados==>{df_cd}")
-            df_cd.to_excel("new_numbers.xlsx")
+            #df_cd.to_excel("new_numbers.xlsx")
             ###############################!
             numeros_coincidentes=df_cd['ultimo_num_DAAS'].unique()
             coincidente_COS=df_cd[df_cd['primer_num_COS'].isin(numeros_coincidentes)]
             #coincidente=df_cd.loc[df_cd['ultimo_num_DAAS'].isin(df_cd['primer_num_COS'])]
-            coincidente_COS.to_excel("coincidente.xlsx")
+            #coincidente_COS.to_excel("coincidente.xlsx")
             coincidente_DAAS=df_cd[df_cd['ultimo_num_DAAS'].isin(coincidente_COS['primer_num_COS'])]
-            coincidente_DAAS.to_excel("coincidente_2.xlsx")
+            #coincidente_DAAS.to_excel("coincidente_2.xlsx")
             coincidente_COS=coincidente_COS.loc[:,['Dispositivo COS','Puerto COS','primer_num_COS']]
             coincidente_COS=coincidente_COS.reset_index(drop=True)
             coincidente_DAAS=coincidente_DAAS.loc[:,['Dispositivo DAAS','Puerto DAAS']]
@@ -383,20 +384,20 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
             # Extraer el primer número de cada entrada en la columna puerto_COS
             df_cd['primer_num_COS'] = df_cd['Puerto COS'].str.split(':').str[0]
             df_cd=df_cd.drop_duplicates(subset='primer_num_COS')
-            df_cd.to_excel("same_new_numbers.xlsx")
+            #df_cd.to_excel("same_new_numbers.xlsx")
             ###############################!
             numeros_coincidentes=df_cd['ultimo_num_DAAS'].unique()
             coincidente_COS=df_cd[df_cd['primer_num_COS'].isin(numeros_coincidentes)]
             #coincidente=df_cd.loc[df_cd['ultimo_num_DAAS'].isin(df_cd['primer_num_COS'])]
-            coincidente_COS.to_excel("coincidente.xlsx")
+            #coincidente_COS.to_excel("coincidente.xlsx")
             coincidente_DAAS=df_cd[df_cd['ultimo_num_DAAS'].isin(coincidente_COS['primer_num_COS'])]
-            coincidente_DAAS.to_excel("coincidente_2.xlsx")
+            #coincidente_DAAS.to_excel("coincidente_2.xlsx")
             coincidente_COS=coincidente_COS.loc[:,['Dispositivo COS','Puerto COS','primer_num_COS']]
             coincidente_COS=coincidente_COS.reset_index(drop=True)
             coincidente_DAAS=coincidente_DAAS.loc[:,['Dispositivo DAAS','Puerto DAAS']]
             coincidente_DAAS=coincidente_DAAS.reset_index(drop=True)
             merge_coincidente=pd.concat([coincidente_COS,coincidente_DAAS],axis=1)
-            merge_coincidente.to_excel('merge_coincidente.xlsx')
+            #merge_coincidente.to_excel('merge_coincidente.xlsx')
             
             print(f"TYPE_NODE==>{type_node}")
             ###############################!    
@@ -433,12 +434,13 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
         indice_slot_PUERTO_DAAS=slot_list_PUERTO_DAAS[0]
         text_num_generic=filas_aleatorias.loc[indice_slot_PUERTO_DAAS,"primer_num_COS"]  
         
+        texto_Puerto_DAAS=text_num_generic
+        texto_Puerto_DAAS=str(texto_Puerto_DAAS)
         
-        texto_Puerto_DAAS=str(text_num_generic)+"/0"
         celda=hoja.cell(row=4,column=11)
-        celda.value=texto_Puerto_DAAS
+        celda.value=texto_Puerto_DAAS+"/0"
         celda=hoja.cell(row=7,column=11)
-        celda.value=texto_Puerto_DAAS
+        celda.value=texto_Puerto_DAAS+"/0"
         
         slot_valor_CHASIS=filas_aleatorias['Dispositivo COS']
         slot_index_CHASIS=slot_valor_CHASIS.index
@@ -474,11 +476,17 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
         nodo_list=nodo_index.to_list()
         indice_nodo=nodo_list[1]
         texto_NOMBRE=df.loc[indice_nodo,"Description"]
-        #texto_NOMBRE=""#!MIRAR COMO COLOCAR EL 3F
+        tex=str(texto_NOMBRE)
+        indice_find_1=tex.find("(")
+        indice_find_2=tex.find(")")
+        tex=tex[:indice_find_1]+"3F"+tex[indice_find_1:indice_find_2]+"3F"+tex[indice_find_2]
+        #texto_NOMBRE=""
         celda=hoja.cell(row=4,column=17)
         celda.value=str(texto_NOMBRE)
+        #celda.value=""
         celda=hoja.cell(row=7,column=17)
-        celda.value=str(texto_NOMBRE)
+        celda.value=tex
+        #celda.value=""
     ################################!
     elif type_node == "2 x 4":
     ######################################!
@@ -510,7 +518,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
         celda.value=texto_DAAS
         texto_Puerto_DAAS="3"
         texto_Puerto_DAAS_2=str(text_num_generic)
-        #texto_Puerto_DAAS=str(text_num_generic)+"/0"#!REVISAR
+        #texto_Puerto_DAAS=str(text_num_generic)+"/0"
         celda=hoja.cell(row=4,column=11)
         celda.value=texto_Puerto_DAAS_2 +"/0"
         celda=hoja.cell(row=5,column=11)
@@ -537,7 +545,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
         texto_RPD2=":1"
         texto_RPD_1=str(text_num_generic)+":0"
         texto_RPD_2=str(text_num_generic)
-        #texto_RPD2=str(text_num_generic)+":1"#!REVISAR
+        #texto_RPD2=str(text_num_generic)+":1"
         celda=hoja.cell(row=4,column=13)
         celda.value=texto_RPD_1
         celda=hoja.cell(row=5,column=13)
@@ -559,7 +567,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
         celda=hoja.cell(row=8,column=14)
         celda.value=texto_UPSTREAM4
         texto_DMAC_2=str(text_num_generic)
-        texto_DMAC=":0/0.0"#!REVISAR
+        texto_DMAC=":0/0.0"
         celda=hoja.cell(row=4,column=15)
         celda.value=texto_DMAC_2 + ":0/0.0"
         celda=hoja.cell(row=5,column=15)
@@ -576,14 +584,21 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
         text_NOMBRE=df.loc[indice_nodo,"Description"]
         texto_NOMBRE_2=str(text_NOMBRE)
         texto_NOMBRE="NODO"
+
+        texx=str(texto_NOMBRE_2)
+        indice_find__1=texx.find("(")
+        indice_find__2=texx.find(")")
+        tex_2=texx[:indice_find__1]+"2F"+texx[indice_find__1:indice_find__2]+"2F"+texx[indice_find__2]
+        tex_3=texx[:indice_find__1]+"3F"+texx[indice_find__1:indice_find__2]+"3F"+texx[indice_find__2]
+        tex_4=texx[:indice_find__1]+"4F"+texx[indice_find__1:indice_find__2]+"4F"+texx[indice_find__2]
         celda=hoja.cell(row=4,column=17)
-        celda.value=texto_NOMBRE_2
+        celda.value=texx
         celda=hoja.cell(row=5,column=17)
-        celda.value=texto_NOMBRE_2
+        celda.value=tex_2
         celda=hoja.cell(row=7,column=17)
-        celda.value=texto_NOMBRE_2
+        celda.value=tex_3
         celda=hoja.cell(row=8,column=17)
-        celda.value=texto_NOMBRE_2    
+        celda.value=tex_4    
     ######################################!
  ###########################################SCRIPT  ANTES-NOC CABLE##########################################   
 

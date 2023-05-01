@@ -17,7 +17,7 @@
 
 *[Librerias](#Librerias_utilizadas)
 
-*[Instalación_librerias](#Para instalar las librerias)
+*[Instalación librerias](#Para-instalar-las-librerias)
 
 *[Estado del proyecto](#Estado-del-proyecto)
 
@@ -56,7 +56,7 @@
 - qt5-applications==5.15.2.2.2
 - requests==2.28.1
 ----
-# Para instalar las librerias
+# Para-instalar-las-librerias
 1. Ir al cmd o terminal del editor
 2. Posicionarse en la ruta de la carpeta del proyeto
 3. Crear un entorno virtual ` python -m venv env`

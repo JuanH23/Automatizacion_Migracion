@@ -19,7 +19,9 @@
 
 *[Instalación librerias](#Para-instalar-las-librerias)
 
-*[Estado del proyecto](#Estado-del-proyecto)
+*[Archivos del proyecto](#Archivos-del-proyecto)
+
+* [config.py](#config.py)
 
 *[Características de la aplicación y demostración](#Características-de-la-aplicación-y-demostración)
 
@@ -62,8 +64,6 @@
 3. Crear un entorno virtual  ` python -m venv env`
 4. Activar el entorno virtual  ` env\Scripts\activate.bat`
 5. Instalar las librerias  ` pip install -r requiriments_f.txt`
-
-=============
 
 
 -------------

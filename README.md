@@ -11,9 +11,9 @@
 **Table of Contents**
 ##Índice
 
-*[Título e imagen de portada](#Characters)
+*[Characters](#Characters-)
 
-*[Insignias](#insignias)
+*[Inline code](#Inline code-)
 
 *[Índice](#índice)
 

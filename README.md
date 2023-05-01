@@ -11,11 +11,11 @@
 **Table of Contents**
 ##Índice
 
-*[H3 header](#H3 header)
+*[H1 Header (Underline)](#H1 Header (Underline))
 
-*[Insignias](#insignias)
+*[H1 Header (Underline)](#insignias)
 
-*[Índice](#índice)
+*[Features](#Features)
 
 *[Descripción del proyecto](#descripción-del-proyecto)
 

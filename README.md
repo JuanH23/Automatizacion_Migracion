@@ -11,9 +11,9 @@
 **Table of Contents**
 ##Índice
 
-*[Characters](#Characters-)
+*[Characters](#Characters)
 
-*[Inline code](#Inline code-)
+*[Insignias](#insignias)
 
 *[Índice](#índice)
 

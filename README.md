@@ -13,7 +13,7 @@
 
 *[Features](#Features)
 
-*[Tecnologías](#Tecnología_utilizadas :smiley: )
+*[Tecnologías](#Tecnología_utilizadas)
 
 *[Librerias](#Librerias_utilizadas)
 

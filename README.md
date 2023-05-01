@@ -13,7 +13,7 @@
 
 *[Features](#Features)
 
-*[Tecnologías](#Tecnología_utilizadas)
+*[Tecnologías](#Tecnología_utilizadas:smiley: )
 
 *[Librerias](#Librerias_utilizadas)
 
@@ -39,7 +39,7 @@
 
 
 
-### Tecnología_utilizadas 
+### Tecnología_utilizadas:smiley: 
 - python 3.19
 
 ### Librerias_utilizadas   

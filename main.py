@@ -115,6 +115,7 @@ class MiApp(QtWidgets.QMainWindow):
         Esta función abre un cuadro de diálogo de archivo para seleccionar un archivo de Excel y almacena la
         ruta del archivo en la variable "dirección".
         """
+        #file: obtiene toda la informacion de el archivo, solo permitiendo abrir archivos Excel (xlsx)
         file=QFileDialog.getOpenFileName(self,"Abrir Archivo Excel", "","Excel Files (*.xlsx) ;; All Files (*)")
         self.direccion=file[0]
     #*Esta función llama a la función crear tabla lo unico que hace es correrlo en forma de hilos para que 
@@ -125,10 +126,22 @@ class MiApp(QtWidgets.QMainWindow):
         La función agrega los puertos faltantes a un marco de datos y devuelve el marco de datos
         actualizado.
         
-        :param df: un DataFrame de pandas que contiene información sobre los dispositivos y sus puertos
-        :return: una versión modificada del marco de datos de entrada `df`, con filas adicionales agregadas
-        para completar los números de puerto que faltan para cada dispositivo.
         """
+        #todos_valores_num1: Da un rango de valores el cual va a completar los puertos COS, del rango 1-112
+        #dispositivos:dispositivos guarda como valores unicos a la columna del Dataframe 'Dispositivo'
+        #puertos: guarda los valores resultantes de realizar una separacion de los datos de la columna 'Puerto' que contenga el simbolo ':'
+        # y lo compara para guardar unicamente los que contengan esto 
+        #puertos_faltantes: este va a mirar que valores faltan dentro del rango de valores de la variable todos_valores_num1
+        #y va revisar si los valores de puertos estan dentro de el 
+        #dispositivos_con_puertos_faltantes: esta variable que es una lista, va a ir añadiendo los valores faltantes
+        #nuevas_filas: esta variable va a añadir todos los valores con sus numeros faltantes
+        #puerto_str: va a ser la variable para añadir los puertos faltantes con su segundo numero :0
+        #puerto2_str: va a ser la variable para añadir los puertos faltantes con su segundo numero :1
+        #ip: toma los valores de la columna ip para añadirla en todos los valores de la nueva lista "nuevas_filas"
+        #param df: Un DataFrame de pandas que contiene información sobre los dispositivos y sus puertos
+        #return:una versión modificada del marco de datos de entrada `df`, con filas adicionales agregadas
+        #para completar los números de puerto que faltan para cada dispositivo.
+
         todos_valores_num1=pd.Series(range(1,113))
         todos_valores_num1=pd.concat([pd.Series([1]),todos_valores_num1,pd.Series([112])])
         todos_valores_num2=pd.Series(range(0,1))
@@ -170,6 +183,21 @@ class MiApp(QtWidgets.QMainWindow):
         :return: un DataFrame modificado con nuevas filas agregadas para dispositivos a los que les faltan
         puertos.
         """
+
+        #todos_valores_num1: Da un rango de valores el cual va a completar los puertos COS, del rango 1-112,Creando una serie con todos los valores posibles de puerto
+        #dispositivos:dispositivos guarda como valores unicos a la columna del Dataframe 'Dispositivo'
+        #puertos: guarda los valores resultantes de realizar una separacion de los datos de la columna 'Puerto' que contenga el simbolo ':'
+        # y lo compara para guardar unicamente los que contengan esto 
+        #puertos_faltantes: este va a mirar que valores faltan dentro del rango de valores de la variable todos_valores_num1
+        #y va revisar si los valores de puertos estan dentro de el 
+        #dispositivos_con_puertos_faltantes: esta variable que es una lista, va a ir añadiendo los valores faltantes
+        #nuevas_filas: esta variable va a añadir todos los valores con sus numeros faltantes
+        #puerto_str: va a ser la variable para añadir los puertos faltantes con su segundo numero :0
+        #puerto2_str: va a ser la variable para añadir los puertos faltantes con su segundo numero :1
+        #ip: toma los valores de la columna ip para añadirla en todos los valores de la nueva lista "nuevas_filas"
+        #param df: Un DataFrame de pandas que contiene información sobre los dispositivos y sus puertos
+        #return:una versión modificada del marco de datos de entrada `df`, con filas adicionales agregadas
+        #para completar los números de puerto que faltan para cada dispositivo.        
         # Crear una serie con todos los valores posibles de puerto
         todos_los_valores = pd.Series(range(1, 49))
         todos_los_valores = pd.concat([pd.Series([0]), todos_los_valores, pd.Series([48])])
@@ -206,26 +234,24 @@ class MiApp(QtWidgets.QMainWindow):
         return df
 
     def simpli_DAAS(self,df):
+        #Lo principal es que hace slicing en valores especificos en dos columnas 'Dispositivo' y 'IP'
+        #Esto para retornar valores que ayudaran a filtrar y reducir los valores que se quieren obtenter
         Valor_Dispositivo=df['Dispositivo']
         Valor_Ip=df['IP']
-        #print(f"Valor_Ip==>{valor_IP}")
         valor_dispositivo=Valor_Dispositivo.index
         valor_list_dispositivo=valor_dispositivo.to_list()
         valor_IP=Valor_Ip.index
-        valor__list_IP=valor_IP.to_list()
-        #print(f"valor__list_IP==>{valor__list_IP}")      
+        valor__list_IP=valor_IP.to_list() 
         indice_IP=valor__list_IP[0]
         indice_IP2=valor__list_IP[0]
         indice_Dispositivo=valor_list_dispositivo[0]
         Dispositivo= df.loc[indice_Dispositivo, "Dispositivo"]
-        print(f"DISPOSITIVOOO==>{Dispositivo}")
 
         se_daas=Dispositivo.find("-")
         sel_daas=Dispositivo.find("-",se_daas+1)
         sele_daas=Dispositivo.find("-",sel_daas+1)
         fin_sele_daas=Dispositivo.find("-",sele_daas+1)
-        filter_Daas=Dispositivo[sele_daas+1:fin_sele_daas]
-        print(f"filter_Daas==>{filter_Daas}")        
+        filter_Daas=Dispositivo[sele_daas+1:fin_sele_daas]     
         IP=df.loc[indice_IP,"IP"]
         IP2=df.loc[indice_IP2,"IP"]
         Sli_IP=IP.find(".")
@@ -355,6 +381,9 @@ class MiApp(QtWidgets.QMainWindow):
     def mostrar_tabla(self):
         """
         Esta función crea e inicia tres hilos para ejecutar diferentes métodos.
+        -La tabla del antes, llamando a la función crear_tabla 
+        -La tabla del despues del COS, llamando a la función crear_despues_COS 
+        -La tabla del DAAS, llamando a la función crear_despues_DAAS 
         """
         try:
             tabla_thread = threading.Thread(target=self.crear_tabla)
@@ -371,6 +400,10 @@ class MiApp(QtWidgets.QMainWindow):
         Esta función filtra datos de un DataFrame y crea una tabla para mostrarlos en una interfaz gráfica.
         :return: La función no devuelve nada explícitamente, pero puede devolver Ninguno si hay un error.
         """
+        #filtro revisa que exista la variable y que no sea ninguna busqueda inexistente
+        #x: guarda las columnas del dataframe
+        #y: guarda las filas del dataframe
+        # Hace dos for concatenados de i, j para ir asignando las filas y columnas al Qtable
         self.variable =""
         try:
             self.variable=self.ui.lineEdit_buscar.text()#*Toma lo que se ingrese en el LineEdit y lo pasa como texto almacenandolo en una variable
@@ -465,14 +498,14 @@ class MiApp(QtWidgets.QMainWindow):
                 if dato2 == 'nan':#*Revisa si hay algun dato vacio y si es asi colocarlo en blanco
                     dato2=''
                 self.ui.tabla2.setItem(ii,jj,QTableWidgetItem(dato2))#*Inserta posicion a posicion en el tableWidget          
-    def control_bt_minimizar(self):#*Función para minimizar el programa
+    def control_bt_minimizar(self):
         """
         Esta función minimiza la ventana del programa.
         """
         self.showMinimized()
       
 
-    def control_close(self):#*Función para cerrar el programa
+    def control_close(self):
         """
         La función "control_close" cierra el programa.
         """
@@ -512,6 +545,8 @@ class MiApp(QtWidgets.QMainWindow):
               self.showNormal()    
   
     def upload_file(self):
+        #ad: cuando se presione el botón, llamara a la Clase Ui_ADVERTENCIA.
+        #Muestra en pantalla esa ventana
         self.ad=Ui_ADVERTENCIA()
         self.ad.show()
         
@@ -523,6 +558,7 @@ class MiApp(QtWidgets.QMainWindow):
 # El código anterior es un fragmento de código de Python que establece el valor de algunas variables y
 # crea un nuevo objeto ClientContext. Luego ejecuta una consulta sobre el contexto e imprime el valor
 # de una variable. Finalmente, establece el valor de dos variables más en False y 0 respectivamente.
+# url2 manda una cadena sin sentido como url para que no pueda mandar ninguna petición y detener el envio de datos
 
         self.index_stop=self.saved_index
         self.count3=self.count2
@@ -535,11 +571,13 @@ class MiApp(QtWidgets.QMainWindow):
         self.c_up=0
         
     def seleccion_archivo(self):
+        #seleccion: Almacena el valor que se seleccione del comboBox
         seleccion=self.ui.comboBox.itemText(self.ui.comboBox.currentIndex())
         print(seleccion)   
         return seleccion
     
     def seleccion_archivo_2(self):
+        #seleccion_2: Almacena el valor que se seleccione del comboBox
         self.seleccion_2=self.ui.comboBox2.itemText(self.ui.comboBox2.currentIndex())
         print(self.seleccion_2)   
         return self.seleccion_2    
@@ -548,7 +586,11 @@ class MiApp(QtWidgets.QMainWindow):
         """
         Esta función descarga una lista específica y la guarda en una carpeta específica.
         """
-
+        #LIST_NAME: Extrae del LineEdit el nombre de la lista el cual se va a descargar
+        #FILE_NAME: Del nombre que se seleccione del comboBox se guardara una lista con ese nombre
+        #De la ruta guardada, se extraera del archivo .env, la ruta en la cual se va a guardar el archivo descargado
+        #Crear un hilo para ejecutar los procesos en paralelo de la función de descarga de las listas y la interfaz grafica
+        #hay un QMssageBox para saber en que momento finalizo la descarga
         LIST_NAME=self.ui.lineEdit_descargar_lista.text()
         FILE_NAME=self.seleccion_archivo()
         FOLDER_DEST=env["path_list_download"]
@@ -583,8 +625,8 @@ class MiApp(QtWidgets.QMainWindow):
         Esta función busca archivos específicos en un directorio determinado y devuelve sus datos como
         marcos de datos de pandas.
         
-        :param name_files: Una lista de nombres de archivos para buscar en los directorios dados
-        :param ruta_de_busqueda: Las rutas de directorio donde la función buscará los archivos
+        :name_files: Una lista de nombres de archivos para buscar en los directorios dados
+        :ruta_de_busqueda: Las rutas de directorio donde la función buscará los archivos
         :return: un diccionario de marcos de datos de pandas, donde las claves son una combinación del
         nombre de la hoja (si se proporciona) y el nombre del archivo donde se obtuvo el marco de datos.
             """
@@ -918,6 +960,8 @@ class MiApp(QtWidgets.QMainWindow):
         Esta función establece una nueva ruta de descarga para una lista de archivos y la guarda en un
         archivo .env.
         """
+        #Revisa que el nombre del archivo en el LineEdit no este vacio y si es asi lo guarde como ya estaba guardado
+        # y si tiene algo nuevo lo guarde en el archivo y lo tome como la nueva ruta
         path_list = self.ui.lineEdit_Path_lists.text()
         # Obtenemos el valor anterior de path_list_download del archivo .env
         old_path_list_download = env.get('path_list_download', '')
@@ -944,6 +988,8 @@ class MiApp(QtWidgets.QMainWindow):
         print(f"FOLDER_DEST==>{self.FOLDER_DEST}")
 
     def save_parameters_url_sharepoint(self):
+        #Revisa que el nombre del archivo en el LineEdit no este vacio y si es asi lo guarde como ya estaba guardado
+        # y si tiene algo nuevo lo guarde en el archivo y lo tome como la nueva ruta
         path_Sharepoint=self.ui.lineEdit_site_Sharepoint.text()
         old_path_path_sharepoint = env.get('sharepoint_url_site', '')
 
@@ -969,6 +1015,8 @@ class MiApp(QtWidgets.QMainWindow):
 
 
     def save_parameters_name_folder_Sharepoint(self):
+        #Revisa que el nombre del archivo en el LineEdit no este vacio y si es asi lo guarde como ya estaba guardado
+        # y si tiene algo nuevo lo guarde en el archivo y lo tome como la nueva ruta
         folder_Sharepoint=self.ui.lineEdit_folder_subir_archivo.text()
         old_path_name_folder=env.get('sharepoint_name_folder', '')
         if folder_Sharepoint=='':

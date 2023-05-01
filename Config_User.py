@@ -14,7 +14,7 @@ class ConfigUsuarioView(QDialog):
         self.generar_formulario()
 
     def generar_formulario(self):
-
+        #SetEchoMode coloca el lineEdit el texto en puntos
         self.ui.lineEdit_2.setEchoMode(
             QLineEdit.EchoMode.Password
         )
@@ -28,6 +28,8 @@ class ConfigUsuarioView(QDialog):
         self.ui.Close_button.clicked.connect(self.cancelar)
 
     def mostrar_pass(self,clicked):
+                  #Si presiona muestra el texto en el LineEdit
+                  #en lo contrario volvera a mostrar puntos
                   if clicked:
                     self.ui.lineEdit_2.setEchoMode(
                         QLineEdit.EchoMode.Normal
@@ -46,12 +48,18 @@ class ConfigUsuarioView(QDialog):
         self.close()
     
     def configurar_usuario(self):
+        #user_path: Archivo usuarios.txt, donde se almacenan los usuarios y contraseñas de los registros
+        #usuario: Guarda en texto lo que se escriba en el LineEdit para el usuario
+        #password1: Guarda en texto lo que se escriba en el LineEdit para comparar la contraseña
+        #password2: Guarda en texto lo que se escriba en el LineEdit para comparar la contraseña
         user_path='usuarios.txt'
         usuario=self.ui.lineEdit.text()
         password1=self.ui.lineEdit_2.text()
         password2=self.ui.lineEdit_3.text()
     
-
+        #Realiza la comparacion entre si alguno de los parametros esta vacios o si el password1 y password2 
+        # son diferentes, muestren mensajes de error y si no es asi, escriba en el archivo de texto 
+        # los parametros registrados.
         if password1 == '' or password2 == '' or usuario=='':
             QMessageBox.warning(self,'Error','Por favor ingrese datos validos',
                                 QMessageBox.StandardButton.Close,
@@ -73,3 +81,4 @@ class ConfigUsuarioView(QDialog):
                                 QMessageBox.StandardButton.Close)   
 
 
+ 

@@ -11,6 +11,8 @@ import os
 import ssl
 from openpyxl import load_workbook
 def Type_file(file_name,export_type):
+    #Dependiendo del tipo de archivo que se coloque va a a añadir la estensión
+    #mas el nombre que le entra como parametro
     if export_type == 'Excel':
         file_name_export='.'.join([file_name,'xlsx']) 
     elif export_type == 'CSV':
@@ -21,6 +23,7 @@ def Type_file(file_name,export_type):
 
 
 def download_list(list_name,export_type,dir_path,file_name):
+    #Llama con un hilo la función save_Execel para ejecutar en segundo plano
     ssl._create_default_https_context=ssl._create_unverified_context 
     sp_list=SharePoint().get_list(list_name)
 
@@ -83,6 +86,8 @@ def read_excel_to_dataframe(file_path,file_name):
     headers = next(data)
     # Crear el DataFrame con la data y las cabeceras de columna
     df = pd.DataFrame(data, columns=headers)
+    #Revisa el nombre del archivo que este, y mira en el las cabeceras, 
+    # si coincide uno u otro filtra el archivo, para solo obtener lo necesario
     if "Elija nombre del archivo" in file_name:#!COS_TERMINAR CUANDO SE SEPAREN LOS ARCHIVOS EN LA DESCARGA
         cont1=0
         print("a")

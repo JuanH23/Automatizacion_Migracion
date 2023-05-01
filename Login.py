@@ -48,6 +48,13 @@ class Login(QWidget):
                     )          
                   
         def login(self):
+                  #users: es una lista en la cual se va a aplicar la funcion .append para 
+                  # agregar los registros que se hagan
+                  #username:guarda los valores del LineEdit para guardarlos en el .env 
+                  # y ademas de revisar si el texto digitado esta en el archivo de texto
+                  #password:guarda los valores del LineEdit para guardarlos en el .env 
+                  # y ademas de revisar si el texto digitado esta en el archivo de texto
+
                   users=[]
                   user_path='usuarios.txt'
 

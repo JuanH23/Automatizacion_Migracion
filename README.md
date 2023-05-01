@@ -9,9 +9,9 @@
 
 
 **Table of Contents**
-##Índice
 
-*[Features](#Features)
+
+*[Descripción del proyecto](#Descripción-del-proyecto)
 
 *[Tecnologías](#Tecnología_utilizadas)
 
@@ -22,23 +22,24 @@
 *[Archivos del proyecto](#Archivos-del-proyecto)
 
 * [config.py](#config.py)
-
-*[Características de la aplicación y demostración](#Características-de-la-aplicación-y-demostración)
-
-*[Acceso al proyecto](#acceso-proyecto)
-
-*[Tecnologías utilizadas](#tecnologías-utilizadas)
-
-*[Personas Contribuyentes](#personas-contribuyentes)
-
-*[Personas-Desarrolladores del Proyecto](#personas-desarrolladores)
-
-* [Licencia](#licencia)
-
-*[Editor.md](# Editor.md)
+* [Config_User.py](#Config_User.py)
+* [download_list.py](#download_list.py)
+* [Advertencia.py](#Advertencia.py)
+* [Login_Final.py](#Login_Final.py)
+* [Login.py](#Login.py)
+* [search_files.py](#search_files.py)
+* [Upload_Files.py](#Upload_Files.py)
 
 
 
+
+
+### Descripción-del-proyecto
+Este es un proyecto realizado con Python, el cual permite realizar subida de archivos Excel a listas de Sharepoint, descarga de listas de Sharepoint, esto con el fin de tener actualizada información acerca de los nodos que se estan utilizando y cuales estan disponibles para poder reemplazarlos a Remote PHY, en donde se tiene un apartado de filtrado de información, el cual se busca un nodo en especifíco y este va a generar un filtrado del nodo en caso de que este libre, con la respectiva información de los puertos DAAS y COS disponibles que se puedan utilzar mostrandolos en la UI.
+
+ A su vez dependiendo del tipo de nodo que sea escogido, ya sea 1 x 2 ó 2 x 4, va a generar automaticamente un formato con el diseño del nodo, guardandose en una carpeta, permitiendo con un botón, subir todos los archivos a una carpeta de SharPoint.
+
+Esto con el fin de optimizar tiempos al momento de actualizar la información de los nodos de la tecnología Arris y Casa, y los puertos disponibles que se pueden utilizar de los COS y DAAS, reduciendo los tiempos para generar los formatos de los diseños de nodos que se requieran.
 ### Tecnología_utilizadas 
 - python 3.19
 
@@ -76,7 +77,59 @@ Este archivo contiene una clase llamada Ui_config, la cual tiene la codificació
 - lineEdit_3: Espacio para confirmar el password
 - Login_button: Botón para guardar las configuraciones
 - checkBox: Caja para visualizar el contenido de los password 
-###Characters
+## Config_User.py
+Este archivo contiene una clase llamada ConfigUsuarioView, la cual tiene la codificación del funcionamiento de la interfaz gráfica, este archivo esta dividido en varias funciones:
+- __init__(self): Esta función inicializa y coloca parametros escenciales 
+- generar_formulario(self): Esta función, se configuran los botones y checkBox de la UI
+- mostrar_pass(self,clicked): Esta función le entra como parametro si fue presionado o no el checkbox, mostrando o no el texto que se introduce.
+- cancelar(self): cierra la ventana
+- configurar_usuario(self): Hace la comparación de los campos que se requieren para registrar o mostrar un mensaje de error.
+## download_list.py
+Este archivo contiene varias funciones, que le permite descargar una lista en especifíco de Sharepoint:
+- Type_file(file_name,export_type): Esta función revisa el tipo de archivo que se predetermine y dependiendo si es uno u otro, adjunto esa extesión mas el nombre de archivo que recibe como parametro.
+- download_list(list_name,export_type,dir_path,file_name): Esta función, 
+Dependiendo del tipo de archivo que sea, va ejecutar la función para guardar un archivo Excel ó CSV.
+- mostrar_pass(self,clicked): Esta función le entra como parametro si fue presionado o no el checkbox, mostrando o no el texto que se introduce.
+- save_Execel(list_items,dir_path,file_name): Esta función, de los datos obtenidos de la lista de SharePoint que se quiere descargar, va a comenzar a escribir en un archivo Excel los datos, ademas de revisar cada uno de los archivos para que filtre y solo se obtenga el archivo con la información necesaria.
+## Advertencia.py
+Este archivo contiene una clase llamada Ui_ADVERTENCIA, el cual contiene todas los parametros de la UI, además de funciones que realiza los botones que contiene:
+
+- self.label: Contiene un mensaje que se muestra en la ventana emergente.
+- self.pushButton: Ejecuta la función para subir los archivos de los Diseños
+- self.pushButton_2: Cierra la ventana emergente y no realiza ninguna subida de archivos
+- upload_file(self): Esta función,llama del archivo Upload_Files.py la función upload_files, para subir los archivos de los diseños a una carpeta del SharPoint.
+- no(self): Cierra la ventana
+## Login_Final.py
+Este archivo contiene una clase llamada Ui_Form, la cual tiene la codificación de toda la interfaz gráfica de la ventana de inicio del programa, donde estan los siguientes componentes:
+- label4: Texto de inicio de usuario
+- lineEdit: Espacio para registrar usuario
+- lineEdit_2: Espacio para registrar el password
+- Login_button: Botón para guardar realizar el Login
+- checkBox: Caja para visualizar el contenido de los password
+- Config_button: Botón para entrar a la ventana de configuración de usuario.
+## Login.py
+Este archivo contiene una clase llamada Login, la cual tiene la codificación del funcionamiento de la interfaz gráfica, este archivo esta dividido en varias funciones:
+- __init__(self): Esta función inicializa y coloca parametros escenciales 
+- generar_formulario(self): Esta función, se configuran los botones y checkBox de la UI
+- mostrar_pass(self,clicked): Esta función le entra como parametro si fue presionado o no el checkbox, mostrando o no el texto que se introduce.
+- control_close(self): cierra la ventana
+- login(self):revisa si en el archivo de users esta los nombres registrados.
+- open_main(self): Abre el programa principal
+- config_usuario(self): Abre la ventana de configuración de usuario
+## search_files.py
+Este archivo contiene una clase llamada Search, la cual esta en un archivo aparte para ejecutarse en paralelo y no congelar la UI.
+- buscar_archivo(self,name_file,ruta):Esta función, busca los archivos con los nombres que estan en una lista y ademas que tengan la extensión ".xlsx"
+## Upload_Files.py
+Este archivo tiene funciones las cuales permiten realizar una subida de archivos de una carpeta del PC, a una carpeta de SharePoint.
+- upload_files(folder,keyword=None):Esta función carga archivos en una carpeta de SharePoint en función de una palabra clave específica o de todos los archivos de una carpeta.
+    filtrar los archivos que se cargan en función de una palabra clave específica. Si se proporciona una palabra clave, solo se cargarán los archivos que contengan la palabra clave en su nombre de archivo.
+    Si no se proporciona ninguna palabra clave o si la palabra clave se establece en 'Ninguna', todos
+    los archivos.
+- get_list_of_files(folder): Esta función toma la ruta de una carpeta como entrada y devuelve una   lista de archivos dentro de esa carpeta junto con sus rutas completas.
+- get_file_content(file_path): Esta función lee el contenido de un archivo en modo binario y lo devuelve.
+
+
+
                 
 ----
 

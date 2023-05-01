@@ -13,9 +13,9 @@
 
 *[Features](#Features)
 
-*[Tecnologías](#Tecnología utilizadas )
+*[Tecnologías](#Tecnología_utilizadas)
 
-*[Librerias](#Librerias utilizadas)
+*[Librerias](#Librerias_utilizadas)
 
 *[Instalación_librerias](#Para instalar las librerias)
 
@@ -37,10 +37,10 @@
 
 
 
-### Tecnología utilizadas 
+### Tecnología_utilizadas 
 - python 3.19
 
-### Librerias utilizadas   
+### Librerias_utilizadas   
 
 - Office365-REST-Python-Client==2.3.13
 - openpyxl==3.0.10

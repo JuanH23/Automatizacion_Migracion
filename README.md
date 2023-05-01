@@ -11,13 +11,13 @@
 **Table of Contents**
 ##Índice
 
-*[H1 Header (Underline)](#H1 Header (Underline))
-
-*[H1 Header (Underline)](#insignias)
-
 *[Features](#Features)
 
-*[Descripción del proyecto](#descripción-del-proyecto)
+*[Tecnologías](#Tecnología utilizadas )
+
+*[Librerias](#Librerias utilizadas)
+
+*[Instalación_librerias](#Para instalar las librerias)
 
 *[Estado del proyecto](#Estado-del-proyecto)
 
@@ -59,13 +59,13 @@
 # Para instalar las librerias
 1. Ir al cmd o terminal del editor
 2. Posicionarse en la ruta de la carpeta del proyeto
-3. Crear un entorno virtual `$ python -m venv env`
-4. Activar el entorno virtual `$ env\Scripts\activate.bat`
-5. Instalar las librerias `$ pip install -r requiriments_f.txt`
+3. Crear un entorno virtual ` python -m venv env`
+4. Activar el entorno virtual ` env\Scripts\activate.bat`
+5. Instalar las librerias ` pip install -r requiriments_f.txt`
 
 =============
 
-H2 Header (Underline)
+
 -------------
 
 ###Characters

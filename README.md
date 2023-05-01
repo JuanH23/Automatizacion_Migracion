@@ -41,32 +41,10 @@
 - python 3.19
 
 ### Librerias utilizadas (Underline)   
-- certifi==2022.6.15
-- cffi==1.15.1
-- charset-normalizer==2.1.0
-- click==7.1.2
-- contourpy==1.0.7
-- cryptography==37.0.4
-- cycler==0.11.0
-- django-environ==0.9.0
-- et-xmlfile==1.1.0
-- fonttools==4.39.2
-- idna==3.3
-- importlib-resources==5.12.0
-- Jinja2==3.1.2
-- kiwisolver==1.4.4
-- MarkupSafe==2.1.2
-- matplotlib==3.7.1
-- msal==1.18.0
-- numpy==1.24.2
+
 - Office365-REST-Python-Client==2.3.13
 - openpyxl==3.0.10
-- packaging==23.0
 - pandas==1.5.3
-- Pillow==9.4.0
-- pycparser==2.21
-- PyJWT==2.4.0
-- pyparsing==3.0.9
 - PyQt5==5.15.4
 - pyqt5-plugins==5.15.4.2.2
 - PyQt5-Qt5==5.15.2
@@ -75,14 +53,15 @@
 - PySide2==5.15.2.1
 - python-dateutil==2.8.2
 - python-dotenv==0.21.1
-- pytz==2022.1
 - qt5-applications==5.15.2.2.2
 - requests==2.28.1
-- shiboken2==5.15.2.1
-- six==1.16.0
-- urllib3==1.26.10
-- zipp==3.15.0
-
+----
+**Para instalar las librerias**
+**1.** Ir al cmd o terminal del editor
+**2.** Posicionarse en la ruta de la carpeta del proyeto
+**3.** Crear un entorno virtual `$ python -m venv env`
+**4.** Activar el entorno virtual `$ env\Scripts\activate.bat`
+**5.** Instalar las librerias `$ pip install -r requiriments_f.txt`
 H1 Header (Underline)
 =============
 

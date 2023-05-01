@@ -11,7 +11,7 @@
 **Table of Contents**
 ##Índice
 
-*[Characters](#Characters)
+*[H3 header](#H3 header)
 
 *[Insignias](#insignias)
 

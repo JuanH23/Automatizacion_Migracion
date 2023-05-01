@@ -37,10 +37,10 @@
 
 
 
-### Tecnología utilizadas (Underline)
+### Tecnología utilizadas 
 - python 3.19
 
-### Librerias utilizadas (Underline)   
+### Librerias utilizadas   
 
 - Office365-REST-Python-Client==2.3.13
 - openpyxl==3.0.10
@@ -56,13 +56,13 @@
 - qt5-applications==5.15.2.2.2
 - requests==2.28.1
 ----
-**Para instalar las librerias**
-**1.** Ir al cmd o terminal del editor
-**2.** Posicionarse en la ruta de la carpeta del proyeto
-**3.** Crear un entorno virtual `$ python -m venv env`
-**4.** Activar el entorno virtual `$ env\Scripts\activate.bat`
-**5.** Instalar las librerias `$ pip install -r requiriments_f.txt`
-H1 Header (Underline)
+# Para instalar las librerias
+1. Ir al cmd o terminal del editor
+2. Posicionarse en la ruta de la carpeta del proyeto
+3. Crear un entorno virtual `$ python -m venv env`
+4. Activar el entorno virtual `$ env\Scripts\activate.bat`
+5. Instalar las librerias `$ pip install -r requiriments_f.txt`
+
 =============
 
 H2 Header (Underline)

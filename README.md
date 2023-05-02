@@ -21,7 +21,7 @@
 
 *[Archivos del proyecto](#Archivos-del-proyecto)
 
-* [config.py](#config.py)
+* [config.py](#config)
 * [Config_User.py](#Config_User.py)
 * [download_list.py](#download_list.py)
 * [Advertencia.py](#Advertencia.py)
@@ -69,7 +69,7 @@ Esto con el fin de optimizar tiempos al momento de actualizar la información de
 
 -------------
 # Archivos-del-proyecto
-## config.py
+## config
 Este archivo contiene una clase llamada Ui_config, la cual tiene la codificación de toda la interfaz gráfica de la ventana de registro del programa, donde estan los siguientes componentes:
 - label4: Texto de registro de usuario
 - lineEdit: Espacio para registrar usuario

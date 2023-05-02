@@ -62,14 +62,14 @@ ctx=ClientContext(url).with_credentials(
 #ctx = ClientContext(url).with_credentials(UserCredential(username,password))
 ctx.clear
         #############################################################################
-list_title ="Arris_4"##!NOMBRE LISTA
+list_title ="DAAS"##!NOMBRE LISTA
 print(list_title)
 Sp_list = ctx.web.lists.get_by_title(list_title)#*Acceder a la lista
       
 print(Sp_list)
 ctx.load(Sp_list)
 ctx.execute_query()
-excel_file = "descarga/Arris_SCMSummary.xlsx"##!PATH
+excel_file = "descarga/Ocupacion - Marcacion RPHY Harmonic.xlsx"##!PATH
 data={}
 chunk=0
 while process==True:
@@ -87,7 +87,7 @@ while process==True:
                 for header in headers:
                     if header in cabeceras:
                         cont1+=1
-                        if cont1==4:
+                        if cont1==10:
                             file_2=file.loc[:,['CMTS','S/CG/CH','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
                             file_2=file_2.rename(columns={"S/CG/CH":"Up"})
                             file_2[['Up','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']] = file_2[['Up','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
@@ -108,42 +108,47 @@ while process==True:
                 for header in headers:
                     if header in cabeceras:
                         cont2+=1
-                        if cont2==4:
+                        if cont2==10:
                             file_2=file.loc[:,['CMTS','Upstream','Total','Active','Registered','Secondary','offline','Bonding','Non_Bonding','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
                             file_2[['Upstream','Total','Description','Active','Registered','Secondary','offline','Bonding','Non_Bonding']] = file_2[['Upstream','Total','Description','Active','Registered','Secondary','offline','Bonding','Non_Bonding']].astype(str)#*Convierte los valores de estas columnas a tipo str
                             data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
                             flag=2
-    elif "Ocupacion- RPHY Harmonic_DAAS" in excel_file :
-                df = pd.read_excel(excel_file,engine='openpyxl')
-                file=pd.DataFrame(df)
-                cont3=0
-                print("c")
-                cabeceras=list(file.columns)
-                headers=['IP','Dispositivo','Puerto','status','Unnamed: 4','Unnamed: 5']
-                file_2=file_2.rename(columns={"Unnamed: 4":"status_2","Unnamed: 5":"ptp"})
-                for header in headers:
-                    if header in cabeceras:
-                        cont3+=1
-                        if cont3==4:
-                            file_2=file.loc[:,['IP','Dispositivo','Puerto','status','status_2','ptp']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
-                            file_2[['IP','Dispositivo','Puerto','status','status_2','ptp']] = file_2[['IP','Dispositivo','Puerto','status','status_2','ptp']].astype(str)#*Convierte los valores de estas columnas a tipo str
-                            data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
-                            flag=3
-    elif "Ocupacion-Harmonic_COS" in excel_file :
-                df = pd.read_excel(excel_file,engine='openpyxl')
+    elif ("Ocupacion - Marcacion RPHY Harmonic" in excel_file) and ("COS" in list_title)  :
+                df = pd.read_excel(excel_file,sheet_name='Hoja5',engine='openpyxl')
                 file=pd.DataFrame(df)
                 cont4=0
                 print("d")
                 cabeceras=list(file.columns)
-                headers=['IP','Dispositivo','Puerto','ID','moka','status','ptp']
+                headers=['IP','Dispositivo','Puerto','moka','status','ptp']
                 for header in headers:
                     if header in cabeceras:
                         cont4+=1
-                if cont4==4:
-                    file_2=file.loc[:,['IP','Dispositivo','Puerto','ID','moka','status','ptp']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
-                    file_2[['IP','Dispositivo','Puerto','ID','moka','status','ptp']] = file_2[['IP','Dispositivo','Puerto','ID','moka','status','ptp']].astype(str)#*Convierte los valores de estas columnas a tipo str
+                if cont4==6:
+                    print(cont4)
+                    file_2=file.loc[:,['IP','Dispositivo','Puerto','moka','status','ptp']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+                    file_2[['IP','Dispositivo','Puerto','moka','status','ptp']] = file_2[['IP','Dispositivo','Puerto','moka','status','ptp']].astype(str)#*Convierte los valores de estas columnas a tipo str
                     data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
                     flag=4 
+    elif ("Ocupacion - Marcacion RPHY Harmonic" in excel_file) and ("DAAS" in list_title) :
+                df = pd.read_excel(excel_file,sheet_name='Hoja2',engine='openpyxl')
+                file=pd.DataFrame(df)
+                cont3=0
+                print("c")
+                
+                cabeceras=list(file.columns)
+                headers=['IP','Dispositivo','Puerto','status','Unnamed: 4','Unnamed: 5']        
+                for header in headers:
+                    if header in cabeceras:
+                        cont3+=1
+                        if cont3==6:
+                            
+                            file_2=file.loc[:,['IP','Dispositivo','Puerto','status','Unnamed: 4','Unnamed: 5']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+                            file_2=file.rename(columns={"Unnamed: 4":"stat2","Unnamed: 5":"ptp"})
+                            file_2[['IP','Dispositivo','Puerto','status','stat2','ptp']] = file_2[['IP','Dispositivo','Puerto','status','stat2','ptp']].astype(str)#*Convierte los valores de estas columnas a tipo str
+                            print(file_2)
+                            data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
+                            flag=3
+
 
     # El código anterior es un script de Python que inserta datos en una lista de SharePoint mediante la
     # API REST de SharePoint. Incluye manejo de errores para errores HTTP y otras excepciones que pueden
@@ -192,12 +197,12 @@ while process==True:
                             elif flag==2:
                                 item_pro = {'CMTS': d['CMTS'],'Upstream':d['Upstream'],'Total': d['Total'],'Active':d['Active'],'Registered':d['Registered'],'Secondary':d['Secondary'],'offline':d['offline'],'Bonding':d['Bonding'],'Non_Bonding':d['Non_Bonding'], 'Description': d['Description']}                              
                             elif flag==3:
-                                item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'],'status':d['status'],'status_2':d['status_2'], 'ptp': d['ptp']}  
+                                item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'],'status':d['status'],'stat2':d['stat2'],'ptp':d['ptp']}  
                             elif flag==4:
-                                item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'],'ID':d['ID'],'moka':d['moka'],'status':d['status'], 'ptp': d['ptp']}      
+                                item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'],'moka':d['moka'],'status':d['status'], 'ptp': d['ptp'],}      
                             c=c+1
                             item_properties=item_pro
-
+                            
                             for i in range(max_attempts):
     # El código anterior es un bloque de código de Python que intenta agregar elementos a una lista de
     # SharePoint mediante la API REST de SharePoint. Incluye manejo de errores para errores HTTP y otras
@@ -277,7 +282,7 @@ while process==True:
     except (requests.exceptions.ConnectionError, requests.exceptions.ChunkedEncodingError) as e:
                     print("No hay conexión a internet. Esperando...")
                     time.sleep(5)  # Esperar 5 segundos antes de volver a intentar
-                    break
+                    
                     continue # Volver al inicio del bucle while
     except Exception as e:
 
@@ -286,8 +291,9 @@ while process==True:
                     print(f"Error al Agregar el elemento a la lista #{c} error: {e}")
                     print("Reintentando en 5 segundo...")
                     time.sleep(5)
+                    continue
                     if attempt_count >= max_attempts:
                         print("Se han excedido el número máximo de intentos. Saliendo del programa...")
-                    break
+                    
                     continue
                     

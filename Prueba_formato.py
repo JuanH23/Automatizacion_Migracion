@@ -16,7 +16,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     env=dotenv_values(".env")
     ruth_list_download= env["path_list_download"]
     ruta_nueva_carpeta = ruth_list_download + "/Diseños_NODOS"
-    set_key(".env","path_files_upload",ruta_nueva_carpeta)
+    
     file_name=""  
     os.makedirs(ruta_nueva_carpeta, exist_ok=True)
     if type_node == "1 x 2":
@@ -38,7 +38,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     ################################################################
     
     df.to_excel(archivo_excel,sheet_name='Hoja1' ,index=False)
-
+    set_key(".env", "path_files_upload", ruta_nueva_carpeta)
     ################################################################
     hoja = archivo_excel.sheets['Hoja1']
     # Obtener el libro de trabajo y la hoja

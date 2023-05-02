@@ -9,8 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
-
+from PyQt5.QtCore import Qt, QMetaType
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -273,9 +272,10 @@ class Ui_MainWindow(object):
 "}\n"
 "QHeaderView::section { background-color: gray; color: white; }\n"
 "QTableView::item:selected { background-color: blue; color: white;    }")
-        self.tabla.setObjectName("tableView")
+        self.tabla.setObjectName("tabla")
         self.tabla.setColumnCount(0)
         self.tabla.setRowCount(0)
+
         #############
         self.tabla2 = QtWidgets.QTableWidget(self.page_tres)
         self.tabla2.setGeometry(QtCore.QRect(320, 420, 280, 180))
@@ -286,7 +286,7 @@ class Ui_MainWindow(object):
 "}\n"
 "QHeaderView::section { background-color: gray; color: white; }\n"
 "QTableView::item:selected { background-color: blue; color: white;    }")
-        self.tabla2.setObjectName("tableView")
+        self.tabla2.setObjectName("tabla2s")
         self.tabla2.setColumnCount(0)
         self.tabla2.setRowCount(0)        
         #############

@@ -103,7 +103,7 @@ class MiApp(QtWidgets.QMainWindow):
         self.continuar_subida=True
         self.update_progressBar.connect(self.ui.progressBar_2.setValue)
         self.FOLDER_DEST=""
-        
+        self.sch=0
         self.ruta_de_busqueda=[]
         self.seleccion_2=""
     def update_progress_bar_Slot(self,value):
@@ -388,16 +388,22 @@ class MiApp(QtWidgets.QMainWindow):
         -La tabla del despues del COS, llamando a la función crear_despues_COS 
         -La tabla del DAAS, llamando a la función crear_despues_DAAS 
         """
-        try:
-            tabla_thread = threading.Thread(target=self.crear_tabla)
-            tabla_thread.start()
-            despues_DAAS_thread=threading.Thread(target=self.crear_despues_COS)
-            despues_DAAS_thread.start()
-            despues_COS_thread=threading.Thread(target=self.crear_despues_DAAS)
-            despues_COS_thread.start()
-        except NameError as e:
-            print(e)    
+        if self.sch==1:
+            try:
+                tabla_thread = threading.Thread(target=self.crear_tabla)
+                tabla_thread.start()
+                despues_DAAS_thread=threading.Thread(target=self.crear_despues_COS)
+                despues_DAAS_thread.start()
+                despues_COS_thread=threading.Thread(target=self.crear_despues_DAAS)
+                despues_COS_thread.start()
+            except NameError as e:
+                print(e)  
+        else:
 
+                QMessageBox.warning(self,"Advertencia",
+                "Por favor presione primero el botón de buscar archivos",
+                QMessageBox.StandardButton.Close,
+                QMessageBox.StandardButton.Close)               
     def crear_tabla(self):#*Esta función filtra los datos del Dataframe requeridos y hace la tabla para mostrarla en la interfaz grafica
         """
         Esta función filtra datos de un DataFrame y crea una tabla para mostrarlos en una interfaz gráfica.
@@ -602,10 +608,10 @@ class MiApp(QtWidgets.QMainWindow):
         file_name= download_lists.Type_file(FILE_NAME,EXPORT_TYPE)
         downloader_thread = threading.Thread(target=download_lists.download_list(LIST_NAME,EXPORT_TYPE,FOLDER_DEST,file_name))
         downloader_thread.start()
-        msg_box = QMessageBox()
-        msg_box.setText("La operación se ha completado correctamente")
-        msg_box.setStandardButtons(QMessageBox.Ok)
-        msg_box.exec_()
+        QMessageBox.information(self,"OPERACION",
+        "La operación se ha completado correctamente",
+        QMessageBox.StandardButton.Ok,
+        QMessageBox.StandardButton.Ok)
     def upload_LIST(self):
         """
         La función crea un hilo para cargar una lista y establece una variable en 1.
@@ -705,266 +711,276 @@ class MiApp(QtWidgets.QMainWindow):
                 print(f"file_despues_DAAS==>{self.file_despues_DAAS}")
                 print(f"file_depues_COS==>{self.file_despues_COS}")
                 print(f"file_casa==>{self.file_casa}")
-                msg_box = QMessageBox()
-                msg_box.setText("La operación se ha completado correctamente")
-                msg_box.setStandardButtons(QMessageBox.Ok)
-                msg_box.exec_()
+                self.sch=1
+                QMessageBox.information(self,"OPERACION",
+                "La operación se ha completado correctamente",
+                QMessageBox.StandardButton.Ok,
+                QMessageBox.StandardButton.Ok)
          except KeyError as e:
                 print(f"Error:{e}")  
 ##########################################################################################
 
     def subir_list(self):
-        """
-        Esta función carga datos de un archivo de Excel a una lista de SharePoint, maneja interrupciones y
-        desconexiones y vuelve a intentar intentos fallidos.
-        """
 
+        """
+                Esta función carga datos de un archivo de Excel a una lista de SharePoint, maneja interrupciones y
+                desconexiones y vuelve a intentar intentos fallidos.
+        """
+        process=True
         self.continuar_subida=True
         self.count2=0
-        self.flag=1
-        self.index_saved=False
+        flag=1
+        index_saved=False
         self.saved_index=0
         c=0
         count=0
         chunksize=1000#Cantidad de datos que va a recorrer del Dataframe, es decir va a coger x cantidad de datos y va a realizar todo el proceso con los datos y luego toam otra x cantidad de datos 
-        last_index = 0 # índice del último elemento agregado
+        self.last_index = 0 # índice del último elemento agregado
         commit_count=0
         commit_interval=50#cantidad de datos que manda por cada paquete
-        # Manejar interrupciones y desconexiones, guardar el índice del último elemento agregado antes de la interrupción o desconexión
-        #######################################################################################
-        self.last_saved_index = 0
+                # Manejar interrupciones y desconexiones, guardar el índice del último elemento agregado antes de la interrupción o desconexión
+                #######################################################################################
+        last_saved_index = 0
         max_attempts = 5 #Maxima cantidad de intentos que va a realizar el programa antes de acabarse
         attempt_count = 0
         total_items=0
-        auth_context = AuthenticationContext(url)
-        auth_context.acquire_token_for_user(username, password)
-        #############################################################################
-        ssl._create_default_https_context=ssl._create_unverified_context #*Quita la seguridad de número exedido de subida de datos
-        self.ctx = ClientContext(url).with_credentials(UserCredential(username,password))
+        #auth_context = AuthenticationContext(url)
+        #auth_context.acquire_token_for_user(username, password)
+        ssl._create_default_https_context=ssl._create_unverified_context
+        self.ctx=ClientContext(url).with_credentials(
+                    UserCredential(
+                        username,
+                        password
+                    )
+                )
+                #############################################################################
+        #ssl._create_default_https_context=ssl._create_unverified_context #*Quita la seguridad de número exedido de subida de datos
+        #ctx = ClientContext(url).with_credentials(UserCredential(username,password))
         self.ctx.clear
-        #############################################################################
-        list_title =self.ui.lineEdit_buscar_2.text()
+                #############################################################################
+        list_title =self.ui.lineEdit_buscar_2.text()##!NOMBRE LISTA
         print(list_title)
         Sp_list = self.ctx.web.lists.get_by_title(list_title)#*Acceder a la lista
-        
+            
         print(Sp_list)
         self.ctx.load(Sp_list)
         self.ctx.execute_query()
-        excel_file = self.direccion
+        excel_file = self.direccion##!PATH
         data={}
         chunk=0
+        while process==True:
+        # El código verifica si el archivo de Excel de entrada contiene hojas específicas con ciertos
+        # encabezados de columna. Si encuentra una hoja con los encabezados requeridos, filtra las columnas,
+        # convierte los valores al tipo de cadena y convierte el marco de datos resultante en un diccionario.
+        # La variable indicadora se establece en un valor específico según la hoja que se haya encontrado.
+            if "Arris_SCMSummary" in excel_file:
+                        df = pd.read_excel(excel_file)
+                        file=pd.DataFrame(df)
+                        cont1=0
+                        print("a")
+                        cabeceras=list(file.columns)
+                        headers=['CMTS','S/CG/CH','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']
+                        for header in headers:
+                            if header in cabeceras:
+                                cont1+=1
+                                if cont1==4:
+                                    file_2=file.loc[:,['CMTS','S/CG/CH','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+                                    file_2=file_2.rename(columns={"S/CG/CH":"Up"})
+                                    file_2[['Up','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']] = file_2[['Up','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
+                                    data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario
+                                    flag=1
+            # El código lee un archivo de Excel y verifica si contiene una hoja específica llamada
+            # "Casa_SCMSummary". Si la hoja existe, filtra las columnas 'CMTS', 'Upstream', 'Total' y
+            # 'Description' de la hoja y reemplaza los valores faltantes con 'Sin datos'. Luego convierte los
+            # valores en las columnas 'Upstream', 'Total' y 'Description' en cadenas y convierte el marco de datos
+            # filtrado en un diccionario. Finalmente, establece una variable de bandera en 2.
+            elif "Casa_SCMSummary" in excel_file :
+                        df = pd.read_excel(excel_file)
+                        file=pd.DataFrame(df)
+                        cont2=0
+                        print("b")
+                        cabeceras=list(file.columns)
+                        headers=['CMTS','Upstream','Total','Active','Registered','Secondary','offline','Bonding','Non_Bonding','Description']
+                        for header in headers:
+                            if header in cabeceras:
+                                cont2+=1
+                                if cont2==4:
+                                    file_2=file.loc[:,['CMTS','Upstream','Total','Active','Registered','Secondary','offline','Bonding','Non_Bonding','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+                                    file_2[['Upstream','Total','Description','Active','Registered','Secondary','offline','Bonding','Non_Bonding']] = file_2[['Upstream','Total','Description','Active','Registered','Secondary','offline','Bonding','Non_Bonding']].astype(str)#*Convierte los valores de estas columnas a tipo str
+                                    data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
+                                    flag=2
+            elif ("Ocupacion - Marcacion RPHY Harmonic" in excel_file) and ("COS" in list_title)  :
+                        df = pd.read_excel(excel_file,sheet_name='Hoja5',engine='openpyxl')
+                        file=pd.DataFrame(df)
+                        cont4=0
+                        print("d")
+                        cabeceras=list(file.columns)
+                        headers=['IP','Dispositivo','Puerto','moka','status','ptp']
+                        for header in headers:
+                            if header in cabeceras:
+                                cont4+=1
+                        if cont4==6:
+                            file_2=file.loc[:,['IP','Dispositivo','Puerto','moka','status','ptp']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+                            file_2[['IP','Dispositivo','Puerto','moka','status','ptp']] = file_2[['IP','Dispositivo','Puerto','moka','status','ptp']].astype(str)#*Convierte los valores de estas columnas a tipo str
+                            data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
+                            flag=4 
+            elif "Ocupacion - Marcacion RPHY Harmonic" in excel_file :
+                        df = pd.read_excel(excel_file,sheet_name='Hoja2',engine='openpyxl')
+                        file=pd.DataFrame(df)
+                        cont3=0
+                        print("c")
+                        print(file)
+                        cabeceras=list(file.columns)
+                        headers=['IP','Dispositivo','Puerto','status','Unnamed: 4','Unnamed: 5']        
+                        for header in headers:
+                            if header in cabeceras:
+                                cont3+=1
+                                if cont3==6:
+                                    
+                                    file_2=file.loc[:,['IP','Dispositivo','Puerto','status','Unnamed: 4','Unnamed: 5']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+                                    file_2=file.rename(columns={"Unnamed: 4":"stat2","Unnamed: 5":"ptp"})
+                                    file_2[['IP','Dispositivo','Puerto','status']] = file_2[['IP','Dispositivo','Puerto','status']].astype(str)#*Convierte los valores de estas columnas a tipo str
+                                    print(file_2)
+                                    data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
+                                    flag=3
 
-# El código verifica si el archivo de Excel de entrada contiene hojas específicas con ciertos
-# encabezados de columna. Si encuentra una hoja con los encabezados requeridos, filtra las columnas,
-# convierte los valores al tipo de cadena y convierte el marco de datos resultante en un diccionario.
-# La variable indicadora se establece en un valor específico según la hoja que se haya encontrado.
-        if "Arris_SCMSummary" in excel_file:
-            df = pd.read_excel(excel_file)
-            file=pd.DataFrame(df)
-            cont1=0
-            print("a")
-            cabeceras=list(file.columns)
-            headers=['CMTS','Mac','Total','Description']
-            for header in headers:
-                if header in cabeceras:
-                    cont1+=1
-                    if cont1==4:
-                        file_2=file.loc[:,['CMTS','Mac','Total','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
-                        file_2[['Mac','Total','Description']] = file_2[['Mac','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
-                        data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario
-                        flag=1
-# El código lee un archivo de Excel y verifica si contiene una hoja específica llamada
-# "Casa_SCMSummary". Si la hoja existe, filtra las columnas 'CMTS', 'Upstream', 'Total' y
-# 'Description' de la hoja y reemplaza los valores faltantes con 'Sin datos'. Luego convierte los
-# valores en las columnas 'Upstream', 'Total' y 'Description' en cadenas y convierte el marco de datos
-# filtrado en un diccionario. Finalmente, establece una variable de bandera en 2.
-        elif "Casa_SCMSummary" in excel_file :
-            df = pd.read_excel(excel_file)
-            file=pd.DataFrame(df)
-            cont2=0
-            print("b")
-            cabeceras=list(file.columns)
-            headers=['CMTS','Upstream','Total','Description']
-            for header in headers:
-                if header in cabeceras:
-                    cont2+=1
-                    if cont2==4:
-                        file_2=file.loc[:,['CMTS','Upstream','Total','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
-                        file_2[['Upstream','Total','Description']] = file_2[['Upstream','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
-                        data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
-                        flag=2
-        elif "Ocupacion - Marcacion RPHY Harmonic" in excel_file :
-            df = pd.read_excel(excel_file,sheet_name='Hoja2',engine='openpyxl')
-            file=pd.DataFrame(df)
-            cont3=0
-            print("c")
-            cabeceras=list(file.columns)
-            headers=['IP','Dispositivo','Puerto','Unnamed: 5']
-            for header in headers:
-                if header in cabeceras:
-                    cont3+=1
-                    if cont3==4:
-                        file_2=file.loc[:,['IP','Dispositivo','Puerto','Unnamed: 5']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
-                        file_2[['IP','Dispositivo','Puerto','Unnamed: 5']] = file_2[['IP','Dispositivo','Puerto','Unnamed: 5']].astype(str)#*Convierte los valores de estas columnas a tipo str
-                        data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
-                        flag=3
-        elif "Ocupacion - Marcacion RPHY Harmoni" in excel_file :
-            df = pd.read_excel(excel_file,sheet_name='Hoja5',engine='openpyxl')
-            file=pd.DataFrame(df)
-            cont4=0
-            print("d")
-            cabeceras=list(file.columns)
-            headers=['IP','Dispositivo','Puerto','ptp']
-            for header in headers:
-                if header in cabeceras:
-                    cont4+=1
-            if cont4==4:
-                file_2=file.loc[:,['IP','Dispositivo','Puerto','ptp']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
-                file_2[['IP','Dispositivo','Puerto','ptp']] = file_2[['IP','Dispositivo','Puerto','ptp']].astype(str)#*Convierte los valores de estas columnas a tipo str
-                data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
-                flag=4 
+            # El código anterior es un script de Python que inserta datos en una lista de SharePoint mediante la
+            # API REST de SharePoint. Incluye manejo de errores para errores HTTP y otras excepciones que pueden
+            # ocurrir durante el proceso de inserción. El código también incluye una barra de progreso para
+            # realizar un seguimiento del progreso de la inserción y un intervalo de confirmación para borrar la
+            # lista y comenzar un nuevo lote de inserciones después de que se haya agregado una cierta cantidad de
+            # elementos. El código también verifica el valor de ciertas variables y realiza diferentes acciones en
+            # función de sus valores.
 
-# El código anterior es un script de Python que inserta datos en una lista de SharePoint mediante la
-# API REST de SharePoint. Incluye manejo de errores para errores HTTP y otras excepciones que pueden
-# ocurrir durante el proceso de inserción. El código también incluye una barra de progreso para
-# realizar un seguimiento del progreso de la inserción y un intervalo de confirmación para borrar la
-# lista y comenzar un nuevo lote de inserciones después de que se haya agregado una cierta cantidad de
-# elementos. El código también verifica el valor de ciertas variables y realiza diferentes acciones en
-# función de sus valores.
-        try:    
-                print(self.flag==1)
-# El código anterior es un fragmento de código de Python que contiene una declaración if-else.
-# Comprueba el valor de la variable `self.flag` y realiza diferentes acciones en función de su valor.
-# Si `self.flag` es igual a 1, comprueba el valor de otra variable `self.c_up`. Si `self.c_up` es
-# mayor que 1, establece el valor de `self.last_saved_index` en 0 y establece el valor de `count` en
-# 0. Si `self.c_up` no es mayor que 1, establece el valor de `self.last_saved
-                if  self.flag==1:
-                    if self.c_up>1:
-                        self.last_saved_index=0
-                        count=0
-                        print(f"count==>{count}")
-                        print(f"L1==>{self.last_saved_index}")
-                        self.flag=0
-                    else:
-                        self.last_saved_index=self.index_stop
-                        count=self.count3
-                        print(f"count==>{count}")
-                        print(f"L1==>{self.last_saved_index}")
-                        self.flag=0
-                        print(self.flag==1)
+            try:    
+                            print(flag==1)
+            # El código anterior es un fragmento de código de Python que contiene una declaración if-else.
+            # Comprueba el valor de la variable `self.flag` y realiza diferentes acciones en función de su valor.
+            # Si `self.flag` es igual a 1, comprueba el valor de otra variable `self.c_up`. Si `self.c_up` es
+            # mayor que 1, establece el valor de `self.last_saved_index` en 0 y establece el valor de `count` en
+            # 0. Si `self.c_up` no es mayor que 1, establece el valor de `self.last_saved
+                            if  flag==1:
+                                if self.c_up>1:
+                                    last_saved_index=0
+                                    count=0
+                                    print(f"count==>{count}")
+                                    print(f"L1==>{last_saved_index}")
+                                    flag=0
+                                else:
+                                    last_saved_index=self.index_stop
+                                    count=self.count3
+                                    print(f"count==>{count}")
+                                    print(f"L1==>{last_saved_index}")
+                                    flag=0
+                                    print(flag==1)
 
-                while self.last_saved_index < len(data): 
-                    
-                    if  self.index_saved==False:
-                         self.saved_index=self.last_saved_index
-                         self.count2=count
-                         
-                    chunk=data[self.last_saved_index:self.last_saved_index+chunksize]
-                    
-                    for d in chunk:
-# El código define un diccionario `item_pro` basado en el valor de la variable `flag`. Dependiendo del
-# valor de `bandera`, se agregan diferentes pares clave-valor al diccionario. El valor de `c` se
-# incrementa en 1 y el diccionario `item_pro` resultante se asigna a la variable `item_properties`.
-                        if flag==1:
-                            item_pro = {'CMTS': d['CMTS'],'Mac':d['Mac'],'Total': d['Total'], 'Description': d['Description']}     
-                        elif flag==2:
-                            item_pro = {'CMTS': d['CMTS'],'Upstream':d['Upstream'],'Total': d['Total'], 'Description': d['Description']}    
-                        elif flag==3:
-                            item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'], 'Unnamed: 5': d['Unnamed: 5']}  
-                        elif flag==4:
-                            item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'], 'ptp': d['ptp']}      
-                        c=c+1
-                        item_properties=item_pro
-
-                        for i in range(max_attempts):
-# El código anterior es un bloque de código de Python que intenta agregar elementos a una lista de
-# SharePoint mediante la API REST de SharePoint. Incluye manejo de errores para errores HTTP y otras
-# excepciones que pueden ocurrir durante el proceso de inserción. También incluye un intervalo de
-# compromiso para borrar la lista y comenzar un nuevo lote de inserciones después de que se haya
-# agregado una cierta cantidad de elementos. El código actualiza una barra de progreso a medida que se
-# agregan elementos y muestra mensajes de error mediante un QMessageBox.
-                            try:
-                                item=Sp_list.add_item(item_properties)
+                            while last_saved_index < len(data): 
                                 
-                                commit_count += 1
-                                count+=1
-                                progress=int((count/len(data))*100)
-                                self.update_progressBar.emit(progress)
-
+                                if  index_saved==False:
+                                    self.saved_index=last_saved_index
+                                    self.count2=count
+                                    
+                                chunk=data[last_saved_index:last_saved_index+chunksize]
                                 
+                                for d in chunk:
+            # El código define un diccionario `item_pro` basado en el valor de la variable `flag`. Dependiendo del
+            # valor de `bandera`, se agregan diferentes pares clave-valor al diccionario. El valor de `c` se
+            # incrementa en 1 y el diccionario `item_pro` resultante se asigna a la variable `item_properties`.
+                                    if flag==1:
+                                        item_pro = {'CMTS': d['CMTS'],'Up':d['Up'],'Mac':d['Mac'],'Conn':d['Conn'],'Total': d['Total'],'Oper':d['Oper'],'Disable':d['Disable'],'Init':d['Init'],'Offline':d['Offline'], 'Description': d['Description']}     
+                                    elif flag==2:
+                                        item_pro = {'CMTS': d['CMTS'],'Upstream':d['Upstream'],'Total': d['Total'],'Active':d['Active'],'Registered':d['Registered'],'Secondary':d['Secondary'],'offline':d['offline'],'Bonding':d['Bonding'],'Non_Bonding':d['Non_Bonding'], 'Description': d['Description']}                              
+                                    elif flag==3:
+                                        item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'],'status':d['status'],'stat2':d['stat2'],'ptp':d['ptp']}  
+                                    elif flag==4:
+                                        item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'],'moka':d['moka'],'status':d['status'], 'ptp': d['ptp']}      
+                                    c=c+1
+                                    item_properties=item_pro
+
+                                    for i in range(max_attempts):
+            # El código anterior es un bloque de código de Python que intenta agregar elementos a una lista de
+            # SharePoint mediante la API REST de SharePoint. Incluye manejo de errores para errores HTTP y otras
+            # excepciones que pueden ocurrir durante el proceso de inserción. También incluye un intervalo de
+            # compromiso para borrar la lista y comenzar un nuevo lote de inserciones después de que se haya
+            # agregado una cierta cantidad de elementos. El código actualiza una barra de progreso a medida que se
+            # agregan elementos y muestra mensajes de error mediante un QMessageBox.
+                                        try:
+                                            item=Sp_list.add_item(item_properties)                            
+                                            commit_count += 1
+                                            count+=1
+                                            progress=int((count/len(data))*100)
+                                            self.update_progressBar.emit(progress)
+                                           
+                                            if commit_count> commit_interval:
+                                                print("Valor reestablecido :)")
+                                                Sp_list.clear()
+                                                commit_count=0
+                                            
+                                            break  #* Si la inserción es exitosa, salir del ciclo for
+                                                
+                                        except requests.exceptions.HTTPError as http_error:
+                                            
+                                            print(f"Error de HTTP al agregar el elemento #{c}: {http_error}")
+                                            time.sleep(5)  #* Esperar 5 segundos antes de intentar de nuevo
+                                            count=last_saved_index
+                                        except Exception as e:
+                                            
+                                            print(f"Error en el intento {i+1} de inserción para el elemento #{c}: {e}")                              
+                                            time.sleep(5)  #*Esperar 5 segundos antes de intentar de nuevo
+                                            if i == max_attempts - 1:
+                                                # Si se alcanza el número máximo de intentos sin éxito, salir del programa
+                                                print(f"No se pudo agregar el elemento #{c} después de {max_attempts} intentos. Saliendo del programa...")
+                                                break
+                                                
+                                    
+                                    if commit_count==commit_interval:
+                                        print("h")
+                                        self.ctx.execute_batch()                                                  
+                                        print("Se realizo Commit")
+                                        print(f"El último ID guardado en la lista es: {last_saved_index}")                                   
+                                        Sp_list.clear()
+                                        commit_count=0
+                                                                                       
                                 if commit_count> commit_interval:
                                     print("Valor reestablecido :)")
                                     Sp_list.clear()
+                                    commit_count=0 
+                                last_saved_index = last_saved_index+len(chunk)                                
+                                print(c)
+                                if commit_count % commit_interval != 0:             
+                                    self.ctx.execute_batch()
+                                    print("Se realizo Commit2")
+                                    count=0
+                                    process=False
+                                    print(last_saved_index)
+                                    
+                                    Sp_list.clear()
                                     commit_count=0
-                                   
-                                break  #* Si la inserción es exitosa, salir del ciclo for
-                                     
-                            except requests.exceptions.HTTPError as http_error:
                                 
-                                print(f"Error de HTTP al agregar el elemento #{c}: {http_error}")
-                                time.sleep(5)  #* Esperar 5 segundos antes de intentar de nuevo
-                                count=self.last_saved_index
-                            except Exception as e:
-                                
-                                print(f"Error en el intento {i+1} de inserción para el elemento #{c}: {e}")                              
-                                time.sleep(5)  #*Esperar 5 segundos antes de intentar de nuevo
-                                if i == max_attempts - 1:
-                                    # Si se alcanza el número máximo de intentos sin éxito, salir del programa
-                                    print(f"No se pudo agregar el elemento #{c} después de {max_attempts} intentos. Saliendo del programa...")
-                                    break
-                        self.show()                
-                        
-                        if commit_count==commit_interval:
-                            print("h")
-                            self.ctx.execute_batch()       
-                                
-                            print("Se realizo Commit")
-                            print(f"El último ID guardado en la lista es: {self.last_saved_index}")
-                           
-                            Sp_list.clear()
-                            commit_count=0
-                        self.show()
-                                        
-                    if commit_count> commit_interval:
-                        print("Valor reestablecido :)")
-                        Sp_list.clear()
-                        commit_count=0 
-                    self.last_saved_index = self.last_saved_index+len(chunk)
-                    
-                    print(c)
-
-                    if commit_count % commit_interval != 0:             
-                        self.ctx.execute_batch()
-                        print("Se realizo Commit2")
-                        count=0
-                        print(self.last_saved_index)
-                        self.show()
-                        Sp_list.clear()
-                        commit_count=0
-                self.show()         
-                self.last_saved_index2 = self.last_saved_index+len(chunk)
-                  
-                if commit_count> 0:
-                    self.ctx.execute_batch()
-                    print("commit final :)")
-                    Sp_list.clear()
-                    commit_count=0  
-                self.show()
-        except (requests.exceptions.ConnectionError, requests.exceptions.ChunkedEncodingError) as e:
-                print("No hay conexión a internet. Esperando...")
-                time.sleep(5)  # Esperar 5 segundos antes de volver a intentar
-                
-                pass  # Volver al inicio del bucle while
-        except Exception as e:
-
-                attempt_count += 1
-               
-                print(f"Error al Agregar el elemento a la lista #{c} error: {e}")
-                print("Reintentando en 5 segundo...")
-                time.sleep(5)
-                if attempt_count >= max_attempts:
-                    print("Se han excedido el número máximo de intentos. Saliendo del programa...")
-                                 
+                            self.last_saved_index2 = last_saved_index+len(chunk)
+                            
+                            if commit_count> 0:
+                                self.ctx.execute_batch()
+                                print("commit final :)")
+                                Sp_list.clear()
+                                process=False
+                                commit_count=0  
+                            
+            except (requests.exceptions.ConnectionError, requests.exceptions.ChunkedEncodingError) as e:
+                            print("No hay conexión a internet. Esperando...")
+                            time.sleep(5)  # Esperar 5 segundos antes de volver a intentar
+                            continue # Volver al inicio del bucle while
+            except Exception as e:
+                            attempt_count += 1                       
+                            print(f"Error al Agregar el elemento a la lista #{c} error: {e}")
+                            print("Reintentando en 5 segundo...")
+                            time.sleep(5)
+                            continue
+                            if attempt_count >= max_attempts:
+                                print("Se han excedido el número máximo de intentos. Saliendo del programa...")
+                            
+                            continue
+                                                    
     def save_path_list(self):
         """
         Esta función establece una nueva ruta de descarga para una lista de archivos y la guarda en un

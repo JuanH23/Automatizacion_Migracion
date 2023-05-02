@@ -83,14 +83,14 @@ while process==True:
                 cont1=0
                 print("a")
                 cabeceras=list(file.columns)
-                headers=['CMTS','S/CG/CH','Total','Description']
+                headers=['CMTS','S/CG/CH','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']
                 for header in headers:
                     if header in cabeceras:
                         cont1+=1
                         if cont1==4:
-                            file_2=file.loc[:,['CMTS','S/CG/CH','Total','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+                            file_2=file.loc[:,['CMTS','S/CG/CH','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
                             file_2=file_2.rename(columns={"S/CG/CH":"Up"})
-                            file_2[['Up','Total','Description']] = file_2[['Up','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
+                            file_2[['Up','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']] = file_2[['Up','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
                             data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario
                             flag=1
     # El código lee un archivo de Excel y verifica si contiene una hoja específica llamada
@@ -104,43 +104,44 @@ while process==True:
                 cont2=0
                 print("b")
                 cabeceras=list(file.columns)
-                headers=['CMTS','Upstream','Total','Description']
+                headers=['CMTS','Upstream','Total','Active','Registered','Secondary','offline','Bonding','Non_Bonding','Description']
                 for header in headers:
                     if header in cabeceras:
                         cont2+=1
                         if cont2==4:
-                            file_2=file.loc[:,['CMTS','Upstream','Total','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
-                            file_2[['Upstream','Total','Description']] = file_2[['Upstream','Total','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
+                            file_2=file.loc[:,['CMTS','Upstream','Total','Active','Registered','Secondary','offline','Bonding','Non_Bonding','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+                            file_2[['Upstream','Total','Description','Active','Registered','Secondary','offline','Bonding','Non_Bonding']] = file_2[['Upstream','Total','Description','Active','Registered','Secondary','offline','Bonding','Non_Bonding']].astype(str)#*Convierte los valores de estas columnas a tipo str
                             data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
                             flag=2
-    elif "Ocupacion - Marcacion RPHY Harmonic" in excel_file :
-                df = pd.read_excel(excel_file,sheet_name='Hoja2',engine='openpyxl')
+    elif "Ocupacion- RPHY Harmonic_DAAS" in excel_file :
+                df = pd.read_excel(excel_file,engine='openpyxl')
                 file=pd.DataFrame(df)
                 cont3=0
                 print("c")
                 cabeceras=list(file.columns)
-                headers=['IP','Dispositivo','Puerto','Unnamed: 5']
+                headers=['IP','Dispositivo','Puerto','status','Unnamed: 4','Unnamed: 5']
+                file_2=file_2.rename(columns={"Unnamed: 4":"status_2","Unnamed: 5":"ptp"})
                 for header in headers:
                     if header in cabeceras:
                         cont3+=1
                         if cont3==4:
-                            file_2=file.loc[:,['IP','Dispositivo','Puerto','Unnamed: 5']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
-                            file_2[['IP','Dispositivo','Puerto','Unnamed: 5']] = file_2[['IP','Dispositivo','Puerto','Unnamed: 5']].astype(str)#*Convierte los valores de estas columnas a tipo str
+                            file_2=file.loc[:,['IP','Dispositivo','Puerto','status','status_2','ptp']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+                            file_2[['IP','Dispositivo','Puerto','status','status_2','ptp']] = file_2[['IP','Dispositivo','Puerto','status','status_2','ptp']].astype(str)#*Convierte los valores de estas columnas a tipo str
                             data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
                             flag=3
-    elif "Ocupacion - Marcacion RPHY Harmoni" in excel_file :
-                df = pd.read_excel(excel_file,sheet_name='Hoja5',engine='openpyxl')
+    elif "Ocupacion-Harmonic_COS" in excel_file :
+                df = pd.read_excel(excel_file,engine='openpyxl')
                 file=pd.DataFrame(df)
                 cont4=0
                 print("d")
                 cabeceras=list(file.columns)
-                headers=['IP','Dispositivo','Puerto','ptp']
+                headers=['IP','Dispositivo','Puerto','ID','moka','status','ptp']
                 for header in headers:
                     if header in cabeceras:
                         cont4+=1
                 if cont4==4:
-                    file_2=file.loc[:,['IP','Dispositivo','Puerto','ptp']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
-                    file_2[['IP','Dispositivo','Puerto','ptp']] = file_2[['IP','Dispositivo','Puerto','ptp']].astype(str)#*Convierte los valores de estas columnas a tipo str
+                    file_2=file.loc[:,['IP','Dispositivo','Puerto','ID','moka','status','ptp']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+                    file_2[['IP','Dispositivo','Puerto','ID','moka','status','ptp']] = file_2[['IP','Dispositivo','Puerto','ID','moka','status','ptp']].astype(str)#*Convierte los valores de estas columnas a tipo str
                     data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
                     flag=4 
 
@@ -187,13 +188,13 @@ while process==True:
     # valor de `bandera`, se agregan diferentes pares clave-valor al diccionario. El valor de `c` se
     # incrementa en 1 y el diccionario `item_pro` resultante se asigna a la variable `item_properties`.
                             if flag==1:
-                                item_pro = {'CMTS': d['CMTS'],'Up':d['Up'],'Total': d['Total'], 'Description': d['Description']}     
+                                item_pro = {'CMTS': d['CMTS'],'Up':d['Up'],'Mac':d['Mac'],'Conn':d['Conn'],'Total': d['Total'],'Oper':d['Oper'],'Disable':d['Disable'],'Init':d['Init'],'Offline':d['Offline'], 'Description': d['Description']}     
                             elif flag==2:
-                                item_pro = {'CMTS': d['CMTS'],'Upstream':d['Upstream'],'Total': d['Total'], 'Description': d['Description']}    
+                                item_pro = {'CMTS': d['CMTS'],'Upstream':d['Upstream'],'Total': d['Total'],'Active':d['Active'],'Registered':d['Registered'],'Secondary':d['Secondary'],'offline':d['offline'],'Bonding':d['Bonding'],'Non_Bonding':d['Non_Bonding'], 'Description': d['Description']}                              
                             elif flag==3:
-                                item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'], 'Unnamed: 5': d['Unnamed: 5']}  
+                                item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'],'status':d['status'],'status_2':d['status_2'], 'ptp': d['ptp']}  
                             elif flag==4:
-                                item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'], 'ptp': d['ptp']}      
+                                item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'],'ID':d['ID'],'moka':d['moka'],'status':d['status'], 'ptp': d['ptp']}      
                             c=c+1
                             item_properties=item_pro
 

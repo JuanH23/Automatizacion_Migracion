@@ -502,7 +502,7 @@ class Ui_MainWindow(object):
         self.progressBar.setProperty("value", 0)
         self.progressBar.setObjectName("progressBar")
         self.comboBox = QtWidgets.QComboBox(self.page_uno)
-        self.comboBox.setGeometry(QtCore.QRect(210, 200, 251, 31))
+        self.comboBox.setGeometry(QtCore.QRect(210, 200, 261, 31))
         self.comboBox.setStyleSheet("QComboBox {\n"
 "                font: 16px;\n"
 "                color: #555555;\n"
@@ -560,6 +560,8 @@ class Ui_MainWindow(object):
         self.comboBox.addItem("")
         self.comboBox.addItem("")
         self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        
 
 
         self.comboBox2 = QtWidgets.QComboBox(self.page_tres)
@@ -878,7 +880,8 @@ class Ui_MainWindow(object):
         self.comboBox.setItemText(0, _translate("MainWindow", "Elija nombre del archivo"))
         self.comboBox.setItemText(1, _translate("MainWindow", "Arris_SCMSummary"))
         self.comboBox.setItemText(2, _translate("MainWindow", "Casa_SCMSummary"))
-        self.comboBox.setItemText(3, _translate("MainWindow", "Ocupacion - Marcacion RPHY Harmonic"))
+        self.comboBox.setItemText(3, _translate("MainWindow", "Ocupacion- RPHY Harmonic_DAAS"))
+        self.comboBox.setItemText(4, _translate("MainWindow", "Ocupacion-Harmonic_COS"))
         #self.comboBox2.setCurrentText(_translate("MainWindow", "nodo"))
         self.comboBox2.setItemText(0, _translate("MainWindow", "Tipo nodo"))
         self.comboBox2.setItemText(1, _translate("MainWindow", "1 x 2"))

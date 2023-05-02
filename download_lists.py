@@ -88,50 +88,50 @@ def read_excel_to_dataframe(file_path,file_name):
     df = pd.DataFrame(data, columns=headers)
     #Revisa el nombre del archivo que este, y mira en el las cabeceras, 
     # si coincide uno u otro filtra el archivo, para solo obtener lo necesario
-    if "Elija nombre del archivo" in file_name:#!COS_TERMINAR CUANDO SE SEPAREN LOS ARCHIVOS EN LA DESCARGA
+    if "Ocupacion-Harmonic_COS" in file_name:#!COS_TERMINAR CUANDO SE SEPAREN LOS ARCHIVOS EN LA DESCARGA
         cont1=0
         print("a")
         cabeceras=list(df.columns)
-        headers=['IP','Dispositivo','Puerto','ptp']
+        headers=['IP','Dispositivo','Puerto','ID','moka','status','ptp']
         for header in headers:
             if header in cabeceras:
                 cont1+=1
                 print(f"cont1==>{cont1}")
                 if cont1==4:
-                    df=df.loc[:,['IP','Dispositivo','Puerto','ptp']]
+                    df=df.loc[:,['IP','Dispositivo','Puerto','ID','moka','status','ptp']]
     elif "Arris_SCMSummary" in file_name:
         cont2=0
         print("b")
         cabeceras=list(df.columns)
-        headers=['CMTS','Mac','Total','Description']
+        headers=['CMTS','Up','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']
         for header in headers:
             if header in cabeceras:
                 cont2+=1
                 print(f"cont1==>{cont2}")
                 if cont2==4:
-                    df=df.loc[:,['CMTS','Mac','Total','Description']] 
+                    df=df.loc[:,['CMTS','Up','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']] 
     elif "Casa_SCMSummary" in file_name:
         cont3=0
         print("c")
         cabeceras=list(df.columns)
-        headers=['CMTS','Upstream','Total','Description']
+        headers=['CMTS','Upstream','Total','Active','Registered','Secondary','offline','Bonding','Non_Bonding','Description']
         for header in headers:
             if header in cabeceras:
                 cont3+=1
                 print(f"cont1==>{cont3}")
                 if cont3==4:
-                    df=df.loc[:,['CMTS','Upstream','Total','Description']]
-    elif "Ocupacion - Marcacion RPHY Harmonic" in file_name:##!DAAS
+                    df=df.loc[:,['CMTS','Upstream','Total','Active','Registered','Secondary','offline','Bonding','Non_Bonding','Description']]
+    elif "Ocupacion- RPHY Harmonic_DAAS" in file_name:##!DAAS
         cont4=0
         print("d")
         cabeceras=list(df.columns)
-        headers=['IP','Dispositivo','Puerto','Unnamed: 5']
+        headers=['IP','Dispositivo','Puerto','status','status_2','ptp']
         for header in headers:
             if header in cabeceras:
                 cont4+=1
                 print(f"cont1==>{cont4}")
                 if cont4==4:
-                    df=df.loc[:,['IP','Dispositivo','Puerto','Unnamed: 5']]                          
+                    df=df.loc[:,['IP','Dispositivo','Puerto','status','status_2','ptp']]                          
     return df
 
 if __name__ =='__main__':

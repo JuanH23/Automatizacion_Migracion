@@ -52,9 +52,9 @@ ruth_list_download= env["path_list_download"]
 EXPORT_TYPE='Excel'
 
 ##############################################################################################################
-name_files=["Arris_SCMSummary.xlsx","Casa_SCMSummary.xlsx","Ocupacion - Marcacion RPHY Harmonic.xlsx"]
+name_files=["Arris_SCMSummary.xlsx","Casa_SCMSummary.xlsx","Ocupacion- RPHY Harmonic_DAAS.xlsx","Ocupacion-Harmonic_COS.xlsx"]
 
-sheet_names=[None,None,'Hoja2','Hoja5']
+sheet_names=[None,None,None,None]
 ##############################################################################################################
 
 class MiApp(QtWidgets.QMainWindow):
@@ -205,6 +205,7 @@ class MiApp(QtWidgets.QMainWindow):
         # Identificar dispositivos con puertos faltantes
         dispositivos = df['Dispositivo'].unique()
         dispositivos_con_puertos_faltantes = []
+        print(f"DF====>{df}")
         for dispositivo in dispositivos:
             puertos = df[df['Dispositivo'] == dispositivo]['Puerto'].apply(lambda x: int(x.split('/')[-1]))
             puertos_faltantes = todos_los_valores[~todos_los_valores.isin(puertos)]
@@ -300,7 +301,9 @@ class MiApp(QtWidgets.QMainWindow):
             sep2=v.find("-",sep+1)
             variable3=v[:sep2]
             print(variable3)
+            
             df2=pd.DataFrame(self.file_despues_DAAS)
+            
             df_das=self.complete_DAAS(df2)
             file_3=df_das.loc[:,['IP','Dispositivo','Puerto','status','Unnamed: 4','Unnamed: 5']].astype(str).fillna(value='No Data')          
             variable2="PUERTOLIBRE"
@@ -638,6 +641,8 @@ class MiApp(QtWidgets.QMainWindow):
                 rutas_files = list(executor.map(lambda x: self.search.buscar_archivo(*x), [(name_file, ruta) for ruta in ruta_de_busqueda for name_file in name_files]))
                 rutas_files=[ruta_file for ruta_file in rutas_files if ruta_file is not None]
             dfs={}
+            print(rutas_files)
+            print(sheet_names)
             for ruta_file,sheet_name in zip(rutas_files,sheet_names):
                 print(ruta_file.name,sheet_name)
                 if sheet_name is not None:
@@ -658,28 +663,33 @@ class MiApp(QtWidgets.QMainWindow):
 
            
                 arris_df=None
-                ocupacion_Cos=None
-                ocupacion_Daas=None
                 Casa_df=None
+                COS_df=None
+                DAAS_df=None
                 #if __name__=='__main__':  
                 dataframes=self.obtener_dataframes(name_files,self.ruta_de_busqueda)
                 arris_df=dataframes['Arris_SCMSummary.xlsx']
-                Casa_df=dataframes['Casa_SCMSummary.xlsx']
-                for key in dataframes.keys():
+                Casa_df=dataframes['Casa_SCMSummary.xlsx']               
+                COS_df=dataframes['Ocupacion-Harmonic_COS.xlsx']
+                DAAS_df=dataframes['Ocupacion- RPHY Harmonic_DAAS.xlsx']
+                '''for key in dataframes.keys():
                     print(key)  # Imprimir las claves del diccionario
                 if 'Hoja5_Ocupacion - Marcacion RPHY Harmonic.xlsx' in dataframes.keys():
                     ocupacion_Cos = dataframes['Hoja5_Ocupacion - Marcacion RPHY Harmonic.xlsx']
                     print(ocupacion_Cos)
                 if 'Hoja2_Ocupacion - Marcacion RPHY Harmonic.xlsx' in dataframes.keys():
-                        ocupacion_Daas = dataframes['Hoja2_Ocupacion - Marcacion RPHY Harmonic.xlsx']
+                        ocupacion_Daas = dataframes['Hoja2_Ocupacion - Marcacion RPHY Harmonic.xlsx']'''
                         
-                return arris_df,ocupacion_Daas,ocupacion_Cos,Casa_df
+                return arris_df,DAAS_df,COS_df,Casa_df
   
+
+         
+
     def search_file_filter(self):
-         """
-            Esta función busca archivos en función de un filtro y muestra los resultados en un cuadro de
-            mensaje.
-         """
+        #"""
+         #   Esta función busca archivos en función de un filtro y muestra los resultados en un cuadro de
+         #   mensaje.
+         #"""
 # El código anterior es un bloque de código de Python que intenta ejecutar un conjunto de
 # instrucciones. Primero obtiene el valor de una variable llamada `old_path_list_download` del
 # entorno, la agrega a una lista llamada `ruta_de_busqueda` y luego imprime el contenido de la lista y
@@ -687,18 +697,18 @@ class MiApp(QtWidgets.QMainWindow):
 # operación se completó con éxito. Si se genera una excepción `KeyError` durante la ejecución del
 # bloque de código, imprime un mensaje de error que indica la causa de la excepción.
          try:
-            old_path_list_download = env.get('path_list_download', '')
-            self.ruta_de_busqueda.append(old_path_list_download)
-            print(self.ruta_de_busqueda)
-            self.file_arris,self.file_despues_DAAS,self.file_despues_COS,self.file_casa=self.read_data()
-            print(f"file_arris==>{self.file_arris}")
-            print(f"file_despues_DAAS==>{self.file_despues_DAAS}")
-            print(f"file_depues_COS==>{self.file_despues_COS}")
-            print(f"file_casa==>{self.file_casa}")
-            msg_box = QMessageBox()
-            msg_box.setText("La operación se ha completado correctamente")
-            msg_box.setStandardButtons(QMessageBox.Ok)
-            msg_box.exec_()
+                old_path_list_download = env.get('path_list_download', '')
+                self.ruta_de_busqueda.append(old_path_list_download)
+                print(self.ruta_de_busqueda)
+                self.file_arris,self.file_despues_DAAS,self.file_despues_COS,self.file_casa=self.read_data()
+                print(f"file_arris==>{self.file_arris}")
+                print(f"file_despues_DAAS==>{self.file_despues_DAAS}")
+                print(f"file_depues_COS==>{self.file_despues_COS}")
+                print(f"file_casa==>{self.file_casa}")
+                msg_box = QMessageBox()
+                msg_box.setText("La operación se ha completado correctamente")
+                msg_box.setStandardButtons(QMessageBox.Ok)
+                msg_box.exec_()
          except KeyError as e:
                 print(f"Error:{e}")  
 ##########################################################################################

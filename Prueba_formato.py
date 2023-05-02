@@ -14,16 +14,21 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
 
     ###########
     env=dotenv_values(".env")
+    print(".")
     ruth_list_download= env["path_list_download"]
+    print("..")
     ruta_nueva_carpeta = ruth_list_download + "/Diseños_NODOS"
+    print("...")
     
-    file_name=""  
+    file_name="" 
     os.makedirs(ruta_nueva_carpeta, exist_ok=True)
     if type_node == "1 x 2":
-        file_name='Diseño Segmentaciones RPHY-NODO '    
+        file_name='Diseño Segmentaciones RPHY-NODO '   
     elif type_node =="2 x 4":
         file_name='Diseño Segmentaciones RPHY 2x4-NODO '
+
     ruta_archivo = os.path.join(ruta_nueva_carpeta,file_name+ name_file +'.xlsx')
+
     
     ###########
     
@@ -31,14 +36,14 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     # Crear archivo Excel desde cero y escribir información del DataFrame
     archivo_excel = pd.ExcelWriter(ruta_archivo, engine='openpyxl')
 
-
     # Escribir el DataFrame en el archivo Excel
     df_cd=pd.DataFrame(df_cos_daas)
     print(f"df_cd==>{df_cd}")
     ################################################################
     
     df.to_excel(archivo_excel,sheet_name='Hoja1' ,index=False)
-    set_key(".env", "path_files_upload", ruta_nueva_carpeta)
+    #!set_key(".env", "path_files_upload", ruta_nueva_carpeta)
+    #!Mover el set_key fuera del archivo,debido a que al realizarse varias veces borre las demas variables del archivo .env
     ################################################################
     hoja = archivo_excel.sheets['Hoja1']
     # Obtener el libro de trabajo y la hoja

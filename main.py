@@ -783,7 +783,7 @@ class MiApp(QtWidgets.QMainWindow):
                         for header in headers:
                             if header in cabeceras:
                                 cont1+=1
-                                if cont1==4:
+                                if cont1==10:
                                     file_2=file.loc[:,['CMTS','S/CG/CH','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
                                     file_2=file_2.rename(columns={"S/CG/CH":"Up"})
                                     file_2[['Up','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']] = file_2[['Up','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
@@ -804,7 +804,7 @@ class MiApp(QtWidgets.QMainWindow):
                         for header in headers:
                             if header in cabeceras:
                                 cont2+=1
-                                if cont2==4:
+                                if cont2==10:
                                     file_2=file.loc[:,['CMTS','Upstream','Total','Active','Registered','Secondary','offline','Bonding','Non_Bonding','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
                                     file_2[['Upstream','Total','Description','Active','Registered','Secondary','offline','Bonding','Non_Bonding']] = file_2[['Upstream','Total','Description','Active','Registered','Secondary','offline','Bonding','Non_Bonding']].astype(str)#*Convierte los valores de estas columnas a tipo str
                                     data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
@@ -824,12 +824,12 @@ class MiApp(QtWidgets.QMainWindow):
                             file_2[['IP','Dispositivo','Puerto','moka','status','ptp']] = file_2[['IP','Dispositivo','Puerto','moka','status','ptp']].astype(str)#*Convierte los valores de estas columnas a tipo str
                             data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
                             flag=4 
-            elif "Ocupacion - Marcacion RPHY Harmonic" in excel_file :
+            elif ("Ocupacion - Marcacion RPHY Harmonic" in excel_file) and ("DAAS" in list_title) :
                         df = pd.read_excel(excel_file,sheet_name='Hoja2',engine='openpyxl')
                         file=pd.DataFrame(df)
                         cont3=0
                         print("c")
-                        print(file)
+                        
                         cabeceras=list(file.columns)
                         headers=['IP','Dispositivo','Puerto','status','Unnamed: 4','Unnamed: 5']        
                         for header in headers:

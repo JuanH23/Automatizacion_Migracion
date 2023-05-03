@@ -26,6 +26,7 @@
 * [Login.py](#Login)
 * [search_files.py](#search_files)
 * [Upload_Files.py](#Upload_Files)
+* [Estructura_principal_FINAL.py](#Estructura_principal_FINAL)
 
 
 
@@ -124,8 +125,45 @@ Este archivo tiene funciones las cuales permiten realizar una subida de archivos
     los archivos.
 - get_list_of_files(folder): Esta función toma la ruta de una carpeta como entrada y devuelve una   lista de archivos dentro de esa carpeta junto con sus rutas completas.
 - get_file_content(file_path): Esta función lee el contenido de un archivo en modo binario y lo devuelve.
+## Estructura_principal_FINAL
+Este archivo contiene una clase llamada principal del programa, donde estan los siguientes componentes:
+- bt_inicio: Botón para entrar a la ventana principal
+- bt_base_datos: Botón para la ventana de subir los datos a lista de SharePoint
+- bt_list: Botón para la ventana de descarga los datos a lista de SharePoint
+- bt_confi: Botón para la ventana de configuraciones de parametros
+- label_21: Texto en la ventana(page_tres) "DESPUES" 
+- label_22: Texto en la ventana(page_tres) "COS"
+- label_23: Texto en la ventana(page_tres) "DAAS"
+- label_17: Texto en la ventana(page_tres) "ANTES"
+- label_19: Texto en la ventana(page_tres) "DISEÑO NODOS"
+- lineEdit_buscar: Espacio para buscar el nodo deseado 
+- bt_filtrar: Botón que ejecuta las funciones para mostrar los datos en los Qtable y realiza el filtrado
+- bt_search_files: Botón para buscar los archivos necesarios en el PC, para realizar el filtrado
+- bt_upload_file: Botón que abre una ventana emergente para subir los Diseños creados
+- label_27:Texto en la ventana(page_uno) "DESCARGA DE LISTAS"
+- lineEdit_descargar_lista: Espacio para insertar el nombre de la lista que se desea descargar
+- label_28:Texto en la ventana(page_uno) "GUARDAR COMO"
+- download_LIST: Botón para llamar la función download_list, del archivo download_lists.py 
+- comboBox: Espacio para seleccionar los nombres disponibles, del archivo de la lista que se desee descargar de SharePoint
+- comboBox2: Espacio para seleccionar el tipo de nodo el cual va a tomar el diseño para realizar el diseño
+- label_29:Texto en la ventana(page_dos) "SUBIR LISTA A SHAREPOINT"
+- lineEdit_buscar_2: Espacio para insertar el nombre de la lista que se desea subir los datos
+- bt_filtrar_2: Espacio que ejecuta la función upload_LIST
+- search_files: Botón para abrir el buscador de Windows para buscar el archivo .xlsx que se desea subir
+- bt_stop: Botón que ejecuta la función cancelar_stop
+- label_15:Texto en la ventana(page_cuatro) "Adicione una vez mas este caracter \'\\\' , a la ruta como este ejemplo: C:-->\\\\<--Users\\PC\\Desktop"
+- label_16:Texto en la ventana(page_cuatro) "CONFIGURACION"
+- label_17:Texto en la ventana(page_cuatro) "Ejemplo: https://claromovilco.sharepoint.com/sites/nombre_sitio_SharePoint/" "
+- lineEdit_site_Sharepoint: Espacio para configurar el Path donde se va a guardar el sitio de SharePoint y se guardara en el archivo .env
+- lineEdit_folder_subir_archivo: Espacio para configurar el nombre de la carpeta donde se va a guardar los archivos de los diseños en SharePoint y se guardara en el archivo .env
+- lineEdit_Path_lists: Espacio para configurar el Path donde se va a guardar el sitio donde se guardaran todos los archivos y se guardara en el archivo .env
+- bt_save_con: Botón para guardar los parametros.
 
 
+estructura principal
+main
+office365
+prueba_formato
 
                 
 ----

@@ -17,8 +17,6 @@ class SharePoint:
     
     def _auth(self):
         """
-        Esta función crea una conexión a un sitio de SharePoint utilizando un nombre de usuario y una
-        contraseña proporcionados.
         :return: un objeto de conexión que se autentica con el nombre de usuario y la contraseña
         proporcionados para un sitio de SharePoint.
         """
@@ -32,10 +30,7 @@ class SharePoint:
         return conn
 
     def _get_files_list(self,folder_name):
-        """
-        Esta función recupera una lista de archivos de una carpeta de SharePoint específica mediante la API
-        de Microsoft Graph.
-        
+        """     
         :folder_name: El nombre de la carpeta en SharePoint para la que desea recuperar una lista de
         archivos
         :return: La función `_get_files_list` devuelve una lista de archivos en la carpeta de SharePoint
@@ -48,8 +43,6 @@ class SharePoint:
         return root_folder.files
     def get_folder_list(self,folder_name):
         """
-        Esta función recupera una lista de carpetas dentro de una carpeta específica en SharePoint.
-        
         :folder_name: El nombre de la carpeta para la que desea recuperar una lista de subcarpetas
         :return: La función `get_folder_list` devuelve una lista de carpetas dentro del nombre de carpeta
         especificado en SharePoint.
@@ -63,9 +56,6 @@ class SharePoint:
 
     def download_file(self,file_name,folder_name):
         """
-        Esta función descarga un archivo de un sitio de SharePoint dado el nombre del archivo y el nombre de
-        la carpeta.
-        
         :file_name: El nombre del archivo que debe descargarse de SharePoint
         :folder_name: El nombre de la carpeta en la que se encuentra el archivo en SharePoint
         :return: Se devuelve el contenido del archivo con el nombre de archivo y el nombre de carpeta
@@ -79,8 +69,6 @@ class SharePoint:
 
     def upload_file(self,file_name,folder_name,content):
         """
-        Esta función carga un archivo en una carpeta específica en un sitio de SharePoint.
-        
         :file_name: El nombre del archivo que debe cargarse en SharePoint
         :folder_name: El nombre de la carpeta en la que se debe cargar el archivo
         :content: El parámetro de contenido es el contenido real del archivo que debe cargarse. Puede
@@ -94,8 +82,6 @@ class SharePoint:
         return response 
     def get_list(self,list_name):
         """
-        Esta función recupera todos los elementos de una lista de SharePoint con un nombre dado.
-        
         :list_name: El nombre de la lista de SharePoint de la que desea recuperar datos
         :return: La función `get_list` devuelve una lista de elementos de una lista de SharePoint
         especificada por el parámetro `list_name`.

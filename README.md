@@ -28,6 +28,7 @@
 * [Upload_Files.py](#Upload_Files)
 * [Estructura_principal_FINAL.py](#Estructura_principal_FINAL)
 * [main.py](#main)
+* [office365_api.py](#office365_api)
 
 
 
@@ -184,7 +185,7 @@ Este archivo contiene una clase llamada MiApp, la cual tiene la codificación de
 - save_path_list(self): Esta función establece una nueva ruta de descarga para una lista de archivos y la guarda en un archivo .env
 - save_parameters_url_sharepoint(self): Esta función establece una nueva ruta de el sitio de SharePint donde se realizara todo el procedimiento y la guarda en un archivo .env
 - save_parameters_name_folder_Sharepoint(self): Esta función establece una nueva ruta de la carpeta de SharePint donde se guardaran los .xlsx de los diseños generados y la guarda en un archivo .env
-## main
+## office365_api
 - def _auth(self): Esta función crea una conexión a un sitio de SharePoint utilizando un nombre de usuario y una contraseña proporcionados.
 - _get_files_list(self,folder_name): Esta función recupera una lista de archivos de una carpeta de SharePoint específica mediante la API de Microsoft Graph.
 - get_folder_list(self,folder_name): Esta función recupera una lista de carpetas dentro de una carpeta específica en SharePoint.

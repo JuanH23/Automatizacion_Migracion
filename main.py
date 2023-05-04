@@ -52,9 +52,11 @@ ruth_list_download= env["path_list_download"]
 EXPORT_TYPE='Excel'
 
 ##############################################################################################################
+#Lista de los nombres de los archivos que se van a buscar en el PC
 name_files=["Arris_SCMSummary.xlsx","Casa_SCMSummary.xlsx","Ocupacion- RPHY Harmonic_DAAS.xlsx","Ocupacion-Harmonic_COS.xlsx"]
 
-sheet_names=[None,None,None,None]
+sheet_names=[None,None,None,None]#Si hay algun archivo con mas de una hoja, colocar el nombre de la hoja 
+#en orden de los archivos de la lista name_files
 ##############################################################################################################
 
 class MiApp(QtWidgets.QMainWindow):
@@ -122,11 +124,7 @@ class MiApp(QtWidgets.QMainWindow):
     #*corra en paralelo con la interfaz y cualquier proceso que se este ejecutando en el mismo instante    
     
     def complet_COS(self,df):
-        """
-        La función agrega los puertos faltantes a un marco de datos y devuelve el marco de datos
-        actualizado.
-        
-        """
+
         #todos_valores_num1: Da un rango de valores el cual va a completar los puertos COS, del rango 1-112
         #dispositivos:dispositivos guarda como valores unicos a la columna del Dataframe 'Dispositivo'
         #puertos: guarda los valores resultantes de realizar una separacion de los datos de la columna 'Puerto' que contenga el simbolo ':'
@@ -175,8 +173,7 @@ class MiApp(QtWidgets.QMainWindow):
 
     def complete_DAAS(self,df):
         """
-        La función agrega filas a un DataFrame para dispositivos a los que les faltan puertos y ordena el
-        DataFrame resultante por dispositivo y puerto.
+
         
         :param df: un DataFrame de pandas que contiene información sobre los dispositivos de red y sus
         puertos
@@ -275,22 +272,28 @@ class MiApp(QtWidgets.QMainWindow):
     def filtrado_COS_DAAS(self):
 
          try:
+            #Lee el archivo encontrado de ARRIS
             df=pd.DataFrame(self.file_arris)
             print(f"df==>{df}")
+            #Lee el archivo encontrado de CASA
             df_casa=pd.DataFrame(self.file_casa)
             print(f"df_casa==>{df_casa}")
+            #Filtra las columnas necesarias para realizar el filtrado
             df_casa=df_casa.loc[:,['CMTS','Upstream','Total','Description']].astype(str).fillna('No data')
-            
+            #Cambia el nombre 
             df_casa=df_casa.rename(columns={'Upstream':'S/CG/CH'})
+            #Filtra las columnas necesarias para realizar el filtrado
             file_2=df.loc[:,['CMTS','S/CG/CH','Total','Description']].astype(str).fillna('No data')
+            #Une el Dataframe de ARRIS con el de CASA
             df_concat = pd.concat([file_2, df_casa])
             #variable="39g1"
             #variable="fas1"
+            #Toma el nombre del nodo que se dijite en el LineEdit
             variable=self.ui.lineEdit_buscar.text()
             variable=variable.upper()#*Debido a que todas las letras en la columna esta en mayuscula no importa lo que se digite en el LineEdit, lo transforma a mayuscula para facilitar el filtrado
             self.filtro=df_concat[df_concat['Description'].str.contains(variable,case=False,na=False,regex=True)]#*con el argumento contains revisa lo que se guarde en la varible,filtre y en la variable filtro guarde todo.
             
-            
+        
             ciudad=self.filtro['CMTS']
             valor=ciudad.index
             valor_list=valor.to_list()
@@ -301,18 +304,24 @@ class MiApp(QtWidgets.QMainWindow):
             sep2=v.find("-",sep+1)
             variable3=v[:sep2]
             print(variable3)
-            
+            #Lee el archivo encontrado de DAAS
             df2=pd.DataFrame(self.file_despues_DAAS)
-            
+            #coloca la variable df2 en la funcion complete_DAAS, para completar los puertos faltantes
             df_das=self.complete_DAAS(df2)
+            #Filtra las columnas necesarias para realizar el filtrado
             file_3=df_das.loc[:,['IP','Dispositivo','Puerto','status','Unnamed: 4','Unnamed: 5']].astype(str).fillna(value='No Data')          
+            #utiliza la palabra clave "PUERTO LIBRE" para reducir la cantidad de resultados
             variable2="PUERTOLIBRE"
+            #Realiza el filtro con la variable2
             filtro2=file_3[file_3['Unnamed: 5'].str.contains(variable2,case=False,na=False,regex=True)].fillna(value='No Data')     
+            #Realiza el filtro con la variable2
             filtro3=filtro2[filtro2['Dispositivo'].str.contains(variable3,case=False,na=False,regex=True)].fillna(value='No Data')
+            #Elimina filas duplicadas
             filtro3_sin_duplicados = filtro3.drop_duplicates()
             variable_disp,variable_ip,variable_ip2,filter_daas=self.simpli_DAAS(filtro3)
             filtro4=filtro3_sin_duplicados[filtro3_sin_duplicados['Dispositivo'].str.contains(variable_disp,case=False,na=False,regex=True)]#!Opcion 1
             ############!Opcion2
+            #Para reducir la cantidad de dispositivos DAAS toma la variable_ip y variable_ip+1 para que solo puedan haber dos
             if filtro3_sin_duplicados['IP'].str.contains(str(variable_ip)).any():
                 in_colum=filtro3_sin_duplicados['IP'].str.contains(str(variable_ip),case=False,na=False,regex=True)
                 temp_df=filtro3_sin_duplicados[in_colum]
@@ -335,10 +344,11 @@ class MiApp(QtWidgets.QMainWindow):
             else:
                  DOS_DAAS=CON_DAAS_COS[CON_DAAS_COS['Dispositivo'].str.contains(str(filter_daas),case=False,na=False,regex=True)]
                  
-
+            #Lee el archivo encontrado de COS
             df_cos=pd.DataFrame(self.file_despues_COS)
             df_out=self.complet_COS(df_cos)
             df_out=df_out[df_out['Dispositivo'].str.contains(variable3,case=False,na=False,regex=True)]
+            #utiliza la palabra clave "unlocked" para reducir la cantidad de resultados
             ptp="unlocked"
             df_out2=df_out[df_out['ptp'].str.contains(ptp,case=False,na=False,regex=True)]#*Filtrado columna ptp
             df_out2=df_out2.loc[:,['Dispositivo','Puerto','ptp']]
@@ -359,7 +369,9 @@ class MiApp(QtWidgets.QMainWindow):
             second=UNO.find("-",first+1)
             three=UNO.find("-",second+1)
             four=UNO.find("-",three+1)
-            UN_COS=UNO[three+1:four]           
+            UN_COS=UNO[three+1:four]
+            #Con el slicing que se realiza toma la columna Dispositivo COS y mira el numero que tiene para que solo tome uno de esos dispositivos
+                       
             if final['Dispositivo COS'].str.contains(UN_COS,case=False,na=False,regex=True).any():
                 NO_dos_COS=final['Dispositivo COS'].str.contains(UN_COS,case=False,na=False,regex=True)
                 self.FINAL_FILTRADO=final[NO_dos_COS]
@@ -374,7 +386,7 @@ class MiApp(QtWidgets.QMainWindow):
             DAAS=self.FINAL_FILTRADO.loc[:,['Dispositivo DAAS','Puerto DAAS','Unnamed: 5']]
             print(COS)
             print(DAAS)
-            
+            #Da los parametros necesarios para que se realicen los diseños
             diseño(self.filtro,self.FINAL_FILTRADO,variable,filter_daas,self.seleccion_2)
             return self.filtro,COS,DAAS
             
@@ -631,8 +643,7 @@ class MiApp(QtWidgets.QMainWindow):
     def obtener_dataframes(self,name_files,ruta_de_busqueda):            
 
             """
-        Esta función busca archivos específicos en un directorio determinado y devuelve sus datos como
-        marcos de datos de pandas.
+
         
         :name_files: Una lista de nombres de archivos para buscar en los directorios dados
         :ruta_de_busqueda: Las rutas de directorio donde la función buscará los archivos
@@ -663,7 +674,7 @@ class MiApp(QtWidgets.QMainWindow):
             return dfs
     def read_data(self):
                 """
-                Esta función lee datos de archivos de Excel y devuelve cuatro marcos de datos.
+                
                 :return: four variables: arris_df, ocupacion_Daas, ocupacion_Cos, and Casa_df.
                 """
 
@@ -722,10 +733,7 @@ class MiApp(QtWidgets.QMainWindow):
 
     def subir_list(self):
 
-        """
-                Esta función carga datos de un archivo de Excel a una lista de SharePoint, maneja interrupciones y
-                desconexiones y vuelve a intentar intentos fallidos.
-        """
+
         process=True
         self.continuar_subida=True
         self.count2=0
@@ -982,10 +990,7 @@ class MiApp(QtWidgets.QMainWindow):
                             continue
                                                     
     def save_path_list(self):
-        """
-        Esta función establece una nueva ruta de descarga para una lista de archivos y la guarda en un
-        archivo .env.
-        """
+
         #Revisa que el nombre del archivo en el LineEdit no este vacio y si es asi lo guarde como ya estaba guardado
         # y si tiene algo nuevo lo guarde en el archivo y lo tome como la nueva ruta
         path_list = self.ui.lineEdit_Path_lists.text()

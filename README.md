@@ -27,7 +27,7 @@
 * [search_files.py](#search_files)
 * [Upload_Files.py](#Upload_Files)
 * [Estructura_principal_FINAL.py](#Estructura_principal_FINAL)
-
+* [main.py](#main)
 
 
 
@@ -158,9 +158,32 @@ Este archivo contiene una clase llamada principal del programa, donde estan los 
 - lineEdit_folder_subir_archivo: Espacio para configurar el nombre de la carpeta donde se va a guardar los archivos de los diseños en SharePoint y se guardara en el archivo .env
 - lineEdit_Path_lists: Espacio para configurar el Path donde se va a guardar el sitio donde se guardaran todos los archivos y se guardara en el archivo .env
 - bt_save_con: Botón para guardar los parametros.
-
-
-estructura principal
+## main
+Este archivo contiene una clase llamada MiApp, la cual tiene la codificación del funcionamiento de la interfaz gráfica, este archivo esta dividido en varias funciones:
+- __init__(self): Esta función inicializa y coloca parametros escenciales 
+-abrir_archivo(self): Esta función abre un cuadro de diálogo de archivo para seleccionar un archivo de Excel
+- complet_COS(self,df): La función agrega los puertos faltantes a un marco de datos y devuelve el marco de datos actualizado.
+- complete_DAAS(self,df): La función agrega filas a un DataFrame para dispositivos a los que les faltan puertos y ordena el DataFrame resultante por dispositivo y puerto.
+- simpli_DAAS(self,df): Toma varias columnas del Dataframe de DAAS para regresar variables que sirven para filtrar.
+- filtrado_COS_DAAS(self): Recibe todos los Dataframes, y regresa en el antes el nodo filtrado, y en el despues los disponibles del COS y el DAAS, ademas de llamar a la función para que realice los archivos de diseños.
+- mostrar_tabla(self): Crea tres hilos escencialmente para ejecutar en paralelo el filtrado y la interfaz gráfica.
+- crear_tabla(self): Crea una tabla del antes, para mostrarlos en una interfaz gráfica.
+- crear_despues_COS(self): Crea una tabla del despues COS, para mostrarlos en una interfaz gráfica.
+- crear_despues_DAAS(self): Crea una tabla del despues DAAS, para mostrarlos en una interfaz gráfica.
+- control_bt_minimizar(self): Minimiza la ventana cuando ejecute el evento el botón.
+- control_close(self): Cierra la ventana
+- upload_file(self): llama del archivo Upload_files.py la clase Ui_ADVERTENCIA y lo muestra en la ventana principal.
+- cancelar_stop(self): Esta función cancela la subida de datos a lista de SharePoint.
+- seleccion_archivo(self): Guarda el nombre de como se va a descargar la lista 
+- seleccion_archivo(self): Guarda el tipo de nodo que se va a generar el diseño
+- upload_LIST(self): La función crea un hilo para cargar una lista
+-  obtener_dataframes(self,name_files,ruta_de_busqueda): Esta función busca archivos específicos en un directorio determinado y devuelve sus datos como marcos de datos de pandas.
+- obtener_dataframes(self,name_files,ruta_de_busqueda): Esta función lee datos de archivos de Excel y devuelve cuatro marcos de datos.
+- search_file_filter(self): Esta función busca archivos en función de un filtro
+- subir_list(self): Esta función carga datos de un archivo de Excel a una lista de SharePoint, maneja interrupciones y descoexniones y vuelve a intentar intentos fallidos.
+- save_path_list(self): Esta función establece una nueva ruta de descarga para una lista de archivos y la guarda en un archivo .env
+- save_parameters_url_sharepoint(self): Esta función establece una nueva ruta de el sitio de SharePint donde se realizara todo el procedimiento y la guarda en un archivo .env
+- save_parameters_name_folder_Sharepoint(self): Esta función establece una nueva ruta de la carpeta de SharePint donde se guardaran los .xlsx de los diseños generados y la guarda en un archivo .env
 main
 office365
 prueba_formato

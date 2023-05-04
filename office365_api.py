@@ -36,7 +36,7 @@ class SharePoint:
         Esta función recupera una lista de archivos de una carpeta de SharePoint específica mediante la API
         de Microsoft Graph.
         
-        :param folder_name: El nombre de la carpeta en SharePoint para la que desea recuperar una lista de
+        :folder_name: El nombre de la carpeta en SharePoint para la que desea recuperar una lista de
         archivos
         :return: La función `_get_files_list` devuelve una lista de archivos en la carpeta de SharePoint
         especificada.
@@ -50,7 +50,7 @@ class SharePoint:
         """
         Esta función recupera una lista de carpetas dentro de una carpeta específica en SharePoint.
         
-        :param folder_name: El nombre de la carpeta para la que desea recuperar una lista de subcarpetas
+        :folder_name: El nombre de la carpeta para la que desea recuperar una lista de subcarpetas
         :return: La función `get_folder_list` devuelve una lista de carpetas dentro del nombre de carpeta
         especificado en SharePoint.
         """
@@ -66,8 +66,8 @@ class SharePoint:
         Esta función descarga un archivo de un sitio de SharePoint dado el nombre del archivo y el nombre de
         la carpeta.
         
-        :param file_name: El nombre del archivo que debe descargarse de SharePoint
-        :param folder_name: El nombre de la carpeta en la que se encuentra el archivo en SharePoint
+        :file_name: El nombre del archivo que debe descargarse de SharePoint
+        :folder_name: El nombre de la carpeta en la que se encuentra el archivo en SharePoint
         :return: Se devuelve el contenido del archivo con el nombre de archivo y el nombre de carpeta
         especificados en el sitio de SharePoint.
         """
@@ -81,9 +81,9 @@ class SharePoint:
         """
         Esta función carga un archivo en una carpeta específica en un sitio de SharePoint.
         
-        :param file_name: El nombre del archivo que debe cargarse en SharePoint
-        :param folder_name: El nombre de la carpeta en la que se debe cargar el archivo
-        :param content: El parámetro de contenido es el contenido real del archivo que debe cargarse. Puede
+        :file_name: El nombre del archivo que debe cargarse en SharePoint
+        :folder_name: El nombre de la carpeta en la que se debe cargar el archivo
+        :content: El parámetro de contenido es el contenido real del archivo que debe cargarse. Puede
         ser en forma de bytes o una cadena, según el tipo de archivo que se cargue
         :return: Se está devolviendo la respuesta de la operación de carga del archivo.
         """
@@ -96,7 +96,7 @@ class SharePoint:
         """
         Esta función recupera todos los elementos de una lista de SharePoint con un nombre dado.
         
-        :param list_name: El nombre de la lista de SharePoint de la que desea recuperar datos
+        :list_name: El nombre de la lista de SharePoint de la que desea recuperar datos
         :return: La función `get_list` devuelve una lista de elementos de una lista de SharePoint
         especificada por el parámetro `list_name`.
         """

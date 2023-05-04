@@ -9,6 +9,7 @@ import time
 import threading
 import os
 import ssl
+
 from openpyxl import load_workbook
 def Type_file(file_name,export_type):
     #Dependiendo del tipo de archivo que se coloque va a a añadir la estensión
@@ -26,7 +27,7 @@ def download_list(list_name,export_type,dir_path,file_name):
     #Llama con un hilo la función save_Execel para ejecutar en segundo plano
     ssl._create_default_https_context=ssl._create_unverified_context 
     sp_list=SharePoint().get_list(list_name)
-
+    
     if export_type == 'Excel':
         
         file=threading.Thread(target= save_Execel(sp_list,dir_path,file_name))

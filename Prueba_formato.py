@@ -42,8 +42,6 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     ################################################################
     
     df.to_excel(archivo_excel,sheet_name='Hoja1' ,index=False)
-    #!set_key(".env", "path_files_upload", ruta_nueva_carpeta)
-    #!Mover el set_key fuera del archivo,debido a que al realizarse varias veces borre las demas variables del archivo .env
     ################################################################
     hoja = archivo_excel.sheets['Hoja1']
     # Obtener el libro de trabajo y la hoja

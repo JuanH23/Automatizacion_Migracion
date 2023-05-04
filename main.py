@@ -1014,7 +1014,9 @@ class MiApp(QtWidgets.QMainWindow):
         print(f"new_path_list_download==>{new_path_list_download}")
         set_key(".env", "path_list_download", new_path_list_download)
         print(set_key(".env", "path_list_download", new_path_list_download))
-        self.FOLDER_DEST=new_path_list_download 
+        self.FOLDER_DEST=new_path_list_download
+        ruta_nueva_carpeta = new_path_list_download + "/Diseños_NODOS" 
+        set_key(".env", "path_files_upload", ruta_nueva_carpeta)
         print(f"s_files==>{self.ruta_de_busqueda}")
         print(f"FOLDER_DEST==>{self.FOLDER_DEST}")
 

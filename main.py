@@ -108,6 +108,7 @@ class MiApp(QtWidgets.QMainWindow):
         self.sch=0
         self.ruta_de_busqueda=[]
         self.seleccion_2=""
+        self.flag=0
     def update_progress_bar_Slot(self,value):
         self.ui.progressBar_2.setValue(value)
 
@@ -590,7 +591,7 @@ class MiApp(QtWidgets.QMainWindow):
         print(self.index_stop)
         self.continuar_subida=False
         self.c_up=0
-        
+        self.flag=1
     def seleccion_archivo(self):
         #seleccion: Almacena el valor que se seleccione del comboBox
         seleccion=self.ui.comboBox.itemText(self.ui.comboBox.currentIndex())
@@ -737,7 +738,7 @@ class MiApp(QtWidgets.QMainWindow):
         process=True
         self.continuar_subida=True
         self.count2=0
-        flag=1
+        flagg=1
         index_saved=False
         self.saved_index=0
         c=0
@@ -776,6 +777,7 @@ class MiApp(QtWidgets.QMainWindow):
         excel_file = self.direccion##!PATH
         data={}
         chunk=0
+        item_pro={}
         while process==True:
         # El código verifica si el archivo de Excel de entrada contiene hojas específicas con ciertos
         # encabezados de columna. Si encuentra una hoja con los encabezados requeridos, filtra las columnas,
@@ -791,12 +793,14 @@ class MiApp(QtWidgets.QMainWindow):
                         for header in headers:
                             if header in cabeceras:
                                 cont1+=1
-                                if cont1==10:
-                                    file_2=file.loc[:,['CMTS','S/CG/CH','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+                                if cont1==9:
+                                    file_2=file.loc[:,['CMTS','S/CG/CH','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']].fillna(value='No Data')
+                                    #file_2=file.loc[:,['CMTS','S/CG/CH','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
                                     file_2=file_2.rename(columns={"S/CG/CH":"Up"})
-                                    file_2[['Up','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']] = file_2[['Up','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
+                                    file_2[['Up','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']] = file_2[['Up','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']].astype(str)
+                                    #file_2[['Up','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']] = file_2[['Up','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
                                     data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario
-                                    flag=1
+                                    flagg=1
             # El código lee un archivo de Excel y verifica si contiene una hoja específica llamada
             # "Casa_SCMSummary". Si la hoja existe, filtra las columnas 'CMTS', 'Upstream', 'Total' y
             # 'Description' de la hoja y reemplaza los valores faltantes con 'Sin datos'. Luego convierte los
@@ -812,11 +816,11 @@ class MiApp(QtWidgets.QMainWindow):
                         for header in headers:
                             if header in cabeceras:
                                 cont2+=1
-                                if cont2==10:
-                                    file_2=file.loc[:,['CMTS','Upstream','Total','Active','Registered','Secondary','offline','Bonding','Non_Bonding','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
-                                    file_2[['Upstream','Total','Description','Active','Registered','Secondary','offline','Bonding','Non_Bonding']] = file_2[['Upstream','Total','Description','Active','Registered','Secondary','offline','Bonding','Non_Bonding']].astype(str)#*Convierte los valores de estas columnas a tipo str
+                                if cont2==9:
+                                    file_2=file.loc[:,['CMTS','Upstream','Total','Active','Registered','Secondary','Offline','Bonding','Non_Bonding','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+                                    file_2[['Upstream','Total','Active','Registered','Secondary','Offline','Bonding','Non_Bonding','Description']] = file_2[['Upstream','Total','Active','Registered','Secondary','Offline','Bonding','Non_Bonding','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
                                     data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
-                                    flag=2
+                                    flagg=2
             elif ("Ocupacion - Marcacion RPHY Harmonic" in excel_file) and ("COS" in list_title)  :
                         df = pd.read_excel(excel_file,sheet_name='Hoja5',engine='openpyxl')
                         file=pd.DataFrame(df)
@@ -831,7 +835,7 @@ class MiApp(QtWidgets.QMainWindow):
                             file_2=file.loc[:,['IP','Dispositivo','Puerto','moka','status','ptp']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
                             file_2[['IP','Dispositivo','Puerto','moka','status','ptp']] = file_2[['IP','Dispositivo','Puerto','moka','status','ptp']].astype(str)#*Convierte los valores de estas columnas a tipo str
                             data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
-                            flag=4 
+                            flagg=4 
             elif ("Ocupacion - Marcacion RPHY Harmonic" in excel_file) and ("DAAS" in list_title) :
                         df = pd.read_excel(excel_file,sheet_name='Hoja2',engine='openpyxl')
                         file=pd.DataFrame(df)
@@ -850,7 +854,7 @@ class MiApp(QtWidgets.QMainWindow):
                                     file_2[['IP','Dispositivo','Puerto','status']] = file_2[['IP','Dispositivo','Puerto','status']].astype(str)#*Convierte los valores de estas columnas a tipo str
                                     print(file_2)
                                     data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
-                                    flag=3
+                                    flagg=3
 
             # El código anterior es un script de Python que inserta datos en una lista de SharePoint mediante la
             # API REST de SharePoint. Incluye manejo de errores para errores HTTP y otras excepciones que pueden
@@ -861,26 +865,27 @@ class MiApp(QtWidgets.QMainWindow):
             # función de sus valores.
 
             try:    
-                            print(flag==1)
+                            
+                            print(self.flag==1)
             # El código anterior es un fragmento de código de Python que contiene una declaración if-else.
             # Comprueba el valor de la variable `self.flag` y realiza diferentes acciones en función de su valor.
             # Si `self.flag` es igual a 1, comprueba el valor de otra variable `self.c_up`. Si `self.c_up` es
             # mayor que 1, establece el valor de `self.last_saved_index` en 0 y establece el valor de `count` en
             # 0. Si `self.c_up` no es mayor que 1, establece el valor de `self.last_saved
-                            if  flag==1:
+                            if  self.flag==1:
                                 if self.c_up>1:
                                     last_saved_index=0
                                     count=0
                                     print(f"count==>{count}")
                                     print(f"L1==>{last_saved_index}")
-                                    flag=0
+                                    self.flag=0
                                 else:
                                     last_saved_index=self.index_stop
                                     count=self.count3
                                     print(f"count==>{count}")
                                     print(f"L1==>{last_saved_index}")
-                                    flag=0
-                                    print(flag==1)
+                                    self.flag=0
+                                    print(self.flag==1)
 
                             while last_saved_index < len(data): 
                                 
@@ -894,13 +899,14 @@ class MiApp(QtWidgets.QMainWindow):
             # El código define un diccionario `item_pro` basado en el valor de la variable `flag`. Dependiendo del
             # valor de `bandera`, se agregan diferentes pares clave-valor al diccionario. El valor de `c` se
             # incrementa en 1 y el diccionario `item_pro` resultante se asigna a la variable `item_properties`.
-                                    if flag==1:
-                                        item_pro = {'CMTS': d['CMTS'],'Up':d['Up'],'Mac':d['Mac'],'Conn':d['Conn'],'Total': d['Total'],'Oper':d['Oper'],'Disable':d['Disable'],'Init':d['Init'],'Offline':d['Offline'], 'Description': d['Description']}     
-                                    elif flag==2:
-                                        item_pro = {'CMTS': d['CMTS'],'Upstream':d['Upstream'],'Total': d['Total'],'Active':d['Active'],'Registered':d['Registered'],'Secondary':d['Secondary'],'offline':d['offline'],'Bonding':d['Bonding'],'Non_Bonding':d['Non_Bonding'], 'Description': d['Description']}                              
-                                    elif flag==3:
+                                    if flagg==1:
+                                        #item_pro = {'CMTS': d['CMTS'],'Up':d['Up'],'Mac':d['Mac'],'Conn':d['Conn'],'Total': d['Total'],'Oper':d['Oper'],'Disable':d['Disable'],'Init':d['Init'],'Offline':d['Offline'], 'Description': d['Description']}
+                                        item_pro = {'CMTS': d['CMTS'],'Up':d['Up'],'Mac':d['Mac'],'Conn':d['Conn'],'Total': d['Total'],'Oper':d['Oper'],'Disable':d['Disable'],'Init':d['Init'],'Offline':d['Offline'], 'Description': d['Description']}      
+                                    elif flagg==2:
+                                        item_pro = {'CMTS': d['CMTS'],'Upstream':d['Upstream'],'Total': d['Total'],'Active':d['Active'],'Registered':d['Registered'],'Secondary':d['Secondary'],'offline':d['Offline'],'Bonding':d['Bonding'],'NonBonding':d['Non_Bonding'],'Description': d['Description']}                                
+                                    elif flagg==3:
                                         item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'],'status':d['status'],'stat2':d['stat2'],'ptp':d['ptp']}  
-                                    elif flag==4:
+                                    elif flagg==4:
                                         item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'],'moka':d['moka'],'status':d['status'], 'ptp': d['ptp']}      
                                     c=c+1
                                     item_properties=item_pro
@@ -930,7 +936,7 @@ class MiApp(QtWidgets.QMainWindow):
                                             
                                             print(f"Error de HTTP al agregar el elemento #{c}: {http_error}")
                                             time.sleep(5)  #* Esperar 5 segundos antes de intentar de nuevo
-                                            count=last_saved_index
+                                            #count=last_saved_index
                                         except Exception as e:
                                             
                                             print(f"Error en el intento {i+1} de inserción para el elemento #{c}: {e}")                              

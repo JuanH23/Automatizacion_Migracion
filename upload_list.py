@@ -62,14 +62,14 @@ ctx=ClientContext(url).with_credentials(
 #ctx = ClientContext(url).with_credentials(UserCredential(username,password))
 ctx.clear
         #############################################################################
-list_title ="DAAS"##!NOMBRE LISTA
+list_title ="Arris_F"##!NOMBRE LISTA
 print(list_title)
 Sp_list = ctx.web.lists.get_by_title(list_title)#*Acceder a la lista
       
 print(Sp_list)
 ctx.load(Sp_list)
 ctx.execute_query()
-excel_file = "descarga/Ocupacion - Marcacion RPHY Harmonic.xlsx"##!PATH
+excel_file = "descarga/Arris_SCMSummary.xlsx"##!PATH
 data={}
 chunk=0
 while process==True:
@@ -87,7 +87,7 @@ while process==True:
                 for header in headers:
                     if header in cabeceras:
                         cont1+=1
-                        if cont1==10:
+                        if cont1==9:
                             file_2=file.loc[:,['CMTS','S/CG/CH','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
                             file_2=file_2.rename(columns={"S/CG/CH":"Up"})
                             file_2[['Up','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']] = file_2[['Up','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
@@ -104,13 +104,15 @@ while process==True:
                 cont2=0
                 print("b")
                 cabeceras=list(file.columns)
-                headers=['CMTS','Upstream','Total','Active','Registered','Secondary','offline','Bonding','Non_Bonding','Description']
+                headers=['CMTS','Upstream','Total','Active','Registered','Secondary','Offline','Bonding','Non_Bonding','Description']
                 for header in headers:
                     if header in cabeceras:
                         cont2+=1
-                        if cont2==10:
-                            file_2=file.loc[:,['CMTS','Upstream','Total','Active','Registered','Secondary','offline','Bonding','Non_Bonding','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
-                            file_2[['Upstream','Total','Description','Active','Registered','Secondary','offline','Bonding','Non_Bonding']] = file_2[['Upstream','Total','Description','Active','Registered','Secondary','offline','Bonding','Non_Bonding']].astype(str)#*Convierte los valores de estas columnas a tipo str
+                        if cont2==9:
+                            file_2=file.loc[:,['CMTS','Upstream','Total','Active','Registered','Secondary','Offline','Bonding','Non_Bonding','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+                            #file_2=file.loc[:,['CMTS','Upstream','Total','Active','Registered','Secondary','offline','Bonding','NonBonding','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+                            file_2[['Upstream','Total','Active','Registered','Secondary','Offline','Bonding','Non_Bonding','Description']] = file_2[['Upstream','Total','Active','Registered','Secondary','Offline','Bonding','Non_Bonding','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
+                            #file_2[['Upstream','Total','Description','Active','Registered','Secondary','offline','Bonding','NonBonding']] = file_2[['Upstream','Total','Description','Active','Registered','Secondary','offline','Bonding','NonBonding']].astype(str)#*Convierte los valores de estas columnas a tipo str
                             data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
                             flag=2
     elif ("Ocupacion - Marcacion RPHY Harmonic" in excel_file) and ("COS" in list_title)  :
@@ -195,7 +197,8 @@ while process==True:
                             if flag==1:
                                 item_pro = {'CMTS': d['CMTS'],'Up':d['Up'],'Mac':d['Mac'],'Conn':d['Conn'],'Total': d['Total'],'Oper':d['Oper'],'Disable':d['Disable'],'Init':d['Init'],'Offline':d['Offline'], 'Description': d['Description']}     
                             elif flag==2:
-                                item_pro = {'CMTS': d['CMTS'],'Upstream':d['Upstream'],'Total': d['Total'],'Active':d['Active'],'Registered':d['Registered'],'Secondary':d['Secondary'],'offline':d['offline'],'Bonding':d['Bonding'],'Non_Bonding':d['Non_Bonding'], 'Description': d['Description']}                              
+                                item_pro = {'CMTS': d['CMTS'],'Upstream':d['Upstream'],'Total': d['Total'],'Active':d['Active'],'Registered':d['Registered'],'Secondary':d['Secondary'],'offline':d['Offline'],'Bonding':d['Bonding'],'NonBonding':d['Non_Bonding'],'Description': d['Description']}                              
+                                #item_pro = {'CMTS': d['CMTS'],'Upstream':d['Upstream'],'Total': d['Total'],'Active':d['Active'],'Registered':d['Registered'],'Secondary':d['Secondary'],'offline':d['offline'],'Bonding':d['Bonding'],'NonBonding':d['Non_Bonding'], 'Description': d['Description']}  
                             elif flag==3:
                                 item_pro = {'IP': d['IP'],'Dispositivo':d['Dispositivo'],'Puerto': d['Puerto'],'status':d['status'],'stat2':d['stat2'],'ptp':d['ptp']}  
                             elif flag==4:

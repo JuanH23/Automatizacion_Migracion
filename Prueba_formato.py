@@ -66,7 +66,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     # Escribir la primera columna del dataframe en la columna A de la hoja de trabajo
     columna = 2  # Columna B
     fila_inicial = 4  # Empezar a escribir desde la fila 2
-    for i, valor in enumerate(df['S/CG/CH']):
+    for i, valor in enumerate(df['Up']):
         celda_actual = worksheet.cell(row=fila_inicial+i, column=columna)
         celda_actual.value = valor
     # Escribir la primera columna del dataframe en la columna A de la hoja de trabajo
@@ -620,11 +620,11 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     sep=0
     sep2=0
     text_script=""
-    slot_valor=df['S/CG/CH']
+    slot_valor=df['Up']
     slot_index=slot_valor.index
     slot_list=slot_index.to_list()
     indice_slot=slot_list[0]
-    texto_slot=df.loc[indice_slot,"S/CG/CH"]
+    texto_slot=df.loc[indice_slot,"Up"]
     #print(texto_slot)
     if "U" in texto_slot:
         if len(slot_list)==4:
@@ -703,10 +703,10 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     else:
         print(f"len_slot_list==>{len(slot_list)}")
         if len(slot_list)==4:
-            a=df.loc[slot_list[0],"S/CG/CH"]
-            b=df.loc[slot_list[1],"S/CG/CH"]
-            c=df.loc[slot_list[2],"S/CG/CH"]
-            d=df.loc[slot_list[3],"S/CG/CH"]
+            a=df.loc[slot_list[0],"Up"]
+            b=df.loc[slot_list[1],"Up"]
+            c=df.loc[slot_list[2],"Up"]
+            d=df.loc[slot_list[3],"Up"]
             #print(f"a==>{a}")
             #print(f"b==>{b}")
             #print(f"c==>{c}")
@@ -730,11 +730,11 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
 
         elif len(slot_list)>4:
             if slot_list[5]==None:
-                a=df.loc[slot_list[0],"S/CG/CH"]
-                b=df.loc[slot_list[1],"S/CG/CH"]
-                c=df.loc[slot_list[2],"S/CG/CH"]
-                d=df.loc[slot_list[3],"S/CG/CH"]
-                e=df.loc[slot_list[4],"S/CG/CH"]
+                a=df.loc[slot_list[0],"Up"]
+                b=df.loc[slot_list[1],"Up"]
+                c=df.loc[slot_list[2],"Up"]
+                d=df.loc[slot_list[3],"Up"]
+                e=df.loc[slot_list[4],"Up"]
                 #print(f"a==>{a}")
                 #print(f"b==>{b}")
                 #print(f"c==>{c}")
@@ -759,12 +759,12 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
                 text_script_g=" "                
                 text_script_h=" "
             elif slot_list[6]==None:
-                a=df.loc[slot_list[0],"S/CG/CH"]
-                b=df.loc[slot_list[1],"S/CG/CH"]
-                c=df.loc[slot_list[2],"S/CG/CH"]
-                d=df.loc[slot_list[3],"S/CG/CH"]
-                e=df.loc[slot_list[4],"S/CG/CH"]
-                f=df.loc[slot_list[5],"S/CG/CH"]
+                a=df.loc[slot_list[0],"Up"]
+                b=df.loc[slot_list[1],"Up"]
+                c=df.loc[slot_list[2],"Up"]
+                d=df.loc[slot_list[3],"Up"]
+                e=df.loc[slot_list[4],"Up"]
+                f=df.loc[slot_list[5],"Up"]
                 #print(f"a==>{a}")
                 #print(f"b==>{b}")
                 #print(f"c==>{c}")
@@ -791,13 +791,13 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
                 text_script_g=" "                
                 text_script_h=" "
             elif slot_list[7]==None:
-                a=df.loc[slot_list[0],"S/CG/CH"]
-                b=df.loc[slot_list[1],"S/CG/CH"]
-                c=df.loc[slot_list[2],"S/CG/CH"]
-                d=df.loc[slot_list[3],"S/CG/CH"]
-                e=df.loc[slot_list[4],"S/CG/CH"]
-                f=df.loc[slot_list[5],"S/CG/CH"]
-                g=df.loc[slot_list[6],"S/CG/CH"]
+                a=df.loc[slot_list[0],"Up"]
+                b=df.loc[slot_list[1],"Up"]
+                c=df.loc[slot_list[2],"Up"]
+                d=df.loc[slot_list[3],"Up"]
+                e=df.loc[slot_list[4],"Up"]
+                f=df.loc[slot_list[5],"Up"]
+                g=df.loc[slot_list[6],"Up"]
                 #print(f"a==>{a}")
                 #print(f"b==>{b}")
                 #print(f"c==>{c}")
@@ -827,14 +827,14 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
                 text_script_h=" "
             else:
                 
-                a=df.loc[slot_list[0],"S/CG/CH"]
-                b=df.loc[slot_list[1],"S/CG/CH"]
-                c=df.loc[slot_list[2],"S/CG/CH"]
-                d=df.loc[slot_list[3],"S/CG/CH"]
-                e=df.loc[slot_list[4],"S/CG/CH"]
-                f=df.loc[slot_list[5],"S/CG/CH"]
-                g=df.loc[slot_list[6],"S/CG/CH"]
-                h=df.loc[slot_list[7],"S/CG/CH"]
+                a=df.loc[slot_list[0],"Up"]
+                b=df.loc[slot_list[1],"Up"]
+                c=df.loc[slot_list[2],"Up"]
+                d=df.loc[slot_list[3],"Up"]
+                e=df.loc[slot_list[4],"Up"]
+                f=df.loc[slot_list[5],"Up"]
+                g=df.loc[slot_list[6],"Up"]
+                h=df.loc[slot_list[7],"Up"]
                 #print(f"a==>{a}")
                 #print(f"b==>{b}")
                 #print(f"c==>{c}")
@@ -866,9 +866,9 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
                 text_script_h=h[:seph2]        
 
         else:
-            a=df.loc[slot_list[0],"S/CG/CH"]
-            b=df.loc[slot_list[1],"S/CG/CH"]
-            c=df.loc[slot_list[2],"S/CG/CH"]
+            a=df.loc[slot_list[0],"Up"]
+            b=df.loc[slot_list[1],"Up"]
+            c=df.loc[slot_list[2],"Up"]
             #print(f"a==>{a}")
             #print(f"b==>{b}")
             #print(f"c==>{c}")

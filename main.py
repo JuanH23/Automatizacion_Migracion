@@ -144,7 +144,9 @@ class MiApp(QtWidgets.QMainWindow):
         todos_valores_num1=pd.Series(range(1,113))
         todos_valores_num1=pd.concat([pd.Series([1]),todos_valores_num1,pd.Series([112])])
         todos_valores_num2=pd.Series(range(0,1))
+        
         todos_valores_num2=pd.concat([pd.Series([0]),todos_valores_num2,pd.Series([1])])
+        
         print(todos_valores_num2)
         dispositivos=df['Dispositivo'].unique()
         dispositivos_con_puertos_faltantes=[]
@@ -153,7 +155,6 @@ class MiApp(QtWidgets.QMainWindow):
             puertos_faltantes=todos_valores_num1[~todos_valores_num1.isin(puertos)]
             if len(puertos_faltantes)>0:
                 dispositivos_con_puertos_faltantes.append(dispositivo)
-
         nuevas_filas=[]
         for dispositivo in dispositivos_con_puertos_faltantes:
             puertos=df[df['Dispositivo']==dispositivo]['Puerto'].apply(lambda x: int(x.split(':')[-1]))
@@ -163,10 +164,10 @@ class MiApp(QtWidgets.QMainWindow):
                 puerto_str=str(puerto)+':0'
                 puerto2_str=str(puerto)+':1'
                 ip=df[df['Dispositivo']==dispositivo]['IP'].iloc[0]
-                nuevas_filas.append((ip,dispositivo,puerto_str,"-","-","-","offline","unlocked"))
-                nuevas_filas.append((ip,dispositivo,puerto2_str,"-","-","-","offline","unlocked"))
+                nuevas_filas.append((ip,dispositivo,puerto_str,"-","-","offline","unlocked"))
+                nuevas_filas.append((ip,dispositivo,puerto2_str,"-","-","offline","unlocked"))
         nuevas_filas_df=pd.DataFrame(nuevas_filas,columns=df.columns)
-
+        
         df=pd.concat([df,nuevas_filas_df]).sort_values(['Dispositivo','Puerto']).reset_index(drop=True)
         df=df.drop_duplicates()
         df=df.drop_duplicates(subset=['Dispositivo','Puerto'])
@@ -282,9 +283,10 @@ class MiApp(QtWidgets.QMainWindow):
             #Filtra las columnas necesarias para realizar el filtrado
             df_casa=df_casa.loc[:,['CMTS','Upstream','Total','Description']].astype(str).fillna('No data')
             #Cambia el nombre 
-            df_casa=df_casa.rename(columns={'Upstream':'S/CG/CH'})
+            df_casa=df_casa.rename(columns={'Upstream':'Up'})
             #Filtra las columnas necesarias para realizar el filtrado
-            file_2=df.loc[:,['CMTS','S/CG/CH','Total','Description']].astype(str).fillna('No data')
+            file_2=df.loc[:,['CMTS','Up','Total','Description']].astype(str).fillna('No data')
+            
             #Une el Dataframe de ARRIS con el de CASA
             df_concat = pd.concat([file_2, df_casa])
             #variable="39g1"
@@ -310,17 +312,17 @@ class MiApp(QtWidgets.QMainWindow):
             #coloca la variable df2 en la funcion complete_DAAS, para completar los puertos faltantes
             df_das=self.complete_DAAS(df2)
             #Filtra las columnas necesarias para realizar el filtrado
-            file_3=df_das.loc[:,['IP','Dispositivo','Puerto','status','Unnamed: 4','Unnamed: 5']].astype(str).fillna(value='No Data')          
+            file_3=df_das.loc[:,['IP','Dispositivo','Puerto','status','stat2','ptp']].astype(str).fillna(value='No Data')          
             #utiliza la palabra clave "PUERTO LIBRE" para reducir la cantidad de resultados
             variable2="PUERTOLIBRE"
             #Realiza el filtro con la variable2
-            filtro2=file_3[file_3['Unnamed: 5'].str.contains(variable2,case=False,na=False,regex=True)].fillna(value='No Data')     
+            filtro2=file_3[file_3['ptp'].str.contains(variable2,case=False,na=False,regex=True)].fillna(value='No Data')     
             #Realiza el filtro con la variable2
             filtro3=filtro2[filtro2['Dispositivo'].str.contains(variable3,case=False,na=False,regex=True)].fillna(value='No Data')
             #Elimina filas duplicadas
             filtro3_sin_duplicados = filtro3.drop_duplicates()
             variable_disp,variable_ip,variable_ip2,filter_daas=self.simpli_DAAS(filtro3)
-            filtro4=filtro3_sin_duplicados[filtro3_sin_duplicados['Dispositivo'].str.contains(variable_disp,case=False,na=False,regex=True)]#!Opcion 1
+            #filtro4=filtro3_sin_duplicados[filtro3_sin_duplicados['Dispositivo'].str.contains(variable_disp,case=False,na=False,regex=True)]#!Opcion 1
             ############!Opcion2
             #Para reducir la cantidad de dispositivos DAAS toma la variable_ip y variable_ip+1 para que solo puedan haber dos
             if filtro3_sin_duplicados['IP'].str.contains(str(variable_ip)).any():
@@ -343,11 +345,14 @@ class MiApp(QtWidgets.QMainWindow):
                     DOS_DAAS=CON_DAAS_COS[column_daas | en_tempo_daas]
                     
             else:
-                 DOS_DAAS=CON_DAAS_COS[CON_DAAS_COS['Dispositivo'].str.contains(str(filter_daas),case=False,na=False,regex=True)]
-                 
+                 DOS_DAAS=CON_DAAS_COS[CON_DAAS_COS['Dispositivo'].str.contains(str(filter_daas),case=False,na=False,regex=True)]    
             #Lee el archivo encontrado de COS
             df_cos=pd.DataFrame(self.file_despues_COS)
+            df_cos=df_cos.loc[:,['IP','Dispositivo','Puerto','ID','moka','status','ptp']]
+            print(df_cos)
+            
             df_out=self.complet_COS(df_cos)
+            
             df_out=df_out[df_out['Dispositivo'].str.contains(variable3,case=False,na=False,regex=True)]
             #utiliza la palabra clave "unlocked" para reducir la cantidad de resultados
             ptp="unlocked"
@@ -355,7 +360,7 @@ class MiApp(QtWidgets.QMainWindow):
             df_out2=df_out2.loc[:,['Dispositivo','Puerto','ptp']]
             df_out2=df_out2.rename(columns={'Dispositivo':'Dispositivo COS'})
             df_out2=df_out2.rename(columns={'Puerto':'Puerto COS'})  
-            DOS_DAAS=DOS_DAAS.loc[:,['Dispositivo','Puerto','Unnamed: 5']]
+            DOS_DAAS=DOS_DAAS.loc[:,['Dispositivo','Puerto','ptp']]
             DOS_DAAS=DOS_DAAS.rename(columns={'Dispositivo':'Dispositivo DAAS'})
             DOS_DAAS=DOS_DAAS.rename(columns={'Puerto':'Puerto DAAS'})
             df_out2=pd.concat([df_out2, pd.Series([None] * len(df_out2.columns), index=df_out2.columns)], ignore_index=True)
@@ -376,15 +381,15 @@ class MiApp(QtWidgets.QMainWindow):
             if final['Dispositivo COS'].str.contains(UN_COS,case=False,na=False,regex=True).any():
                 NO_dos_COS=final['Dispositivo COS'].str.contains(UN_COS,case=False,na=False,regex=True)
                 self.FINAL_FILTRADO=final[NO_dos_COS]
-                self.FINAL_FILTRADO=self.FINAL_FILTRADO.loc[:,['Dispositivo COS','Puerto COS','ptp','Dispositivo DAAS','Puerto DAAS','Unnamed: 5']]
+                self.FINAL_FILTRADO=self.FINAL_FILTRADO.loc[:,['Dispositivo COS','Puerto COS','ptp','Dispositivo DAAS','Puerto DAAS','ptp']]
             else:
                 self.FINAL_FILTRADO=final
-                self.FINAL_FILTRADO=self.FINAL_FILTRADO.loc[:,['Dispositivo COS','Puerto COS','ptp','Dispositivo DAAS','Puerto DAAS','Unnamed: 5']]
+                self.FINAL_FILTRADO=self.FINAL_FILTRADO.loc[:,['Dispositivo COS','Puerto COS','ptp','Dispositivo DAAS','Puerto DAAS','ptp']]
             print(self.FINAL_FILTRADO )    
             #final.to_excel("out8.xlsx")
             #self.FINAL_FILTRADO.to_excel("out11.xlsx")##RETORNAR FINAL_FILTRADO PARA LA VISUALIZACION DE LA TABLA DEL DESPUES
             COS=self.FINAL_FILTRADO.loc[:,['Dispositivo COS','Puerto COS','ptp']]
-            DAAS=self.FINAL_FILTRADO.loc[:,['Dispositivo DAAS','Puerto DAAS','Unnamed: 5']]
+            DAAS=self.FINAL_FILTRADO.loc[:,['Dispositivo DAAS','Puerto DAAS','ptp']]
             print(COS)
             print(DAAS)
             #Da los parametros necesarios para que se realicen los diseños
@@ -411,6 +416,8 @@ class MiApp(QtWidgets.QMainWindow):
                 despues_COS_thread.start()
             except NameError as e:
                 print(e)  
+            except ValueError as e:
+                 print(e)
         else:
 
                 QMessageBox.warning(self,"Advertencia",
@@ -613,18 +620,23 @@ class MiApp(QtWidgets.QMainWindow):
         #De la ruta guardada, se extraera del archivo .env, la ruta en la cual se va a guardar el archivo descargado
         #Crear un hilo para ejecutar los procesos en paralelo de la función de descarga de las listas y la interfaz grafica
         #hay un QMssageBox para saber en que momento finalizo la descarga
-        LIST_NAME=self.ui.lineEdit_descargar_lista.text()
-        FILE_NAME=self.seleccion_archivo()
-        FOLDER_DEST=env["path_list_download"]
-        print(f"FOLDER_DEST==>{FOLDER_DEST}")
-        ssl._create_default_https_context=ssl._create_unverified_context
-        file_name= download_lists.Type_file(FILE_NAME,EXPORT_TYPE)
-        downloader_thread = threading.Thread(target=download_lists.download_list(LIST_NAME,EXPORT_TYPE,FOLDER_DEST,file_name))
-        downloader_thread.start()
-        QMessageBox.information(self,"OPERACION",
-        "La operación se ha completado correctamente",
-        QMessageBox.StandardButton.Ok,
-        QMessageBox.StandardButton.Ok)
+        try:
+            LIST_NAME=self.ui.lineEdit_descargar_lista.text()
+            FILE_NAME=self.seleccion_archivo()
+            FOLDER_DEST=env["path_list_download"]
+            print(f"FOLDER_DEST==>{FOLDER_DEST}")
+            ssl._create_default_https_context=ssl._create_unverified_context
+            file_name= download_lists.Type_file(FILE_NAME,EXPORT_TYPE)
+            downloader_thread = threading.Thread(target=download_lists.download_list(LIST_NAME,EXPORT_TYPE,FOLDER_DEST,file_name))
+            downloader_thread.start()
+            QMessageBox.information(self,"OPERACION",
+            "La operación se ha completado correctamente",
+            QMessageBox.StandardButton.Ok,
+            QMessageBox.StandardButton.Ok)
+        except PermissionError as e:
+                QMessageBox.warning(self,'Error','Ruta no valida',
+                QMessageBox.StandardButton.Close,
+                QMessageBox.StandardButton.Close)
     def upload_LIST(self):
         """
         La función crea un hilo para cargar una lista y establece una variable en 1.
@@ -939,7 +951,8 @@ class MiApp(QtWidgets.QMainWindow):
                                             #count=last_saved_index
                                         except Exception as e:
                                             
-                                            print(f"Error en el intento {i+1} de inserción para el elemento #{c}: {e}")                              
+                                            print(f"Error en el intento {i+1} de inserción para el elemento #{c}: {e}")  
+                                            self.count2=count                            
                                             time.sleep(5)  #*Esperar 5 segundos antes de intentar de nuevo
                                             if i == max_attempts - 1:
                                                 # Si se alcanza el número máximo de intentos sin éxito, salir del programa
@@ -983,11 +996,13 @@ class MiApp(QtWidgets.QMainWindow):
             except (requests.exceptions.ConnectionError, requests.exceptions.ChunkedEncodingError) as e:
                             print("No hay conexión a internet. Esperando...")
                             time.sleep(5)  # Esperar 5 segundos antes de volver a intentar
+                            self.count2=count
                             continue # Volver al inicio del bucle while
             except Exception as e:
                             attempt_count += 1                       
                             print(f"Error al Agregar el elemento a la lista #{c} error: {e}")
                             print("Reintentando en 5 segundo...")
+                            self.count2=count
                             time.sleep(5)
                             continue
                             if attempt_count >= max_attempts:
@@ -1025,7 +1040,10 @@ class MiApp(QtWidgets.QMainWindow):
         set_key(".env", "path_files_upload", ruta_nueva_carpeta)
         print(f"s_files==>{self.ruta_de_busqueda}")
         print(f"FOLDER_DEST==>{self.FOLDER_DEST}")
-
+        QMessageBox.information(self,"GUARDADO",
+        "Se ha guardado correctamente, por favor reinicie la aplicación",
+        QMessageBox.StandardButton.Ok,
+        QMessageBox.StandardButton.Ok)        
     def save_parameters_url_sharepoint(self):
         #Revisa que el nombre del archivo en el LineEdit no este vacio y si es asi lo guarde como ya estaba guardado
         # y si tiene algo nuevo lo guarde en el archivo y lo tome como la nueva ruta

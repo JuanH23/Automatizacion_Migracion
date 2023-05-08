@@ -115,13 +115,13 @@ def read_excel_to_dataframe(file_path,file_name):
         cont3=0
         print("c")
         cabeceras=list(df.columns)
-        headers=['CMTS','Upstream','Total','Active','Registered','Secondary','offline','Bonding','Non_Bonding','Description']
+        headers=['CMTS','Upstream','Total','Active','Registered','Secondary','offline','Bonding','NonBonding','Description']
         for header in headers:
             if header in cabeceras:
                 cont3+=1
                 print(f"cont1==>{cont3}")
                 if cont3==4:
-                    df=df.loc[:,['CMTS','Upstream','Total','Active','Registered','Secondary','offline','Bonding','Non_Bonding','Description']]
+                    df=df.loc[:,['CMTS','Upstream','Total','Active','Registered','Secondary','offline','Bonding','NonBonding','Description']]
     elif "Ocupacion- RPHY Harmonic_DAAS" in file_name:##!DAAS
         cont4=0
         print("d")
@@ -132,7 +132,7 @@ def read_excel_to_dataframe(file_path,file_name):
                 cont4+=1
                 print(f"cont1==>{cont4}")
                 if cont4==4:
-                    df=df.loc[:,['IP','Dispositivo','Puerto','status','status_2','ptp']]                          
+                    df=df.loc[:,['IP','Dispositivo','Puerto','status','stat2','ptp']]                          
     return df
 
 if __name__ =='__main__':

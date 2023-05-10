@@ -45,20 +45,28 @@ Esto con el fin de optimizar tiempos al momento de actualizar la información de
 - python 3.19
 
 ### Librerias_utilizadas   
+Las principales librerias utilizadas son:
+- Office365-REST-Python-Client==2.3.13:
+    Libreria encargada de la autenticación, manipulación, subida de datos, subida de archivos, descarga de archivos.
+- openpyxl:
+    Lectura de archivos Excel, ademas de que con su extensión de estilos, realización y manipulación de los archivos excel, para generar los diseño de nodos
+- pandas:
+    Manejo, manipulación de gran cantidad de datos, almacenados en dataframes
+- PyQt5:
+    compatibilidad con python, para el diseño de la interfaz gráfica, también responsable de todo el manejo de usuario que tenga dentro del aplicativo
+- threading:
+    Manejo de hilos en el programa, esto se usa para manejar procesos de la interfaz con procesos del back, para que no se congele la UI o se interrumpa algún proceso.
+- sys:
+    Uso de funcionalidades del sistema
+- ssl:
+    Ayuda a disminuir la posibilidad de que al momento de realizar subida de datos a las listas, detecte o perciba que es un bot, y no interrumpa la subida o descarga de datos.
+- multiprocessing:
+    Para la busqueda de archivos en el PC, es necesario que se maneje con esta librería para manejar en parelelo la busqueda, debido a que el proceso puede ser mas pesado y la librería threading no lo llega a manejar bien del todo.
+- PyQt5Designer:
+    Esta librería contiene un programa ejecutable, para facilitar el diseño de las interfaces graficas
+- python-dotenv:
+    Manejo y manipulación de los archivos .env, principalmente para guardar información y que solo el sistema en el que se este corriendo se pueda manejar o leer.
 
-- Office365-REST-Python-Client==2.3.13
-- openpyxl==3.0.10
-- pandas==1.5.3
-- PyQt5==5.15.4
-- pyqt5-plugins==5.15.4.2.2
-- PyQt5-Qt5==5.15.2
-- PyQt5-sip==12.11.1
-- PyQt5Designer==5.14.1
-- PySide2==5.15.2.1
-- python-dateutil==2.8.2
-- python-dotenv==0.21.1
-- qt5-applications==5.15.2.2.2
-- requests==2.28.1
 ----
 # Para-instalar-las-librerias
 1. Ir al cmd o terminal del editor

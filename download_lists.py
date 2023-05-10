@@ -9,8 +9,10 @@ import time
 import threading
 import os
 import ssl
-
 from openpyxl import load_workbook
+from Estructura_principal_FINAL import *
+from tqdm import tqdm
+from PyQt5.QtWidgets import QMessageBox
 def Type_file(file_name,export_type):
     #Dependiendo del tipo de archivo que se coloque va a a añadir la estensión
     #mas el nombre que le entra como parametro
@@ -22,22 +24,22 @@ def Type_file(file_name,export_type):
         file_name_export=file_name
     return file_name_export
 
-
-def download_list(list_name,export_type,dir_path,file_name):
+   
+def download_list(list_name,export_type,dir_path,file_name,progress_callback=None):
     #Llama con un hilo la función save_Execel para ejecutar en segundo plano
     ssl._create_default_https_context=ssl._create_unverified_context 
     sp_list=SharePoint().get_list(list_name)
+    total_items=len(sp_list)
     
     if export_type == 'Excel':
-        
-        file=threading.Thread(target= save_Execel(sp_list,dir_path,file_name))
+                
+        file=threading.Thread(target=save_Execel, args=(sp_list, dir_path, file_name,progress_callback))
         file.start()
+            
     elif export_type =='CSV':
         save_file_csv(sp_list,dir_path,file_name)
     else:
         print("No se puede Descargar ese tipo de archivo")
-    
-    
     
 
 def save_file_csv(list_items,dir_path,file_name):
@@ -51,27 +53,40 @@ def save_file_csv(list_items,dir_path,file_name):
             w.writerow(item.properties)
 
 
-def save_Execel(list_items,dir_path,file_name):
-    ssl._create_default_https_context=ssl._create_unverified_context
-    dir_file_path=Path(dir_path,file_name).with_suffix('.xlsx')
+def save_Execel(list_items,dir_path,file_name,progress_callback=None):
+    ssl._create_default_https_context=ssl._create_unverified_context   
+    dir_file_path=Path(dir_path,file_name).with_suffix('.xlsx') 
     # dir_file_path=PurePath(dir_path,file_name)
+    total_items = len(list_items)
     wb= Workbook()
-    ws=wb.active
+    ws=wb.active   
     #Obtiene las cabeceras de la lista
     header=list_items[0].properties.keys()
+    
     #Escribe las columnas en la primera fila
     for idx,name in enumerate(header):
         ws.cell(row=1, column=idx+1,value=name)
     #Comienza a escribir los items desde la segunda fila
     row=2
-    for dict_obj in list_items:
-        for idx, item in enumerate(dict_obj.properties.items()):
-            ws.cell(row=row,column=idx+1,value=item[1])
-        row+=1
+    with tqdm(total=total_items, desc='Descargando archivo') as pbar:
+        for i,dict_obj in enumerate(list_items, start=1):
+                
+                    
+                    for idx, item in enumerate(dict_obj.properties.items()):
+                        ws.cell(row=row,column=idx+1,value=item[1])
+                        if progress_callback:
+                            
+                            progress_callback(pbar, row, total_items)                        
+                    row+=1
+                    
+
+   
+    print("AAAAAA")
     dir_path=Path(dir_path)
     dir_path.mkdir(parents=True,exist_ok=True)
     wb.save(dir_file_path)
     
+
     df=read_excel_to_dataframe(dir_file_path,file_name)
     df.to_excel(dir_file_path,index=False)
     print(f"df==>{df}")

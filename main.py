@@ -14,6 +14,7 @@ import download_lists
 import threading
 from office365_api import SharePoint
 import download_lists
+from PyQt5.QtCore import QTimer
 from Advertencia import*
 from search_files import Search
 from Prueba_formato import diseño
@@ -41,6 +42,7 @@ from multiprocessing import Pool,cpu_count,freeze_support
 import numpy as np
 import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from tqdm import tqdm
 ###########################################################################################################
 #*Variables de entorno para las funciones con SharePoint
 env=dotenv_values(".env")
@@ -58,6 +60,7 @@ name_files=["Arris_SCMSummary.xlsx","Casa_SCMSummary.xlsx","Ocupacion- RPHY Harm
 sheet_names=[None,None,None,None]#Si hay algun archivo con mas de una hoja, colocar el nombre de la hoja 
 #en orden de los archivos de la lista name_files
 ##############################################################################################################
+
 
 class MiApp(QtWidgets.QMainWindow):
     update_progressBar=QtCore.pyqtSignal(int)
@@ -109,6 +112,28 @@ class MiApp(QtWidgets.QMainWindow):
         self.ruta_de_busqueda=[]
         self.seleccion_2=""
         self.flag=0
+        self.process=True
+        self.btc_stop=0
+    
+    def show_popup(self):#!!!!!!!!!!!!!!
+        #Hace con la función Qtimer.singleShot, que se ejecute una sola vez el mensaje
+        QTimer.singleShot(0, self.popup) 
+    def popup(self):
+        QMessageBox.warning(self,"Advertencia",
+        f"Programa finalizado, El último ID guardado en la lista es: {self.count3}") 
+    def show_error(self):#!!!!!!!!!!!!!!
+        #Hace con la función Qtimer.singleShot, que se ejecute una sola vez el mensaje de error
+        QTimer.singleShot(0, self.error) 
+    def error(self):
+            QMessageBox.warning(self,"Advertencia",
+            f"Por favor seleccione un documento a subir")
+
+    def show_finish(self):#!!!!!!!!!!!!!!
+        QTimer.singleShot(0, self.finish) 
+    def finish(self):
+        QMessageBox.information(self, "Proceso finalizado", "La descarga se ha completado correctamente.")
+
+
     def update_progress_bar_Slot(self,value):
         self.ui.progressBar_2.setValue(value)
 
@@ -119,8 +144,13 @@ class MiApp(QtWidgets.QMainWindow):
         ruta del archivo en la variable "dirección".
         """
         #file: obtiene toda la informacion de el archivo, solo permitiendo abrir archivos Excel (xlsx)
-        file=QFileDialog.getOpenFileName(self,"Abrir Archivo Excel", "","Excel Files (*.xlsx) ;; All Files (*)")
-        self.direccion=file[0]
+        try:
+            file=QFileDialog.getOpenFileName(self,"Abrir Archivo Excel", "","Excel Files (*.xlsx) ;; All Files (*)")
+            self.direccion=file[0]
+        except AttributeError:
+            QMessageBox.warning(self,"Advertencia",
+            f"Por favor seleccione un documento a subir")   
+            
     #*Esta función llama a la función crear tabla lo unico que hace es correrlo en forma de hilos para que 
     #*corra en paralelo con la interfaz y cualquier proceso que se este ejecutando en el mismo instante    
     
@@ -588,17 +618,32 @@ class MiApp(QtWidgets.QMainWindow):
 # crea un nuevo objeto ClientContext. Luego ejecuta una consulta sobre el contexto e imprime el valor
 # de una variable. Finalmente, establece el valor de dos variables más en False y 0 respectivamente.
 # url2 manda una cadena sin sentido como url para que no pueda mandar ninguna petición y detener el envio de datos
+        if self.btc_stop==1:#Si se presiona una vez el boton para detener la subida de datos, hasta que no se ejecute de nuevo la subida de datos. no permite presionarse este botón
+            self.index_stop=self.saved_index
+            self.count3=self.count2
+            self.index_saved=True
+            url2="adfdsfdsfdsfdsgk"
+            self.ctx=ClientContext(url2)
+            self.ctx.execute_query()
+            print(self.index_stop)
+            self.continuar_subida=False
+            self.process=False
+            if self.process==False:
+                try:              
+                    print(self.process)
+                    self.show_popup()   
+                except Exception as e:
+                    print(e)    
+            self.c_up=0
+            self.flag=1
+            self.btc_stop=2
+        else:#Si ya fue presionado una vez el botón durante la ejecución, muestra este mensaje
+            QMessageBox.warning(self,"Advertencia",
+            f"Por favor intente subir primero los datos nuevamente")   
+        
+        
+        
 
-        self.index_stop=self.saved_index
-        self.count3=self.count2
-        self.index_saved=True
-        url2="adfdsfdsfdsfdsgk"
-        self.ctx=ClientContext(url2)
-        self.ctx.execute_query()
-        print(self.index_stop)
-        self.continuar_subida=False
-        self.c_up=0
-        self.flag=1
     def seleccion_archivo(self):
         #seleccion: Almacena el valor que se seleccione del comboBox
         seleccion=self.ui.comboBox.itemText(self.ui.comboBox.currentIndex())
@@ -611,7 +656,7 @@ class MiApp(QtWidgets.QMainWindow):
         print(self.seleccion_2)   
         return self.seleccion_2    
 
-    def download_LISTS(self):
+    def download_LISTS(self,pbar):
         """
         Esta función descarga una lista específica y la guarda en una carpeta específica.
         """
@@ -625,28 +670,45 @@ class MiApp(QtWidgets.QMainWindow):
             FILE_NAME=self.seleccion_archivo()
             FOLDER_DEST=env["path_list_download"]
             print(f"FOLDER_DEST==>{FOLDER_DEST}")
-            ssl._create_default_https_context=ssl._create_unverified_context
-            file_name= download_lists.Type_file(FILE_NAME,EXPORT_TYPE)
-            downloader_thread = threading.Thread(target=download_lists.download_list(LIST_NAME,EXPORT_TYPE,FOLDER_DEST,file_name))
-            downloader_thread.start()
-            QMessageBox.information(self,"OPERACION",
-            "La operación se ha completado correctamente",
-            QMessageBox.StandardButton.Ok,
-            QMessageBox.StandardButton.Ok)
+            if FILE_NAME =="Elija nombre del archivo":
+                QMessageBox.warning(self,'Advertencia','Por favor escoja un nombre valido',
+                QMessageBox.StandardButton.Close,
+                QMessageBox.StandardButton.Close)
+            else:
+                ssl._create_default_https_context=ssl._create_unverified_context
+                file_name= download_lists.Type_file(FILE_NAME,EXPORT_TYPE)
+                downloader_thread = threading.Thread(target=download_lists.download_list,args=(LIST_NAME,EXPORT_TYPE,FOLDER_DEST,file_name,self.update_progress_barr))
+                downloader_thread.start()
+                downloader_thread.join()##!!!!!!!REVISAR POR SI TOCA BORRARLO
+                
+                self.show_finish()
         except PermissionError as e:
                 QMessageBox.warning(self,'Error','Ruta no valida',
                 QMessageBox.StandardButton.Close,
                 QMessageBox.StandardButton.Close)
+
+    def update_progress_barr(self, pbar, value, total_items):
+        """
+        Función de devolución de llamada para actualizar la barra de progreso.
+        """
+        
+        progress_percent = (value / total_items) * 100
+        pbar.update(progress_percent)
+        
+        progress_percent_2 = (value / total_items)*11
+        self.ui.progressBar.setValue(int(progress_percent_2))
+
+
     def upload_LIST(self):
         """
         La función crea un hilo para cargar una lista y establece una variable en 1.
         """
-        
+        ssl._create_default_https_context=ssl._create_unverified_context
         self.upload_thread = threading.Thread(target=self.subir_list)
         
         self.upload_thread.start()
         self.c_up=1        
-        
+        self.process=True
            
     def update_progress_bar(self,progress):
         self.ui.progressBar_2.setValue(progress)
@@ -746,8 +808,8 @@ class MiApp(QtWidgets.QMainWindow):
 
     def subir_list(self):
 
-
-        process=True
+        self.btc_stop=1
+        ssl._create_default_https_context=ssl._create_unverified_context
         self.continuar_subida=True
         self.count2=0
         flagg=1
@@ -765,6 +827,7 @@ class MiApp(QtWidgets.QMainWindow):
         max_attempts = 5 #Maxima cantidad de intentos que va a realizar el programa antes de acabarse
         attempt_count = 0
         total_items=0
+        cout=0
         #auth_context = AuthenticationContext(url)
         #auth_context.acquire_token_for_user(username, password)
         ssl._create_default_https_context=ssl._create_unverified_context
@@ -785,16 +848,24 @@ class MiApp(QtWidgets.QMainWindow):
             
         print(Sp_list)
         self.ctx.load(Sp_list)
-        self.ctx.execute_query()
-        excel_file = self.direccion##!PATH
+        self.ctx.execute_query()   
+        try:
+            excel_file = self.direccion##!PATH
+        except AttributeError:
+                self.show_error()
+        
         data={}
         chunk=0
         item_pro={}
-        while process==True:
+        
+        print(self.process==True)
+        while self.process==True:#Esta condicion solo cambiara cuando se ejecuta la funcion cancelar_stop o termine de enviar los datos
+            print("BBBBBBBB")
         # El código verifica si el archivo de Excel de entrada contiene hojas específicas con ciertos
         # encabezados de columna. Si encuentra una hoja con los encabezados requeridos, filtra las columnas,
         # convierte los valores al tipo de cadena y convierte el marco de datos resultante en un diccionario.
         # La variable indicadora se establece en un valor específico según la hoja que se haya encontrado.
+            print(("Ocupacion - Marcacion RPHY Harmonic" in excel_file) and ("DAAS" in list_title))      
             if "Arris_SCMSummary" in excel_file:
                         df = pd.read_excel(excel_file)
                         file=pd.DataFrame(df)
@@ -849,6 +920,7 @@ class MiApp(QtWidgets.QMainWindow):
                             data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
                             flagg=4 
             elif ("Ocupacion - Marcacion RPHY Harmonic" in excel_file) and ("DAAS" in list_title) :
+                        
                         df = pd.read_excel(excel_file,sheet_name='Hoja2',engine='openpyxl')
                         file=pd.DataFrame(df)
                         cont3=0
@@ -859,7 +931,7 @@ class MiApp(QtWidgets.QMainWindow):
                         for header in headers:
                             if header in cabeceras:
                                 cont3+=1
-                                if cont3==6:
+                                if cont3==5:
                                     
                                     file_2=file.loc[:,['IP','Dispositivo','Puerto','status','Unnamed: 4','Unnamed: 5']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
                                     file_2=file.rename(columns={"Unnamed: 4":"stat2","Unnamed: 5":"ptp"})
@@ -931,6 +1003,7 @@ class MiApp(QtWidgets.QMainWindow):
             # agregado una cierta cantidad de elementos. El código actualiza una barra de progreso a medida que se
             # agregan elementos y muestra mensajes de error mediante un QMessageBox.
                                         try:
+                                            ssl._create_default_https_context=ssl._create_unverified_context
                                             item=Sp_list.add_item(item_properties)                            
                                             commit_count += 1
                                             count+=1
@@ -945,7 +1018,7 @@ class MiApp(QtWidgets.QMainWindow):
                                             break  #* Si la inserción es exitosa, salir del ciclo for
                                                 
                                         except requests.exceptions.HTTPError as http_error:
-                                            
+                                            cout+=1
                                             print(f"Error de HTTP al agregar el elemento #{c}: {http_error}")
                                             time.sleep(5)  #* Esperar 5 segundos antes de intentar de nuevo
                                             #count=last_saved_index
@@ -953,6 +1026,7 @@ class MiApp(QtWidgets.QMainWindow):
                                             
                                             print(f"Error en el intento {i+1} de inserción para el elemento #{c}: {e}")  
                                             self.count2=count                            
+                                            cout+=1
                                             time.sleep(5)  #*Esperar 5 segundos antes de intentar de nuevo
                                             if i == max_attempts - 1:
                                                 # Si se alcanza el número máximo de intentos sin éxito, salir del programa
@@ -964,6 +1038,7 @@ class MiApp(QtWidgets.QMainWindow):
                                         print("h")
                                         self.ctx.execute_batch()                                                  
                                         print("Se realizo Commit")
+                                        ssl._create_default_https_context=ssl._create_unverified_context
                                         print(f"El último ID guardado en la lista es: {last_saved_index}")                                   
                                         Sp_list.clear()
                                         commit_count=0
@@ -978,23 +1053,24 @@ class MiApp(QtWidgets.QMainWindow):
                                     self.ctx.execute_batch()
                                     print("Se realizo Commit2")
                                     count=0
-                                    process=False
+                                    self.process=False
                                     print(last_saved_index)
                                     
                                     Sp_list.clear()
                                     commit_count=0
-                                
+
                             self.last_saved_index2 = last_saved_index+len(chunk)
                             
                             if commit_count> 0:
                                 self.ctx.execute_batch()
                                 print("commit final :)")
                                 Sp_list.clear()
-                                process=False
+                                self.process=False
                                 commit_count=0  
                             
             except (requests.exceptions.ConnectionError, requests.exceptions.ChunkedEncodingError) as e:
                             print("No hay conexión a internet. Esperando...")
+                            cout+=1
                             time.sleep(5)  # Esperar 5 segundos antes de volver a intentar
                             self.count2=count
                             continue # Volver al inicio del bucle while
@@ -1002,14 +1078,18 @@ class MiApp(QtWidgets.QMainWindow):
                             attempt_count += 1                       
                             print(f"Error al Agregar el elemento a la lista #{c} error: {e}")
                             print("Reintentando en 5 segundo...")
+                            cout+=1
                             self.count2=count
                             time.sleep(5)
-                            continue
-                            if attempt_count >= max_attempts:
+                            if cout == 5:#Si la execepcion ocuure 5 veces va a a terminar la subida de archivos
                                 print("Se han excedido el número máximo de intentos. Saliendo del programa...")
+                                self.cancelar_stop()
+                            continue
+                            
                             
                             continue
-                                                    
+
+                                         
     def save_path_list(self):
 
         #Revisa que el nombre del archivo en el LineEdit no este vacio y si es asi lo guarde como ya estaba guardado

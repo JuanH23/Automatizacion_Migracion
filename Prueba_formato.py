@@ -9,17 +9,15 @@ from dotenv import set_key,dotenv_values
 from Advertencia import*
 import numpy as np
 import random
+from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtCore import QTimer
 # Crear DataFrame con información
 def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
 
     ###########
     env=dotenv_values(".env")
-    print(".")
     ruth_list_download= env["path_list_download"]
-    print("..")
     ruta_nueva_carpeta = ruth_list_download + "/Diseños_NODOS"
-    print("...")
-    
     file_name="" 
     os.makedirs(ruta_nueva_carpeta, exist_ok=True)
     if type_node == "1 x 2":
@@ -29,9 +27,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
 
     ruta_archivo = os.path.join(ruta_nueva_carpeta,file_name+ name_file +'.xlsx')
 
-    
     ###########
-    
 
     # Crear archivo Excel desde cero y escribir información del DataFrame
     archivo_excel = pd.ExcelWriter(ruta_archivo, engine='openpyxl')
@@ -39,8 +35,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     # Escribir el DataFrame en el archivo Excel
     df_cd=pd.DataFrame(df_cos_daas)
     print(f"df_cd==>{df_cd}")
-    ################################################################
-    
+    ################################################################ 
     df.to_excel(archivo_excel,sheet_name='Hoja1' ,index=False)
     ################################################################
     hoja = archivo_excel.sheets['Hoja1']
@@ -59,26 +54,26 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     #######################
     # Escribir la primera columna del dataframe en la columna A de la hoja de trabajo
     columna = 1  # Columna A
-    fila_inicial = 4  # Empezar a escribir desde la fila 2
+    fila_inicial = 4  # Empezar a escribir desde la fila 4
     for i, valor in enumerate(df['CMTS']):
         celda_actual = worksheet.cell(row=fila_inicial+i, column=columna)
         celda_actual.value = valor
-    # Escribir la primera columna del dataframe en la columna A de la hoja de trabajo
+    # Escribir la primera columna del dataframe en la columna B de la hoja de trabajo
     columna = 2  # Columna B
-    fila_inicial = 4  # Empezar a escribir desde la fila 2
+    fila_inicial = 4  # Empezar a escribir desde la fila 4
     for i, valor in enumerate(df['Up']):
         celda_actual = worksheet.cell(row=fila_inicial+i, column=columna)
         celda_actual.value = valor
-    # Escribir la primera columna del dataframe en la columna A de la hoja de trabajo
-    columna = 5  # Columna B
-    fila_inicial = 4  # Empezar a escribir desde la fila 2
+    # Escribir la primera columna del dataframe en la columna E de la hoja de trabajo
+    columna = 5  # Columna E
+    fila_inicial = 4  # Empezar a escribir desde la fila 4
     
     for i, valor in enumerate(df['Total'].astype(int)):
         celda_actual = worksheet.cell(row=fila_inicial+i, column=columna)
         celda_actual.value = valor
-    # Escribir la primera columna del dataframe en la columna A de la hoja de trabajo
-    columna = 6  # Columna B
-    fila_inicial = 4  # Empezar a escribir desde la fila 2
+    # Escribir la primera columna del dataframe en la columna F de la hoja de trabajo
+    columna = 6  # Columna F
+    fila_inicial = 4  # Empezar a escribir desde la fila 4
     for i, valor in enumerate(df['Description']):
         celda_actual = worksheet.cell(row=fila_inicial+i, column=columna)
         celda_actual.value = valor
@@ -115,14 +110,19 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
                 cell.fill = fill
 
     ########################################TABLA_ANTES##########################################
+    #Unir celdas en especifico
     hoja.merge_cells(start_row=1, start_column=1, end_row=1, end_column=7)
     hoja.merge_cells(start_row=4, start_column=7, end_row=7, end_column=7)
+    #Se le da un tamaño que se requiere a la fila y a la columna "A" y "F"
     hoja.row_dimensions[1].height=20
     hoja.column_dimensions['A'].width=28
     hoja.column_dimensions['F'].width=40
+    #Tamaño de la letra
     fuente=Font(size=14)
     fuente.bold=True
+    #Aplica los cambios dados 
     hoja.cell(row=1,column=1).font=fuente
+    #obtiene el nombre del CMTS para colocar el texto en la celda
     chasis_valor=df['CMTS']
     chasis_index=chasis_valor.index
     chasis_list=chasis_index.to_list()
@@ -145,12 +145,16 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     celda.value=texto
     cell = worksheet.cell(row=2, column=1)
     cell_range = worksheet['A2:G2']
+    #Centra el texto en la celda tanto horizontal como verticalmente
     cell.alignment = Alignment(horizontal='center', vertical='center')
+    #Le da un tipo de relleno al borde de las celdas en este caso  "thick"
     border=Border(top=Side(style='thick'),bottom=Side(style='thick'),left=Side(style='thick'),right=Side(style='thick'))
     border_chasis=Border(top=Side(style='thick'),bottom=Side(style='thick'),left=Side(style='thick'),right=Side(style='thick'))
+    #aplica los cambios en el rango de celda dado
     for cells in cell_range:
         for cell in cells:
             cell.border = border
+    #Texto de las cabeceras de la tabla
     texto="CHASIS"
     celda_CHASIS=hoja.cell(row=3,column=1)
     celda_CHASIS.value=texto
@@ -181,8 +185,10 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     for celda in hoja[fila]:
         celda.alignment = cell_aligment_row3
     hoja.column_dimensions['G'].width=10
+    #"cell_range_row3": Rango de celda que se van a aplicar los cambios 
     cell_range_row3 = worksheet['A3:F3']
     cell.alignment = Alignment(horizontal='center', vertical='center')
+    #Crear objeto de color azul
     dark_blue=Color(rgb='366092')
     relleno = PatternFill(start_color=dark_blue, end_color=dark_blue, fill_type='solid')
     border=Border(top=Side(style='thin'),bottom=Side(style='thin'),left=Side(style='thin'),right=Side(style='thin'))
@@ -196,6 +202,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     rango=hoja['E4:E12']
     
     #suma_columna = sum([celda.value for fila in rango for celda in fila ])
+    #Suma los valores que tenga en el rango que sea dependiendo del nodo
     suma_columna = sum([0 if celda.value is None else celda.value for fila in rango for celda in fila])
 
     celda_resultado = hoja['G4']
@@ -206,6 +213,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     cell.alignment = Alignment(horizontal='center', vertical='center')
     cell.font=red_font
     ########################################TABLA_DEPUES##########################################
+    #combina dos celdas y da tamaño en horizontal por columna
     hoja.merge_cells(start_row=1, start_column=9, end_row=1, end_column=17)
     hoja.column_dimensions['I'].width=20
     hoja.column_dimensions['J'].width=25
@@ -235,6 +243,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     celda.value=texto
     cell1 = worksheet.cell(row=1, column=9)
     cell2 = worksheet.cell(row=2, column=9)
+    #Delimita el rango a donde se van a aplicar los cambios
     cell_range_row4 = worksheet['I2:Q2']
     cell_range_row5 = worksheet['I3:Q3']
     cell_range_row6 = worksheet['I4:Q4']
@@ -247,6 +256,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     cell2.alignment = Alignment(horizontal='center', vertical='center')
     border=Border(top=Side(style='thin'),bottom=Side(style='thin'),left=Side(style='thin'),right=Side(style='thin'))
     cell_range_row10.border=border
+    #Aplica los cambios en el borde a cada una de las celdas
 
     for cells in cell_range_row4:
         for cell in cells:
@@ -265,7 +275,8 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
             cell.border = border
     for cells in cell_range_row9:
         for cell in cells:
-            cell.border = border                 
+            cell.border = border      
+    #Asigna el texto a las cabeceras de la tabla del despues                   
     texto="REGIONAL"
     celda=hoja.cell(row=3,column=9)
     celda.value=texto
@@ -312,10 +323,12 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     relleno_yellow = PatternFill(start_color=yellow, end_color=yellow, fill_type='solid')
     pink=Color(rgb='FCD5B4')
     relleno_pink=PatternFill(start_color=pink,end_color=pink,fill_type='solid')
+    #Delimita el rango a donde se van a aplicar los cambios
     cell_range_row4=worksheet['J4:Q4']
     cell_range_row5=worksheet['J5:Q5']
     cell_range_row7=worksheet['J7:Q7']
     cell_range_row8=worksheet['J8:Q8']
+    #Aplica los cambios en el borde a cada una de las celdas
     for cells in cell_range_row4:
         for cell in cells:
             cell.fill=relleno_yellow 
@@ -334,14 +347,18 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     ###############################################
     DISPOSITIVO_DAAS = df_cd['Dispositivo DAAS'].unique()
     simil=[]
-
-    if df_cd['Dispositivo DAAS'].str.contains(str(filter_daas+1)).any():
+    #Realiza la conversion del segundo das en vez que comience de 0-48, empiece
+    #de 49-97.
+    if df_cd['Dispositivo DAAS'].str.contains(str(filter_daas+1)).any():#Revisa que tenga mas de un DAAS
             print("ENTRO AL DAAS")
             print(f"filter_DAAS==>{filter_daas+1}")
+            #Organiza los valores 
             df_cd = df_cd.sort_values('Puerto COS',inplace=False,ascending=True)
+            #Crea una mascara
             mask_range = df_cd['Puerto DAAS'].between('xe-0/0/0', 'xe-0/0/48')
             mask_name = df_cd['Dispositivo DAAS'].str.contains(str(filter_daas+1))
             mask_range_name = mask_name & mask_range
+            #Le suma a cada valor que ya se le realizo un split con el simbolo "/" del segundo Daas y le suma 49 a cada valor que encuentre
             df_cd.loc[mask_range_name, 'Puerto DAAS'] = (
                 df_cd.loc[mask_range_name, 'Puerto DAAS']
                 .str.replace(r'xe-0/0/(\d+)', lambda x: 'xe-0/0/' + str(int(x.group(1))+49))
@@ -356,7 +373,9 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
             print(f"df_cd_sin_duplicados==>{df_cd}")
             #df_cd.to_excel("new_numbers.xlsx")
             ###############################!
+            #Crea una columna con los numeros unicos del DAAS
             numeros_coincidentes=df_cd['ultimo_num_DAAS'].unique()
+            #Revisa cuales de los puertos del DAAS estan en la columna nueva donde se encuentran
             coincidente_COS=df_cd[df_cd['primer_num_COS'].isin(numeros_coincidentes)]
             #coincidente=df_cd.loc[df_cd['ultimo_num_DAAS'].isin(df_cd['primer_num_COS'])]
             #coincidente_COS.to_excel("coincidente.xlsx")
@@ -366,10 +385,12 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
             coincidente_COS=coincidente_COS.reset_index(drop=True)
             coincidente_DAAS=coincidente_DAAS.loc[:,['Dispositivo DAAS','Puerto DAAS']]
             coincidente_DAAS=coincidente_DAAS.reset_index(drop=True)
+            #une ambos Dataframe para trabajar con un solo Data
             merge_coincidente=pd.concat([coincidente_COS,coincidente_DAAS],axis=1)
             merge_coincidente.to_excel('merge_coincidente.xlsx')
 
             valores_unicos=merge_coincidente['primer_num_COS'].unique().tolist()
+            #Toma un valor aleatorio del puerto COS y lo coloca en el formato
             valor_aleatorio = random.choice(valores_unicos)
             valores_unicos.remove(valor_aleatorio)
             filas_aleatorias = merge_coincidente.loc[merge_coincidente['primer_num_COS'] == valor_aleatorio]
@@ -380,7 +401,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
  
                                
             #print(f"simil==>{simil}")
-    else:
+    else:#Si solo tiene un dispositivo DAAS
             df_cd['Puerto DAAS']=df_cd['Puerto DAAS'].astype(str)
             df_cd['ultimo_num_DAAS'] = df_cd['Puerto DAAS'].apply(lambda x: get_x(x, 0))
 
@@ -416,11 +437,13 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
             print(f"TYPE_NODE==>{type_node}")       
             print(f"simil==>{simil}")
     ######################################!
+    #Genera un tipo de formato u otro dependiendo si se coloco un nodo u otro
     if type_node == "1 x 2":
         texto="Nodo 1x2"
         celda=hoja.cell(row=4,column=9)
         celda.value=texto
     ################################!
+        #Extrae de la columna 'Dispositivo DAAS',el texto para colocarlo en la celda
         slot_valor_DAAS=filas_aleatorias['Dispositivo DAAS']
         slot_index_DAAS=slot_valor_DAAS.index
         slot_list_DAAS=slot_index_DAAS.to_list()
@@ -430,7 +453,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
         celda.value=texto_DAAS
         celda=hoja.cell(row=7,column=10)
         celda.value=texto_DAAS
-
+        #Extrae de la columna 'primer_num_COS',el texto para colocarlo en la celda
         slot_valor_PUERTO_DAAS=filas_aleatorias['primer_num_COS']
         slot_index_PUERTO_DAAS=slot_valor_PUERTO_DAAS.index
         slot_list_PUERTO_DAAS=slot_index_PUERTO_DAAS.to_list()
@@ -444,7 +467,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
         celda.value=texto_Puerto_DAAS+"/0"
         celda=hoja.cell(row=7,column=11)
         celda.value=texto_Puerto_DAAS+"/0"
-        
+        #Extrae de la columna 'Dispositivo COS',el texto para colocarlo en la celda
         slot_valor_CHASIS=filas_aleatorias['Dispositivo COS']
         slot_index_CHASIS=slot_valor_CHASIS.index
         slot_list_CHAIS=slot_index_CHASIS.to_list()
@@ -473,13 +496,14 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
         celda.value=texto_DMAC
         celda=hoja.cell(row=7,column=15)
         celda.value=texto_DMAC
-
+        #Extrae de la columna 'Description',el texto para colocarlo en la celda
         nodo_valor=df['Description']
         nodo_index=nodo_valor.index
         nodo_list=nodo_index.to_list()
         indice_nodo=nodo_list[1]
         texto_NOMBRE=df.loc[indice_nodo,"Description"]
         tex=str(texto_NOMBRE)
+        #busca los caracteres "(" y ")" para colocar el texto necesario, en este caso "3F"
         indice_find_1=tex.find("(")
         indice_find_2=tex.find(")")
         tex=tex[:indice_find_1]+"3F"+tex[indice_find_1:indice_find_2]+"3F"+tex[indice_find_2]
@@ -491,20 +515,21 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
         celda.value=tex
         #celda.value=""
     ################################!
+    #Si se selecciona nodo tipo "2 x 4"
     elif type_node == "2 x 4":
     ######################################!
         texto="Nodo 2x4"
         celda=hoja.cell(row=4,column=9)
         celda.value=texto
     ################################!
-
+        #Extrae de la columna 'primer_num_COS',el texto para colocarlo en las celdas
         slot_valor_PUERTO_DAAS=filas_aleatorias['primer_num_COS']
         slot_index_PUERTO_DAAS=slot_valor_PUERTO_DAAS.index
         slot_list_PUERTO_DAAS=slot_index_PUERTO_DAAS.to_list()
         indice_slot_PUERTO_DAAS=slot_list_PUERTO_DAAS[0]
         text_num_generic=filas_aleatorias.loc[indice_slot_PUERTO_DAAS,"primer_num_COS"] 
         
-
+        #Extrae de la columna 'Dispositivo DAAS',el texto para colocarlo en las celdas
         slot_valor_DAAS=filas_aleatorias['Dispositivo DAAS']
         slot_index_DAAS=slot_valor_DAAS.index
         slot_list_DAAS=slot_index_DAAS.to_list()
@@ -530,6 +555,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
         celda.value=texto_Puerto_DAAS_2 +"/0"
         celda=hoja.cell(row=8,column=11)
         celda.value=texto_Puerto_DAAS_2 +"/0"
+        #Extrae de la columna 'Dispositivo COS',el texto para colocarlo en las celdas
         slot_valor_CHASIS=filas_aleatorias['Dispositivo COS']
         slot_index_CHASIS=slot_valor_CHASIS.index
         slot_list_CHAIS=slot_index_CHASIS.to_list()
@@ -579,7 +605,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
         celda.value=texto_DMAC_2 + ":1/0.0"
         celda=hoja.cell(row=8,column=15)
         celda.value=texto_DMAC_2 + ":1/0.0"
-
+        #Extrae de la columna 'Description',el texto para colocarlo en las celdas
         nodo_valor=df['Description']
         nodo_index=nodo_valor.index
         nodo_list=nodo_index.to_list()
@@ -587,7 +613,8 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
         text_NOMBRE=df.loc[indice_nodo,"Description"]
         texto_NOMBRE_2=str(text_NOMBRE)
         texto_NOMBRE="NODO"
-
+        #busca los caracteres "(" y ")" para colocar el texto necesario, en este caso "2F","3F" y "4F", en cada una de las celdas correspondientes
+        #ademas de asignar los valores 
         texx=str(texto_NOMBRE_2)
         indice_find__1=texx.find("(")
         indice_find__2=texx.find(")")
@@ -620,13 +647,16 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     sep=0
     sep2=0
     text_script=""
+    #Extrae de la columna 'Up',el texto para mirar si es necesario asignar un valor u otro
     slot_valor=df['Up']
     slot_index=slot_valor.index
     slot_list=slot_index.to_list()
     indice_slot=slot_list[0]
     texto_slot=df.loc[indice_slot,"Up"]
     #print(texto_slot)
+    #Si el texto extraido anteriormente contiene "U"
     if "U" in texto_slot:
+        #Si la longitud de la lista extraida es igual a 4, buscara el caracter "/", para asignar datos a solo 4 celdas y las demas vacias
         if len(slot_list)==4:
             sep=texto_slot.find("/")
             sep2=texto_slot.find("/",sep+1)
@@ -639,7 +669,9 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
             text_script_f=""
             text_script_g=""
             text_script_h=""
+            
         elif len(slot_list)>4:
+            #Si en la posicion 5 de la lista esta vacio, buscara el caracter "/", para asignar datos a solo 5 celdas y las demas vacias
             if slot_list[5]==None:
                 sep=texto_slot.find("/")
                 sep2=texto_slot.find("/",sep+1)
@@ -652,6 +684,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
                 text_script_f=""
                 text_script_g=""
                 text_script_h=""
+                #Si en la posicion 6 de la lista esta vacio, buscara el caracter "/", para asignar datos a solo 6 celdas y las demas vacias
             elif slot_index[6]==None:
                 sep=texto_slot.find("/")
                 sep2=texto_slot.find("/",sep+1)
@@ -664,6 +697,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
                 text_script_f=text_script
                 text_script_g=""
                 text_script_h=""
+                #Si en la posicion 7 de la lista esta vacio, buscara el caracter "/", para asignar datos a solo 7 celdas y las demas vacias
             elif slot_index[7]==None:
                 sep=texto_slot.find("/")
                 sep2=texto_slot.find("/",sep+1)
@@ -676,6 +710,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
                 text_script_f=text_script
                 text_script_g=text_script
                 text_script_h=""
+                #si tiene valores en los 8 datos necesarios, buscara el caracter "/", para asignar datos a todos los espacios
             else:
                 sep=texto_slot.find("/")
                 sep2=texto_slot.find("/",sep+1)
@@ -702,6 +737,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
                 text_script_h=""
     else:
         print(f"len_slot_list==>{len(slot_list)}")
+        #Si la longitud de la lista extraida es igual a 4, buscara el caracter "/", para asignar datos a solo 4 celdas y las demas vacias
         if len(slot_list)==4:
             a=df.loc[slot_list[0],"Up"]
             b=df.loc[slot_list[1],"Up"]
@@ -729,6 +765,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
             text_script_h=""
 
         elif len(slot_list)>4:
+            #Si en la posicion 5 de la lista esta vacio, buscara el caracter "/", para asignar datos a solo 5 celdas y las demas vacias
             if slot_list[5]==None:
                 a=df.loc[slot_list[0],"Up"]
                 b=df.loc[slot_list[1],"Up"]
@@ -758,6 +795,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
                 text_script_f=" "
                 text_script_g=" "                
                 text_script_h=" "
+                #Si en la posicion 6 de la lista esta vacio, buscara el caracter "/", para asignar datos a solo 6 celdas y las demas vacias
             elif slot_list[6]==None:
                 a=df.loc[slot_list[0],"Up"]
                 b=df.loc[slot_list[1],"Up"]
@@ -790,6 +828,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
                 text_script_f=f[:sepf2]
                 text_script_g=" "                
                 text_script_h=" "
+                #Si en la posicion 7 de la lista esta vacio, buscara el caracter "/", para asignar datos a solo 7 celdas y las demas vacias
             elif slot_list[7]==None:
                 a=df.loc[slot_list[0],"Up"]
                 b=df.loc[slot_list[1],"Up"]
@@ -825,6 +864,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
                 sepg2=g.find("/",sepg+1)
                 text_script_g=g[:sepg2]              
                 text_script_h=" "
+            #si tiene valores en los 8 datos necesarios, buscara el caracter "/", para asignar datos a todos los espacios
             else:
                 
                 a=df.loc[slot_list[0],"Up"]
@@ -887,7 +927,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
             text_script_g=""
             text_script_h=""
 
-
+    #dependiendo de la condicion que sea asigna un valor u otro a la celda
     texto="interface upstream "+text_script_a
     celda=hoja.cell(row=20,column=6)
     celda.value=texto
@@ -984,7 +1024,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     celda.value=texto 
 
 
-
+    #Extrar el texto de la columna "Description"
     description_valor=df['Description']
     description_index=description_valor.index
     description_list=description_index.to_list()
@@ -992,7 +1032,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     #print(f"slot_list==>{description_list}")
     indice_description=description_list[0]
     text_description=df.loc[indice_description,"Description"]
-
+    #Busca palabras clave para solo extraer el nombre del nodo, al cual se le esta generando el diseño
     sep=text_description.find("DO")
     sep2=text_description.find("(")
     text_script=text_description[sep+2:sep2]   
@@ -1025,7 +1065,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     # Guardar archivo Excel
     
     archivo_excel.save()
-
+#funcion para realizar split de los elementos de la columna "Puerto DAAS"
 def get_x(s, n=2):
     elements = s.split('/')
     if len(elements) >= n+1:

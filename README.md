@@ -186,6 +186,7 @@ Este archivo contiene una clase llamada MiApp, la cual tiene la codificación de
 - save_parameters_url_sharepoint(self): Esta función establece una nueva ruta de el sitio de SharePint donde se realizara todo el procedimiento y la guarda en un archivo .env
 - save_parameters_name_folder_Sharepoint(self): Esta función establece una nueva ruta de la carpeta de SharePint donde se guardaran los .xlsx de los diseños generados y la guarda en un archivo .env
 ## office365_api
+Este archivo contiene funciones, principalmente, para la descarga de las listas  y para la subida de archivos al Sharepoint
 - def _auth(self): Esta función crea una conexión a un sitio de SharePoint utilizando un nombre de usuario y una contraseña proporcionados.
 - _get_files_list(self,folder_name): Esta función recupera una lista de archivos de una carpeta de SharePoint específica mediante la API de Microsoft Graph.
 - get_folder_list(self,folder_name): Esta función recupera una lista de carpetas dentro de una carpeta específica en SharePoint.
@@ -193,7 +194,8 @@ Este archivo contiene una clase llamada MiApp, la cual tiene la codificación de
 - upload_file(self,file_name,folder_name,content): Esta función carga un archivo en una carpeta específica en un sitio de SharePoint.
 - get_list(self,list_name): Esta función recupera todos los elementos de una lista de SharePoint con un nombre dado.
 
-prueba_formato
+## Prueba_formato
+Este archivo contiene diferentes funcionalidades que utiliza principalmente de la libreria, openpyxl, especificamente de openpyxl.styles, en donde se genera el diseño de los nodos, dependiendo si se selecciona un nodo 1 x 2 ó 2 x 4, obteniendo texto del resultado final del Dataframe filtrado, caracterizando las celdas necesarias con color de fondo, rellenos, contorno, tipo de letra, tamaño de celda, tamaño de texto, ajustandose la información en el espacio de "SCRIPT  ANTES-NOC CABLE",dependiendo de la cantidad de información que tenga un nodo, seleccionando un puerto en especifico dentro de los disponibles y coincidentes entre el dispositivo COS y el dispositivo DAAS, y dejando solo uno para el diseño final. 
 
                 
 ----

@@ -22,10 +22,12 @@ import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import pandas as pd
 #env=dotenv_values(".env")
-username = "juan.hurtado02@usa.edu.co"
+'''username = "juan.hurtado02@usa.edu.co"
 password = "Mono9100."
-url = "https://universidadsergioarboleda.sharepoint.com/sites/devs/"
-
+url = "https://universidadsergioarboleda.sharepoint.com/sites/devs/"'''
+url = "https://claromovilco.sharepoint.com/sites/Prueba35/"
+username = "juan.hurtado@claro.com.co"
+password = "JUEhp$9_23"
 """
         Esta función carga datos de un archivo de Excel a una lista de SharePoint, maneja interrupciones y
         desconexiones y vuelve a intentar intentos fallidos.
@@ -51,18 +53,28 @@ total_items=0
 #auth_context = AuthenticationContext(url)
 #auth_context.acquire_token_for_user(username, password)
 ssl._create_default_https_context=ssl._create_unverified_context
-ctx=ClientContext(url).with_credentials(
+'''ctx=ClientContext(url).with_credentials(
             UserCredential(
                 username,
                 password
             )
-        )
+        )'''
+auth_context = AuthenticationContext(url)
+auth_context.acquire_token_for_user(username, password)
+ctx = ClientContext(url, auth_context)
         #############################################################################
 #ssl._create_default_https_context=ssl._create_unverified_context #*Quita la seguridad de número exedido de subida de datos
 #ctx = ClientContext(url).with_credentials(UserCredential(username,password))
 ctx.clear
         #############################################################################
-list_title ="Arris_F"##!NOMBRE LISTA
+list_title ="Lista_COS2"##!NOMBRE LISTA
+#!
+##!Lista_arris
+##!Lista_Casa
+##!Lista_Cos
+##!Lista_COS2
+#*P_P
+#*Lista_Daas
 print(list_title)
 Sp_list = ctx.web.lists.get_by_title(list_title)#*Acceder a la lista
       

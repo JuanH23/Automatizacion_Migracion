@@ -46,7 +46,7 @@ Esto con el fin de optimizar tiempos al momento de actualizar la información de
 
 ### Librerias_utilizadas   
 Las principales librerias utilizadas son:
-- Office365-REST-Python-Client==2.3.13:
+- Office365-REST-Python-Client:
     Libreria encargada de la autenticación, manipulación, subida de datos, subida de archivos, descarga de archivos.
 - openpyxl:
     Lectura de archivos Excel, ademas de que con su extensión de estilos, realización y manipulación de los archivos excel, para generar los diseño de nodos

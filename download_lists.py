@@ -12,7 +12,11 @@ import ssl
 from openpyxl import load_workbook
 from Estructura_principal_FINAL import *
 from tqdm import tqdm
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5 import QtCore, QtGui, QtWidgets
+from concurrent.futures import ThreadPoolExecutor
+from PyQt5.QtCore import QObject, pyqtSignal
+download_finished = pyqtSignal()
+download_finished=pyqtSignal()
 def Type_file(file_name,export_type):
     #Dependiendo del tipo de archivo que se coloque va a a añadir la estensión
     #mas el nombre que le entra como parametro
@@ -25,17 +29,20 @@ def Type_file(file_name,export_type):
     return file_name_export
 
    
-def download_list(list_name,export_type,dir_path,file_name,progress_callback=None):
+def download_list(list_name,export_type,dir_path,file_name,signal_handler):
     #Llama con un hilo la función save_Execel para ejecutar en segundo plano
     ssl._create_default_https_context=ssl._create_unverified_context 
     sp_list=SharePoint().get_list(list_name)
     total_items=len(sp_list)
     
-    if export_type == 'Excel':
-                
-        file=threading.Thread(target=save_Execel, args=(sp_list, dir_path, file_name,progress_callback))
+    if export_type == 'Excel':   
+        file=threading.Thread(target=save_Execel, args=(sp_list, dir_path, file_name))
         file.start()
+        file.join()
+        signal_handler.download_finished.emit()
+        print("FINALIZACION")
             
+        #save_Execel(sp_list, dir_path, file_name)
     elif export_type =='CSV':
         save_file_csv(sp_list,dir_path,file_name)
     else:
@@ -53,11 +60,10 @@ def save_file_csv(list_items,dir_path,file_name):
             w.writerow(item.properties)
 
 
-def save_Execel(list_items,dir_path,file_name,progress_callback=None):
+def save_Execel(list_items,dir_path,file_name):
     ssl._create_default_https_context=ssl._create_unverified_context   
     dir_file_path=Path(dir_path,file_name).with_suffix('.xlsx') 
     # dir_file_path=PurePath(dir_path,file_name)
-    total_items = len(list_items)
     wb= Workbook()
     ws=wb.active   
     #Obtiene las cabeceras de la lista
@@ -68,24 +74,21 @@ def save_Execel(list_items,dir_path,file_name,progress_callback=None):
         ws.cell(row=1, column=idx+1,value=name)
     #Comienza a escribir los items desde la segunda fila
     row=2
-    with tqdm(total=total_items, desc='Descargando archivo') as pbar:
-        for i,dict_obj in enumerate(list_items, start=1):
+    
+    for i,dict_obj in enumerate(list_items, start=1):
                 
                     
                     for idx, item in enumerate(dict_obj.properties.items()):
                         ws.cell(row=row,column=idx+1,value=item[1])
-                        if progress_callback:
-                            
-                            progress_callback(pbar, row, total_items)                        
-                    row+=1
-                    
+                       
+                    row+=1             
 
    
     print("AAAAAA")
     dir_path=Path(dir_path)
     dir_path.mkdir(parents=True,exist_ok=True)
     wb.save(dir_file_path)
-    
+
 
     df=read_excel_to_dataframe(dir_file_path,file_name)
     df.to_excel(dir_file_path,index=False)

@@ -8,7 +8,8 @@ site_url = "https://claromovilco.sharepoint.com/sites/Prueba35/"
 username = "juan.hurtado@claro.com.co"
 password = "JUEhp$9_23"
 auth=True
-list_title = "Lista_COS2"
+list_title = "Lista_Casa"
+c=0
 while auth==True:
     try:
         auth_context = AuthenticationContext(site_url)
@@ -23,10 +24,11 @@ while auth==True:
             print("La autenticación falló. No se pudo obtener la lista.")
         auth=False    
     except ValueError as e:
+        c+=1
         print("error MFA, reintentando conectar")
         time.sleep(2)
         continue
-    
+print(c)    
     ##!Lista_arris
     ##!Lista_Casa
     ##!Lista_Cos

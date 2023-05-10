@@ -18,6 +18,7 @@ from PyQt5.QtCore import QTimer
 from Advertencia import*
 from search_files import Search
 from Prueba_formato import diseño
+from PyQt5 import QtCore, QtGui, QtWidgets
 ##########################################################################################################
 #*Librerias utilizadas en la función de subir lista a SharePoint
 from office365.sharepoint.lists.template_type import ListTemplateType
@@ -43,6 +44,12 @@ import numpy as np
 import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
+from concurrent.futures import ThreadPoolExecutor
+import asyncio
+from functools import partial
+from PyQt5.QtCore import QThread, pyqtSignal
+
+from PyQt5.QtCore import pyqtSignal, QObject
 ###########################################################################################################
 #*Variables de entorno para las funciones con SharePoint
 env=dotenv_values(".env")
@@ -60,10 +67,15 @@ name_files=["Arris_SCMSummary.xlsx","Casa_SCMSummary.xlsx","Ocupacion- RPHY Harm
 sheet_names=[None,None,None,None]#Si hay algun archivo con mas de una hoja, colocar el nombre de la hoja 
 #en orden de los archivos de la lista name_files
 ##############################################################################################################
+class SignalHandler(QObject):
+    download_finished = pyqtSignal()
 
-
+    def __init__(self, parent=None):
+        super().__init__(parent)
+ # Establece el evento de finalización
 class MiApp(QtWidgets.QMainWindow):
     update_progressBar=QtCore.pyqtSignal(int)
+    
     def __init__(self):
         super().__init__()
         self.ui=Ui_MainWindow()
@@ -74,7 +86,10 @@ class MiApp(QtWidgets.QMainWindow):
         self.grip=QtWidgets.QSizeGrip(self)
         self.grip.resize(self.gripSize,self.gripSize)
         #self.ui.frame_Sup.mouseMoveEvent=self.mover_ventana
-        
+        ##########################
+        self.signal_handler = SignalHandler()
+        self.signal_handler.download_finished.connect(self.finish)
+        ##########################
         #*Funciones con los botones para cada uno de los eventos
         self.ui.bt_filtrar.clicked.connect(self.mostrar_tabla)
         self.ui.download_LIST.clicked.connect(self.download_LISTS)
@@ -677,26 +692,17 @@ class MiApp(QtWidgets.QMainWindow):
             else:
                 ssl._create_default_https_context=ssl._create_unverified_context
                 file_name= download_lists.Type_file(FILE_NAME,EXPORT_TYPE)
-                downloader_thread = threading.Thread(target=download_lists.download_list,args=(LIST_NAME,EXPORT_TYPE,FOLDER_DEST,file_name,self.update_progress_barr))
+                downloader_thread = threading.Thread(target=download_lists.download_list,args=(LIST_NAME,EXPORT_TYPE,FOLDER_DEST,file_name,self.signal_handler))
                 downloader_thread.start()
-                downloader_thread.join()##!!!!!!!REVISAR POR SI TOCA BORRARLO
                 
-                self.show_finish()
+                
+                #########################################
         except PermissionError as e:
                 QMessageBox.warning(self,'Error','Ruta no valida',
                 QMessageBox.StandardButton.Close,
                 QMessageBox.StandardButton.Close)
 
-    def update_progress_barr(self, pbar, value, total_items):
-        """
-        Función de devolución de llamada para actualizar la barra de progreso.
-        """
-        
-        progress_percent = (value / total_items) * 100
-        pbar.update(progress_percent)
-        
-        progress_percent_2 = (value / total_items)*11
-        self.ui.progressBar.setValue(int(progress_percent_2))
+
 
 
     def upload_LIST(self):

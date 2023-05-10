@@ -486,21 +486,6 @@ class Ui_MainWindow(object):
 "\n"
 "")
         self.download_LIST.setObjectName("download_LIST")
-        self.progressBar = QtWidgets.QProgressBar(self.page_uno)
-        self.progressBar.setGeometry(QtCore.QRect(120, 380, 421, 31))
-        self.progressBar.setStyleSheet("QProgressBar {\n"
-"    border: 2px solid grey;\n"
-"    border-radius: 5px;\n"
-"    text-align: center;\n"
-"}\n"
-"\n"
-"QProgressBar::chunk {\n"
-"    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0,\n"
-"        stop:0 #FFDAB9, stop:1 #CD5C5C);\n"
-"    border-radius: 5px;\n"
-"}")
-        self.progressBar.setProperty("value", 0)
-        self.progressBar.setObjectName("progressBar")
         self.comboBox = QtWidgets.QComboBox(self.page_uno)
         self.comboBox.setGeometry(QtCore.QRect(210, 200, 261, 31))
         self.comboBox.setStyleSheet("QComboBox {\n"

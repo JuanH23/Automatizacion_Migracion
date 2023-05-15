@@ -3,9 +3,10 @@ from office365.sharepoint.client_context import ClientContext
 from office365.runtime.auth.user_credential import UserCredential 
 from office365.sharepoint.files.file import File
 import ssl
+from office365.runtime.auth.authentication_context import AuthenticationContext
 from dotenv import set_key,dotenv_values
-
-
+from dotenv import load_dotenv
+load_dotenv()
 env=dotenv_values(".env")
 USERNAME=env["sharepoint_email"]
 PASSWORD=env["sharepoint_password"]
@@ -21,12 +22,15 @@ class SharePoint:
         proporcionados para un sitio de SharePoint.
         """
         ssl._create_default_https_context=ssl._create_unverified_context
-        conn=ClientContext(SHAREPOINT_SITE).with_credentials(
-            UserCredential(
-                USERNAME,
-                PASSWORD
-            )
-        )
+        auth_context = AuthenticationContext(SHAREPOINT_SITE)
+        auth_context.acquire_token_for_user(USERNAME, PASSWORD)
+        conn = ClientContext(SHAREPOINT_SITE, auth_context)
+        #conn=ClientContext(SHAREPOINT_SITE).with_credentials(
+        #    UserCredential(
+        #        USERNAME,
+        #        PASSWORD
+        #    )
+        #)
         return conn
 
     def _get_files_list(self,folder_name):

@@ -3,13 +3,17 @@ import re
 import sys,os
 from pathlib import PurePath
 from dotenv import set_key,dotenv_values
+from dotenv import load_dotenv
+import time
+from PyQt5.QtWidgets import QMessageBox
+load_dotenv()
 #Ruta a donde se va a subir
 #Path de computador de desde donde se va a subir el archivo
 ROOT_DIR=""
 #Nombre del archivo, incluye subfolders para subir
 #Ruta de SharePoint a donde se va a subir 
 env=dotenv_values(".env")
-ROOT_DIR="C:\\Users\IC0167A\Desktop\Proyecto_final\prueba_s"#!CONFIGURAR PATH DEL PC DE DONDE SE VAN A SUBIR LOS ARCHIVOS, UNA VEZ TERMINADO LOS DISEÑOS
+ROOT_DIR="C:\\Users\IC0167A\Desktop\Proyecto_final\prueba_s"
 SHAREPOINT_FOLDER__NAME=env["sharepoint_name_folder"]
 #archivo nombre pattern, si se quiere subir un archivo en especifico colocar en ese parametro el nombre sin extension
 FILE_NAME_PATTERN='None'
@@ -21,13 +25,23 @@ def upload_files(folder,keyword=None):
     """
 # Este código define una función llamada `upload_files` que toma dos parámetros: `carpeta` y `palabra
 # clave`.
+    c=0
     file_list=get_list_of_files(folder)
     for file in file_list:
         if keyword is None or keyword == 'None' or re.search(keyword,file[0]):
             file_content=get_file_content(file[1])
-            SharePoint().upload_file(file[0],SHAREPOINT_FOLDER__NAME,file_content)    
+            
+            try:
+                    
+                    SharePoint().upload_file(file[0],SHAREPOINT_FOLDER__NAME,file_content) #!SI ES NECESARIO COLOCAR EL INTENTO DE AUTENTICACION    
+                    print("ARCHIVOS SUBIDOS")
+            except:
+                        c+=1
+                        print(f"error MFA, reintentando conectar #{c}")
+                        time.sleep(2)
 
-
+                        continue  
+                        
 def get_list_of_files(folder):
     """
     :folder: El parámetro "carpeta" es una cadena que representa la ruta a un directorio

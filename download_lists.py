@@ -30,11 +30,21 @@ def Type_file(file_name,export_type):
 
    
 def download_list(list_name,export_type,dir_path,file_name,signal_handler):
+    auth=True
+    c=0
     #Llama con un hilo la función save_Execel para ejecutar en segundo plano
-    ssl._create_default_https_context=ssl._create_unverified_context 
-    sp_list=SharePoint().get_list(list_name)
-    total_items=len(sp_list)
-    
+    while auth==True:
+        try:
+            ssl._create_default_https_context=ssl._create_unverified_context 
+            sp_list=SharePoint().get_list(list_name)
+            total_items=len(sp_list)
+            auth=False
+            print("LOGRO CONECTAR!!!")
+        except:
+            c+=1
+            print(f"error MFA, reintentando conectar #{c}")
+            time.sleep(2)
+            continue
     if export_type == 'Excel':   
         file=threading.Thread(target=save_Execel, args=(sp_list, dir_path, file_name))
         file.start()

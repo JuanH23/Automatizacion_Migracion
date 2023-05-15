@@ -50,8 +50,10 @@ from functools import partial
 from PyQt5.QtCore import QThread, pyqtSignal
 
 from PyQt5.QtCore import pyqtSignal, QObject
+from dotenv import load_dotenv
 ###########################################################################################################
 #*Variables de entorno para las funciones con SharePoint
+load_dotenv()
 env=dotenv_values(".env")
 username = env["sharepoint_email"]
 password = env["sharepoint_password"]
@@ -701,6 +703,10 @@ class MiApp(QtWidgets.QMainWindow):
                 QMessageBox.warning(self,'Error','Ruta no valida',
                 QMessageBox.StandardButton.Close,
                 QMessageBox.StandardButton.Close)
+        except requests.exceptions.SSLError as re:
+                QMessageBox.warning(self,'Error','Error de servidor, intente la descarga nuevamente',
+                QMessageBox.StandardButton.Close,
+                QMessageBox.StandardButton.Close)
 
 
 
@@ -834,27 +840,37 @@ class MiApp(QtWidgets.QMainWindow):
         attempt_count = 0
         total_items=0
         cout=0
-        #auth_context = AuthenticationContext(url)
-        #auth_context.acquire_token_for_user(username, password)
-        ssl._create_default_https_context=ssl._create_unverified_context
-        self.ctx=ClientContext(url).with_credentials(
-                    UserCredential(
-                        username,
-                        password
-                    )
-                )
-                #############################################################################
-        #ssl._create_default_https_context=ssl._create_unverified_context #*Quita la seguridad de número exedido de subida de datos
-        #ctx = ClientContext(url).with_credentials(UserCredential(username,password))
-        self.ctx.clear
-                #############################################################################
-        list_title =self.ui.lineEdit_buscar_2.text()##!NOMBRE LISTA
-        print(list_title)
-        Sp_list = self.ctx.web.lists.get_by_title(list_title)#*Acceder a la lista
-            
-        print(Sp_list)
-        self.ctx.load(Sp_list)
-        self.ctx.execute_query()   
+        auth=True
+
+        while auth==True:
+            try:
+                auth_context = AuthenticationContext(url)
+                auth_context.acquire_token_for_user(username, password)
+                #ssl._create_default_https_context=ssl._create_unverified_context
+                #self.ctx=ClientContext(url).with_credentials(
+                #            UserCredential(
+                #                username,
+                #                password
+                #            )
+                #        )
+                        #############################################################################
+                ssl._create_default_https_context=ssl._create_unverified_context #*Quita la seguridad de número exedido de subida de datos
+                self.ctx = ClientContext(url, auth_context)
+                self.ctx.clear
+                        #############################################################################
+                list_title =self.ui.lineEdit_buscar_2.text()##!NOMBRE LISTA
+                print(list_title)
+                Sp_list = self.ctx.web.lists.get_by_title(list_title)#*Acceder a la lista
+                    
+                print(Sp_list)
+                self.ctx.load(Sp_list)
+                self.ctx.execute_query()
+                auth=False
+            except:
+                c+=1
+                print(f"error MFA, reintentando conectar #{c}")
+                time.sleep(2)
+                continue   
         try:
             excel_file = self.direccion##!PATH
         except AttributeError:
@@ -1028,6 +1044,7 @@ class MiApp(QtWidgets.QMainWindow):
                                             print(f"Error de HTTP al agregar el elemento #{c}: {http_error}")
                                             time.sleep(5)  #* Esperar 5 segundos antes de intentar de nuevo
                                             #count=last_saved_index
+                                            continue
                                         except Exception as e:
                                             
                                             print(f"Error en el intento {i+1} de inserción para el elemento #{c}: {e}")  
@@ -1078,20 +1095,21 @@ class MiApp(QtWidgets.QMainWindow):
                             print("No hay conexión a internet. Esperando...")
                             cout+=1
                             time.sleep(5)  # Esperar 5 segundos antes de volver a intentar
-                            self.count2=count
+                            self.count2=last_saved_index
                             continue # Volver al inicio del bucle while
             except Exception as e:
                             attempt_count += 1                       
                             print(f"Error al Agregar el elemento a la lista #{c} error: {e}")
                             print("Reintentando en 5 segundo...")
                             cout+=1
-                            self.count2=count
+                            self.count2=last_saved_index
                             time.sleep(5)
                             if cout == 5:#Si la execepcion ocuure 5 veces va a a terminar la subida de archivos
                                 print("Se han excedido el número máximo de intentos. Saliendo del programa...")
                                 self.cancelar_stop()
+                            else:
+                                continue
                             continue
-                            
                             
                             continue
 

@@ -16,6 +16,8 @@ from Config_User import ConfigUsuarioView
 from dotenv import set_key,dotenv_values
 from Login_Final import*
 from search_files import*
+from dotenv import load_dotenv
+load_dotenv()
 class Login(QWidget):
         def __init__(self):
             super().__init__()

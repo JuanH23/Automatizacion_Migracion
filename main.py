@@ -1095,14 +1095,14 @@ class MiApp(QtWidgets.QMainWindow):
                             print("No hay conexión a internet. Esperando...")
                             cout+=1
                             time.sleep(5)  # Esperar 5 segundos antes de volver a intentar
-                            self.count2=last_saved_index
+                            self.count2=count
                             continue # Volver al inicio del bucle while
             except Exception as e:
                             attempt_count += 1                       
                             print(f"Error al Agregar el elemento a la lista #{c} error: {e}")
                             print("Reintentando en 5 segundo...")
                             cout+=1
-                            self.count2=last_saved_index
+                            self.count2=count
                             time.sleep(5)
                             if cout == 5:#Si la execepcion ocuure 5 veces va a a terminar la subida de archivos
                                 print("Se han excedido el número máximo de intentos. Saliendo del programa...")

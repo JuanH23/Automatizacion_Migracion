@@ -6,7 +6,6 @@ import sys
 #from estructura_principal import*
 from Estructura_principal_FINAL import *
 from PyQt5.QtWidgets import QTableWidgetItem,QFileDialog,QMessageBox
-from PyQt5.QtCore import QPropertyAnimation
 from PyQt5 import QtCore
 from PyQt5 import QtCore, QtGui, QtWidgets
 import pandas as pd
@@ -35,7 +34,6 @@ import urllib
 import time
 import ssl
 import requests
-import json
 from dotenv import set_key,dotenv_values
 import os
 from pathlib import Path
@@ -44,11 +42,8 @@ import numpy as np
 import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
-from concurrent.futures import ThreadPoolExecutor
-import asyncio
 from functools import partial
 from PyQt5.QtCore import QThread, pyqtSignal
-
 from PyQt5.QtCore import pyqtSignal, QObject
 from dotenv import load_dotenv
 ###########################################################################################################
@@ -87,11 +82,8 @@ class MiApp(QtWidgets.QMainWindow):
         self.gripSize=10
         self.grip=QtWidgets.QSizeGrip(self)
         self.grip.resize(self.gripSize,self.gripSize)
-        #self.ui.frame_Sup.mouseMoveEvent=self.mover_ventana
-        ##########################
         self.signal_handler = SignalHandler()
         self.signal_handler.download_finished.connect(self.finish)
-        ##########################
         #*Funciones con los botones para cada uno de los eventos
         self.ui.bt_filtrar.clicked.connect(self.mostrar_tabla)
         self.ui.download_LIST.clicked.connect(self.download_LISTS)
@@ -99,11 +91,8 @@ class MiApp(QtWidgets.QMainWindow):
         self.ui.bt_list.clicked.connect(lambda: self.ui.stackedWidget_2.setCurrentWidget(self.ui.page_uno))	
         self.ui.bt_base_datos.clicked.connect(lambda: self.ui.stackedWidget_2.setCurrentWidget(self.ui.page_dos))	
         self.ui.bt_config.clicked.connect(lambda: self.ui.stackedWidget_2.setCurrentWidget(self.ui.page_cuatro))		
-        #self.ui.bt_restaurar.clicked.connect(self.control_normal)
         self.ui.bt_minimizar.clicked.connect(self.control_bt_minimizar)
-        #self.ui.bt_max.clicked.connect(self.control_max)
         self.ui.bt_close.clicked.connect(self.control_close)
-        #self.ui.bt_menu.clicked.connect(self.mover_menu)
         self.ui.search_files.clicked.connect(self.abrir_archivo)
         self.ui.bt_filtrar_2.clicked.connect(self.upload_LIST)
         self.ui.bt_stop.clicked.connect(self.cancelar_stop)
@@ -132,24 +121,26 @@ class MiApp(QtWidgets.QMainWindow):
         self.process=True
         self.btc_stop=0
     
-    def show_popup(self):#!!!!!!!!!!!!!!
+    def show_popup(self):
         #Hace con la función Qtimer.singleShot, que se ejecute una sola vez el mensaje
         QTimer.singleShot(0, self.popup) 
     def popup(self):
         QMessageBox.warning(self,"Advertencia",
         f"Programa finalizado, El último ID guardado en la lista es: {self.count3}") 
-    def show_error(self):#!!!!!!!!!!!!!!
+    def show_error(self):
         #Hace con la función Qtimer.singleShot, que se ejecute una sola vez el mensaje de error
         QTimer.singleShot(0, self.error) 
     def error(self):
             QMessageBox.warning(self,"Advertencia",
             f"Por favor seleccione un documento a subir")
-
-    def show_finish(self):#!!!!!!!!!!!!!!
+    def show_finish(self):
         QTimer.singleShot(0, self.finish) 
     def finish(self):
         QMessageBox.information(self, "Proceso finalizado", "La descarga se ha completado correctamente.")
-
+    def show_not_find(self):
+        QTimer.singleShot(0, self.not_find) 
+    def not_find(self):
+        QMessageBox.information(self, "Error de busqueda", "No se encuentra el nodo, busque nuevamente.")
 
     def update_progress_bar_Slot(self,value):
         self.ui.progressBar_2.setValue(value)
@@ -194,7 +185,7 @@ class MiApp(QtWidgets.QMainWindow):
         
         todos_valores_num2=pd.concat([pd.Series([0]),todos_valores_num2,pd.Series([1])])
         
-        print(todos_valores_num2)
+        #print(todos_valores_num2)
         dispositivos=df['Dispositivo'].unique()
         dispositivos_con_puertos_faltantes=[]
         for dispositivo in dispositivos:
@@ -222,8 +213,6 @@ class MiApp(QtWidgets.QMainWindow):
 
     def complete_DAAS(self,df):
         """
-
-        
         :param df: un DataFrame de pandas que contiene información sobre los dispositivos de red y sus
         puertos
         :return: un DataFrame modificado con nuevas filas agregadas para dispositivos a los que les faltan
@@ -251,7 +240,7 @@ class MiApp(QtWidgets.QMainWindow):
         # Identificar dispositivos con puertos faltantes
         dispositivos = df['Dispositivo'].unique()
         dispositivos_con_puertos_faltantes = []
-        print(f"DF====>{df}")
+        #print(f"DF====>{df}")
         for dispositivo in dispositivos:
             puertos = df[df['Dispositivo'] == dispositivo]['Puerto'].apply(lambda x: int(x.split('/')[-1]))
             puertos_faltantes = todos_los_valores[~todos_los_valores.isin(puertos)]
@@ -309,8 +298,8 @@ class MiApp(QtWidgets.QMainWindow):
         SLICE_IP2=IP2.find(".",Slic_IP2+1)
         filter_IP=int(IP[SLICE_IP+1:])
         filter_IP2=int(IP2[SLICE_IP2+1:])
-        print(f"filter_IP==>{filter_IP}")
-        print(f"filter_IP2==>{filter_IP2}")
+        #print(f"filter_IP==>{filter_IP}")
+        #print(f"filter_IP2==>{filter_IP2}")
         return Dispositivo,filter_IP,filter_IP2,int(filter_Daas)
 
 # The code defines a method called "filtrado_COS_DAAS" that takes no arguments. Within the method, it
@@ -323,13 +312,13 @@ class MiApp(QtWidgets.QMainWindow):
          try:
             #Lee el archivo encontrado de ARRIS
             df=pd.DataFrame(self.file_arris)
-            print(f"df==>{df}")
+            #print(f"df==>{df}")
             #Lee el archivo encontrado de CASA
             df_casa=pd.DataFrame(self.file_casa)
-            print(f"df_casa==>{df_casa}")
+            #print(f"df_casa==>{df_casa}")
             #Filtra las columnas necesarias para realizar el filtrado
             df_casa=df_casa.loc[:,['CMTS','Upstream','Total','Description']].astype(str).fillna('No data')
-            #Cambia el nombre 
+            #Cambia el nombre de la columna
             df_casa=df_casa.rename(columns={'Upstream':'Up'})
             #Filtra las columnas necesarias para realizar el filtrado
             file_2=df.loc[:,['CMTS','Up','Total','Description']].astype(str).fillna('No data')
@@ -349,11 +338,11 @@ class MiApp(QtWidgets.QMainWindow):
             valor_list=valor.to_list()
             indice=valor_list[0]
             v = self.filtro.loc[indice, "CMTS"]
-            print(v)
+            #print(v)
             sep=v.find("-")
             sep2=v.find("-",sep+1)
             variable3=v[:sep2]
-            print(variable3)
+            #print(variable3)
             #Lee el archivo encontrado de DAAS
             df2=pd.DataFrame(self.file_despues_DAAS)
             #coloca la variable df2 en la funcion complete_DAAS, para completar los puertos faltantes
@@ -386,7 +375,7 @@ class MiApp(QtWidgets.QMainWindow):
                 #CON_DAAS_COS.to_excel("out10.xlsx")
             if CON_DAAS_COS['Dispositivo'].str.contains(str(filter_daas+1)).any():
                 if CON_DAAS_COS['Dispositivo'].str.contains(str(filter_daas)).any():
-                    print("ENTRO AL DAAS")
+                    #print("ENTRO AL DAAS")
                     column_daas=CON_DAAS_COS['Dispositivo'].str.contains(str(filter_daas),case=False,na=False,regex=True)
                     en_tempo_daas=CON_DAAS_COS['Dispositivo'].str.contains(str(filter_daas+1),case=False,na=False,regex=True)
                     DOS_DAAS=CON_DAAS_COS[column_daas | en_tempo_daas]
@@ -396,7 +385,7 @@ class MiApp(QtWidgets.QMainWindow):
             #Lee el archivo encontrado de COS
             df_cos=pd.DataFrame(self.file_despues_COS)
             df_cos=df_cos.loc[:,['IP','Dispositivo','Puerto','ID','moka','status','ptp']]
-            print(df_cos)
+            #print(df_cos)
             
             df_out=self.complet_COS(df_cos)
             
@@ -432,19 +421,22 @@ class MiApp(QtWidgets.QMainWindow):
             else:
                 self.FINAL_FILTRADO=final
                 self.FINAL_FILTRADO=self.FINAL_FILTRADO.loc[:,['Dispositivo COS','Puerto COS','ptp','Dispositivo DAAS','Puerto DAAS','ptp']]
-            print(self.FINAL_FILTRADO )    
+            #print(self.FINAL_FILTRADO )    
             #final.to_excel("out8.xlsx")
             #self.FINAL_FILTRADO.to_excel("out11.xlsx")##RETORNAR FINAL_FILTRADO PARA LA VISUALIZACION DE LA TABLA DEL DESPUES
             COS=self.FINAL_FILTRADO.loc[:,['Dispositivo COS','Puerto COS','ptp']]
             DAAS=self.FINAL_FILTRADO.loc[:,['Dispositivo DAAS','Puerto DAAS','ptp']]
-            print(COS)
-            print(DAAS)
+            #print(COS)
+            #print(DAAS)
             #Da los parametros necesarios para que se realicen los diseños
             diseño(self.filtro,self.FINAL_FILTRADO,variable,filter_daas,self.seleccion_2)
             return self.filtro,COS,DAAS
             
          except KeyError as e:
               print(e)
+              
+         except IndexError:
+              self.show_not_find()
 
     def mostrar_tabla(self):
         """
@@ -521,7 +513,7 @@ class MiApp(QtWidgets.QMainWindow):
     def crear_despues_COS(self):
         try:
             x,FINAL_DESPUES,DAAS=self.filtrado_COS_DAAS()
-            print(FINAL_DESPUES)
+            #print(FINAL_DESPUES)
             columnas2=list(FINAL_DESPUES.columns)#*Toma solo las columnas del Dataframe            
             df_fila2=FINAL_DESPUES.to_numpy().tolist()#*lo transforma en una lista para revisar las filas del Dataframe                  
             xx=len(columnas2)#*Toma el tamaño o longitud de la variable para luego recorrerlo en un for              
@@ -550,7 +542,7 @@ class MiApp(QtWidgets.QMainWindow):
     def crear_despues_DAAS(self):
         try:
             x,y,DAAS=self.filtrado_COS_DAAS()
-            print(DAAS)
+            #print(DAAS)
             columnas2=list(DAAS.columns)#*Toma solo las columnas del Dataframe            
             df_fila2=DAAS.to_numpy().tolist()#*lo transforma en una lista para revisar las filas del Dataframe                  
             xx=len(columnas2)#*Toma el tamaño o longitud de la variable para luego recorrerlo en un for              
@@ -586,21 +578,6 @@ class MiApp(QtWidgets.QMainWindow):
         La función "control_close" cierra el programa.
         """
         self.close()
-    '''def mover_menu(self):
-        if True:
-                width=self.ui.frame_lateral_2.width()
-                normal=0
-                if width==0:
-                        extender=200
-                else:
-                        extender=normal
-                self.animacion=QPropertyAnimation(self.ui.frame_lateral_2, b'minimumWidth' )
-                self.animacion.setProperty("minimuWidth",200)
-                self.animacion.setDuration(300)
-                self.animacion.setStartValue(width)
-                self.animacion.setEndValue(extender)
-                self.animacion.setEasingCurve(QtCore.QEasingCurve.InOutQuart)
-                self.animacion.start()'''
 
     def resizeEven(self,event):
         rect=self.rect()
@@ -631,10 +608,10 @@ class MiApp(QtWidgets.QMainWindow):
         Esta función cancela una parada y restablece ciertas variables.
         """
 
-# El código anterior es un fragmento de código de Python que establece el valor de algunas variables y
-# crea un nuevo objeto ClientContext. Luego ejecuta una consulta sobre el contexto e imprime el valor
-# de una variable. Finalmente, establece el valor de dos variables más en False y 0 respectivamente.
-# url2 manda una cadena sin sentido como url para que no pueda mandar ninguna petición y detener el envio de datos
+        # El código anterior es un fragmento de código de Python que establece el valor de algunas variables y
+        # crea un nuevo objeto ClientContext. Luego ejecuta una consulta sobre el contexto e imprime el valor
+        # de una variable. Finalmente, establece el valor de dos variables más en False y 0 respectivamente.
+        # url2 manda una cadena sin sentido como url para que no pueda mandar ninguna petición y detener el envio de datos
         if self.btc_stop==1:#Si se presiona una vez el boton para detener la subida de datos, hasta que no se ejecute de nuevo la subida de datos. no permite presionarse este botón
             self.index_stop=self.saved_index
             self.count3=self.count2
@@ -642,12 +619,12 @@ class MiApp(QtWidgets.QMainWindow):
             url2="adfdsfdsfdsfdsgk"
             self.ctx=ClientContext(url2)
             self.ctx.execute_query()
-            print(self.index_stop)
+            #print(self.index_stop)
             self.continuar_subida=False
             self.process=False
             if self.process==False:
                 try:              
-                    print(self.process)
+                    #print(self.process)
                     self.show_popup()   
                 except Exception as e:
                     print(e)    
@@ -664,13 +641,13 @@ class MiApp(QtWidgets.QMainWindow):
     def seleccion_archivo(self):
         #seleccion: Almacena el valor que se seleccione del comboBox
         seleccion=self.ui.comboBox.itemText(self.ui.comboBox.currentIndex())
-        print(seleccion)   
+        #print(seleccion)   
         return seleccion
     
     def seleccion_archivo_2(self):
         #seleccion_2: Almacena el valor que se seleccione del comboBox
         self.seleccion_2=self.ui.comboBox2.itemText(self.ui.comboBox2.currentIndex())
-        print(self.seleccion_2)   
+        #print(self.seleccion_2)   
         return self.seleccion_2    
 
     def download_LISTS(self,pbar):
@@ -686,7 +663,7 @@ class MiApp(QtWidgets.QMainWindow):
             LIST_NAME=self.ui.lineEdit_descargar_lista.text()
             FILE_NAME=self.seleccion_archivo()
             FOLDER_DEST=env["path_list_download"]
-            print(f"FOLDER_DEST==>{FOLDER_DEST}")
+            #print(f"FOLDER_DEST==>{FOLDER_DEST}")
             if FILE_NAME =="Elija nombre del archivo":
                 QMessageBox.warning(self,'Advertencia','Por favor escoja un nombre valido',
                 QMessageBox.StandardButton.Close,
@@ -745,10 +722,10 @@ class MiApp(QtWidgets.QMainWindow):
                 rutas_files = list(executor.map(lambda x: self.search.buscar_archivo(*x), [(name_file, ruta) for ruta in ruta_de_busqueda for name_file in name_files]))
                 rutas_files=[ruta_file for ruta_file in rutas_files if ruta_file is not None]
             dfs={}
-            print(rutas_files)
-            print(sheet_names)
+            #print(rutas_files)
+            #print(sheet_names)
             for ruta_file,sheet_name in zip(rutas_files,sheet_names):
-                print(ruta_file.name,sheet_name)
+                #print(ruta_file.name,sheet_name)
                 if sheet_name is not None:
                     for sheet_name in sheet_names:
 
@@ -786,7 +763,6 @@ class MiApp(QtWidgets.QMainWindow):
                         
                 return arris_df,DAAS_df,COS_df,Casa_df
   
-
          
 
     def search_file_filter(self):
@@ -794,21 +770,21 @@ class MiApp(QtWidgets.QMainWindow):
          #   Esta función busca archivos en función de un filtro y muestra los resultados en un cuadro de
          #   mensaje.
          #"""
-# El código anterior es un bloque de código de Python que intenta ejecutar un conjunto de
-# instrucciones. Primero obtiene el valor de una variable llamada `old_path_list_download` del
-# entorno, la agrega a una lista llamada `ruta_de_busqueda` y luego imprime el contenido de la lista y
-# los valores de otras cuatro variables. Luego muestra un cuadro de mensaje que indica que la
-# operación se completó con éxito. Si se genera una excepción `KeyError` durante la ejecución del
-# bloque de código, imprime un mensaje de error que indica la causa de la excepción.
+         # El código anterior es un bloque de código de Python que intenta ejecutar un conjunto de
+         # instrucciones. Primero obtiene el valor de una variable llamada `old_path_list_download` del
+         # entorno, la agrega a una lista llamada `ruta_de_busqueda` y luego imprime el contenido de la lista y
+         # los valores de otras cuatro variables. Luego muestra un cuadro de mensaje que indica que la
+         # operación se completó con éxito. Si se genera una excepción `KeyError` durante la ejecución del
+         # bloque de código, imprime un mensaje de error que indica la causa de la excepción.
          try:
                 old_path_list_download = env.get('path_list_download', '')
                 self.ruta_de_busqueda.append(old_path_list_download)
-                print(self.ruta_de_busqueda)
+                #print(self.ruta_de_busqueda)
                 self.file_arris,self.file_despues_DAAS,self.file_despues_COS,self.file_casa=self.read_data()
-                print(f"file_arris==>{self.file_arris}")
-                print(f"file_despues_DAAS==>{self.file_despues_DAAS}")
-                print(f"file_depues_COS==>{self.file_despues_COS}")
-                print(f"file_casa==>{self.file_casa}")
+                #print(f"file_arris==>{self.file_arris}")
+                #print(f"file_despues_DAAS==>{self.file_despues_DAAS}")
+                #print(f"file_depues_COS==>{self.file_despues_COS}")
+                #print(f"file_casa==>{self.file_casa}")
                 self.sch=1
                 QMessageBox.information(self,"OPERACION",
                 "La operación se ha completado correctamente",
@@ -953,11 +929,12 @@ class MiApp(QtWidgets.QMainWindow):
                         for header in headers:
                             if header in cabeceras:
                                 cont3+=1
-                                if cont3==5:
+                                if cont3==6:
                                     
                                     file_2=file.loc[:,['IP','Dispositivo','Puerto','status','Unnamed: 4','Unnamed: 5']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
                                     file_2=file.rename(columns={"Unnamed: 4":"stat2","Unnamed: 5":"ptp"})
-                                    file_2[['IP','Dispositivo','Puerto','status']] = file_2[['IP','Dispositivo','Puerto','status']].astype(str)#*Convierte los valores de estas columnas a tipo str
+                                    #file_2[['IP','Dispositivo','Puerto','status']] = file_2[['IP','Dispositivo','Puerto','status']].astype(str)#*Convierte los valores de estas columnas a tipo str
+                                    file_2[['IP','Dispositivo','Puerto','status','stat2','ptp']] = file_2[['IP','Dispositivo','Puerto','status','stat2','ptp']].astype(str)#*Convierte los valores de estas columnas a tipo str
                                     print(file_2)
                                     data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
                                     flagg=3

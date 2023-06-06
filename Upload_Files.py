@@ -56,8 +56,8 @@ def get_list_of_files(folder):
             file_list.append([item,item_full_path])
     return file_list
         
-#Lectura de archivos y regresa el contenido de los archivos
-def get_file_content(file_path):
+
+def get_file_content(file_path):#Lectura de archivos y regresa el contenido de los archivos
     """   
     :file_path: El parámetro de la ruta del archivo es una cadena que representa la ubicación del
     archivo que debe leerse. Puede ser una ruta absoluta o relativa al archivo

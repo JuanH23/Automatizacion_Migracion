@@ -76,7 +76,7 @@ class Ui_ADVERTENCIA(QDialog):
         self.signal_handler = SignalHandler()
         self.signal_handler.upload_finished.connect(self.finish)
 
-    def show_finish(self):#!!!!!!!!!!!!!!
+    def show_finish(self):
         QTimer.singleShot(0, self.finish) 
     def finish(self):
         QMessageBox.information(self, "Proceso finalizado", "Se han subido los archivos, por favor revise que se hayan subido todos correctamente.")
@@ -95,13 +95,7 @@ class Ui_ADVERTENCIA(QDialog):
         print(env["path_list_download"]+ "/Diseños_NODOS")
         self.close()
          
-        
-
-
-# Este bloque de código crea una instancia de la clase `Ui_ADVERTENCIA` y la muestra como una ventana
-# de diálogo usando PyQt5. También está iniciando el ciclo de eventos principal de la aplicación
-# usando `app.exec_()`. La declaración `if __name__ == "__main__":` garantiza que este bloque de
-# código solo se ejecute si el script se ejecuta directamente y no se importa como un módulo.
+    
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)

@@ -67,7 +67,7 @@ ctx = ClientContext(url, auth_context)
 #ctx = ClientContext(url).with_credentials(UserCredential(username,password))
 ctx.clear
         #############################################################################
-list_title ="Lista_COS2"##!NOMBRE LISTA
+list_title ="COS2"##!NOMBRE LISTA
 #!
 ##!Lista_arris
 ##!Lista_Casa
@@ -81,7 +81,7 @@ Sp_list = ctx.web.lists.get_by_title(list_title)#*Acceder a la lista
 print(Sp_list)
 ctx.load(Sp_list)
 ctx.execute_query()
-excel_file = "descarga/Arris_SCMSummary.xlsx"##!PATH
+excel_file = "descarga/Ocupacion - Marcacion RPHY Harmonic.xlsx "##!PATH
 data={}
 chunk=0
 while process==True:
@@ -136,7 +136,7 @@ while process==True:
                 headers=['IP','Dispositivo','Puerto','moka','status','ptp']
                 for header in headers:
                     if header in cabeceras:
-                        cont4+=1
+                        cont4+=1            
                 if cont4==6:
                     print(cont4)
                     file_2=file.loc[:,['IP','Dispositivo','Puerto','moka','status','ptp']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"

@@ -11,8 +11,8 @@ import numpy as np
 import random
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import QTimer
-# Crear DataFrame con información
-def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
+
+def diseño(df,df_cos_daas,name_file,filter_daas,type_node): # Crear DataFrame con información
 
     ###########
     env=dotenv_values(".env")
@@ -28,29 +28,18 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     ruta_archivo = os.path.join(ruta_nueva_carpeta,file_name+ name_file +'.xlsx')
 
     ###########
+    archivo_excel = pd.ExcelWriter(ruta_archivo, engine='openpyxl')     # Crear archivo Excel desde cero y escribir información del DataFrame
 
-    # Crear archivo Excel desde cero y escribir información del DataFrame
-    archivo_excel = pd.ExcelWriter(ruta_archivo, engine='openpyxl')
-
-    # Escribir el DataFrame en el archivo Excel
-    df_cd=pd.DataFrame(df_cos_daas)
+    df_cd=pd.DataFrame(df_cos_daas)                                     # Escribir el DataFrame en el archivo Excel
     print(f"df_cd==>{df_cd}")
     ################################################################ 
     df.to_excel(archivo_excel,sheet_name='Hoja1' ,index=False)
     ################################################################
     hoja = archivo_excel.sheets['Hoja1']
-    # Obtener el libro de trabajo y la hoja
-    workbook = archivo_excel.book
+    
+    workbook = archivo_excel.book   # Obtener el libro de trabajo y la hoja
     worksheet = workbook.active
     
-    '''celda_inicial = worksheet['A4']
-    for i in range(len(df)):
-        for j in range(len(df.columns)):
-            # Obtener la celda actual en la hoja de trabajo
-            celda_actual = worksheet.cell(row=i+celda_inicial.row, column=j+celda_inicial.column)
-            # Asignar el valor del dataframe a la celda actual
-            celda_actual.value = df.iloc[i, j]'''
-
     #######################
     # Escribir la primera columna del dataframe en la columna A de la hoja de trabajo
     columna = 1  # Columna A
@@ -80,31 +69,31 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     
     columna = worksheet["C"]
     rango=columna[3:12]
-    # bucle para establecer el valor de cada celda en None
-    for celda in rango:
+    
+    for celda in rango:     # bucle para establecer el valor de cada celda en None
         celda.value = None
         
     columna = worksheet["D"]
     rango=columna[3:12]
-    # bucle para establecer el valor de cada celda en None
-    for celda in rango:
+
+    for celda in rango:     # bucle para establecer el valor de cada celda en None
         celda.value = None             
     #######################
 
 
-    # Crear objeto de relleno blanco
-    fill = PatternFill(fill_type='solid', start_color='FFFFFFFF', end_color='FFFFFFFF')
+    
+    fill = PatternFill(fill_type='solid', start_color='FFFFFFFF', end_color='FFFFFFFF')     # Crear objeto de relleno blanco
 
-    # Recorrer todas las celdas y aplicar el relleno blanco
-    for sheet_name in workbook.sheetnames:
+    
+    for sheet_name in workbook.sheetnames:      # Recorrer todas las celdas y aplicar el relleno blanco
         sheet = workbook[sheet_name]
         
 
         # Obtener el número de filas y columnas de la hoja
         max_row = sheet.max_row
         max_col = sheet.max_column
-        # Recorrer todas las celdas de la hoja y establecer su color de fondo en blanco
-        for row in range(1, max_row + 1):
+        
+        for row in range(1, max_row + 1):       # Recorrer todas las celdas de la hoja y establecer su color de fondo en blanco
             for col in range(1, max_col + 1):
                 cell = sheet.cell(row=row, column=col)
                 cell.fill = fill
@@ -133,7 +122,6 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     #texto_chasis="MEDE-CABA-H-03-CS100G#"
     celda=hoja.cell(row=1,column=1)
     celda.value=texto
-
     hoja.merge_cells(start_row=2, start_column=1, end_row=2, end_column=7)
     hoja.row_dimensions[2].height=30
     hoja.column_dimensions['F'].width=40
@@ -201,7 +189,6 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
 
     rango=hoja['E4:E12']
     
-    #suma_columna = sum([celda.value for fila in rango for celda in fila ])
     #Suma los valores que tenga en el rango que sea dependiendo del nodo
     suma_columna = sum([0 if celda.value is None else celda.value for fila in rango for celda in fila])
 
@@ -221,7 +208,6 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     hoja.column_dimensions['L'].width=25
     hoja.column_dimensions['N'].width=15
     hoja.column_dimensions['Q'].width=45
-
     fuente=Font(size=14)
     fuente.bold=True
     hoja.cell(row=1,column=9).font=fuente
@@ -251,7 +237,6 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     cell_range_row8 = worksheet['I7:Q7']
     cell_range_row9 = worksheet['I8:Q8']
     cell_range_row10 = worksheet['I6']
-
     cell1.alignment = Alignment(horizontal='center', vertical='center')
     cell2.alignment = Alignment(horizontal='center', vertical='center')
     border=Border(top=Side(style='thin'),bottom=Side(style='thin'),left=Side(style='thin'),right=Side(style='thin'))
@@ -342,8 +327,6 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
         for cell in cells:
             cell.fill=relleno_pink
 
-
-
     ###############################################
     DISPOSITIVO_DAAS = df_cd['Dispositivo DAAS'].unique()
     simil=[]
@@ -398,8 +381,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
             print(f"numero_random_solo_UNA__VEZ==>{filas_aleatorias}")
             print(f"TYPE_NODE==>{type_node}")
             ###############################!
- 
-                               
+              
             #print(f"simil==>{simil}")
     else:#Si solo tiene un dispositivo DAAS
             df_cd['Puerto DAAS']=df_cd['Puerto DAAS'].astype(str)
@@ -433,7 +415,6 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
             filas_aleatorias['primer_num_COS']=filas_aleatorias['primer_num_COS'].astype(str)
             print(f"numero_random_solo_UNA__VEZ==>{filas_aleatorias}")
             
-
             print(f"TYPE_NODE==>{type_node}")       
             print(f"simil==>{simil}")
     ######################################!
@@ -490,7 +471,6 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
         celda.value=texto_UPSTREAM
         celda=hoja.cell(row=7,column=14)
         celda.value=texto_UPSTREAM2
-        #texto_DMAC=""
         texto_DMAC=text_num_generic+":0/0.0"
         celda=hoja.cell(row=4,column=15)
         celda.value=texto_DMAC
@@ -1023,7 +1003,6 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     celda=hoja.cell(row=50,column=6)
     celda.value=texto 
 
-
     #Extrar el texto de la columna "Description"
     description_valor=df['Description']
     description_index=description_valor.index
@@ -1062,9 +1041,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node):
     for cells in cell_range_row16:
         for cell in cells:
             cell.fill=relleno_2                
-    # Guardar archivo Excel
-    
-    archivo_excel.save()
+    archivo_excel.save()    # Guardar archivo Excel
 #funcion para realizar split de los elementos de la columna "Puerto DAAS"
 def get_x(s, n=2):
     elements = s.split('/')

@@ -73,17 +73,16 @@ def save_file_csv(list_items,dir_path,file_name):
 def save_Execel(list_items,dir_path,file_name):
     ssl._create_default_https_context=ssl._create_unverified_context   
     dir_file_path=Path(dir_path,file_name).with_suffix('.xlsx') 
-    # dir_file_path=PurePath(dir_path,file_name)
     wb= Workbook()
     ws=wb.active   
-    #Obtiene las cabeceras de la lista
-    header=list_items[0].properties.keys()
     
-    #Escribe las columnas en la primera fila
-    for idx,name in enumerate(header):
+    header=list_items[0].properties.keys()  #Obtiene las cabeceras de la lista 
+    
+    
+    for idx,name in enumerate(header):      #Escribe las columnas en la primera fila
         ws.cell(row=1, column=idx+1,value=name)
-    #Comienza a escribir los items desde la segunda fila
-    row=2
+    
+    row=2                                   #Comienza a escribir los items desde la segunda fila
     
     for i,dict_obj in enumerate(list_items, start=1):
                 
@@ -113,11 +112,11 @@ def read_excel_to_dataframe(file_path,file_name):
     ws = wb.active
     data = ws.values
     headers = next(data)
-    # Crear el DataFrame con la data y las cabeceras de columna
-    df = pd.DataFrame(data, columns=headers)
+   
+    df = pd.DataFrame(data, columns=headers) # Crear el DataFrame con la data y las cabeceras de columna
     #Revisa el nombre del archivo que este, y mira en el las cabeceras, 
     # si coincide uno u otro filtra el archivo, para solo obtener lo necesario
-    if "Ocupacion-Harmonic_COS" in file_name:#!COS_TERMINAR CUANDO SE SEPAREN LOS ARCHIVOS EN LA DESCARGA
+    if "Ocupacion-Harmonic_COS" in file_name:#!COS
         cont1=0
         print("a")
         cabeceras=list(df.columns)

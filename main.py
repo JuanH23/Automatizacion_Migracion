@@ -1,7 +1,3 @@
-# El código anterior importa las bibliotecas y los módulos necesarios para un programa de Python que
-# implica la creación de una GUI usando PyQt5, la descarga y carga de archivos en SharePoint y la
-# realización de otras tareas, como buscar archivos y formatear datos. También incluye varias
-# funciones y clases de los módulos importados.
 import sys
 #from estructura_principal import*
 from Estructura_principal_FINAL import *
@@ -182,7 +178,6 @@ class MiApp(QtWidgets.QMainWindow):
         todos_valores_num1=pd.Series(range(1,113))
         todos_valores_num1=pd.concat([pd.Series([1]),todos_valores_num1,pd.Series([112])])
         todos_valores_num2=pd.Series(range(0,1))
-        
         todos_valores_num2=pd.concat([pd.Series([0]),todos_valores_num2,pd.Series([1])])
         
         #print(todos_valores_num2)
@@ -309,22 +304,16 @@ class MiApp(QtWidgets.QMainWindow):
 
     def filtrado_COS_DAAS(self):
 
-         try:
-            #Lee el archivo encontrado de ARRIS
-            df=pd.DataFrame(self.file_arris)
-            #Lee el archivo encontrado de CASA
-            df_casa=pd.DataFrame(self.file_casa)
-            #Filtra las columnas necesarias para realizar el filtrado
-            df_casa=df_casa.loc[:,['CMTS','Upstream','Total','Description']].astype(str).fillna('No data')
-            #Cambia el nombre de la columna
-            df_casa=df_casa.rename(columns={'Upstream':'Up'})
-            #Filtra las columnas necesarias para realizar el filtrado
+         try:           
+            df=pd.DataFrame(self.file_arris)        #Lee el archivo encontrado de ARRIS
+            df_casa=pd.DataFrame(self.file_casa)    #Lee el archivo encontrado de CASA
+            df_casa=df_casa.loc[:,['CMTS','Upstream','Total','Description']].astype(str).fillna('No data')    #Filtra las columnas necesarias para realizar el filtrado      
+            df_casa=df_casa.rename(columns={'Upstream':'Up'})       #Cambia el nombre de la columna
+                                                    #Filtra las columnas necesarias para realizar el filtrado
             file_2=df.loc[:,['CMTS','Up','Total','Description']].astype(str).fillna('No data')
-            #Une el Dataframe de ARRIS con el de CASA
-            df_concat = pd.concat([file_2, df_casa])
-            #Toma el nombre del nodo que se dijite en el LineEdit                                                                                           
-            variable=self.ui.lineEdit_buscar.text()
-            variable=variable.upper()#*Debido a que todas las letras en la columna esta en mayuscula no importa lo que se digite en el LineEdit, lo transforma a mayuscula para facilitar el filtrado
+            df_concat = pd.concat([file_2, df_casa])    #Une el Dataframe de ARRIS con el de CASA                                                                                                      
+            variable=self.ui.lineEdit_buscar.text()     #Toma el nombre del nodo que se dijite en el LineEdit
+            variable=variable.upper()                   #*Debido a que todas las letras en la columna esta en mayuscula no importa lo que se digite en el LineEdit, lo transforma a mayuscula para facilitar el filtrado
             self.filtro=df_concat[df_concat['Description'].str.contains(variable,case=False,na=False,regex=True)]#*con el argumento contains revisa lo que se guarde en la varible,filtre y en la variable filtro guarde todo. 
             ciudad=self.filtro['CMTS']
             valor=ciudad.index
@@ -336,9 +325,8 @@ class MiApp(QtWidgets.QMainWindow):
             sep2=v.find("-",sep+1)
             variable3=v[:sep2]
             #print(variable3)
-            df2=pd.DataFrame(self.file_despues_DAAS) #Lee el archivo encontrado de DAAS
-            #coloca la variable df2 en la funcion complete_DAAS, para completar los puertos faltantes
-            df_das=self.complete_DAAS(df2)
+            df2=pd.DataFrame(self.file_despues_DAAS)    #Lee el archivo encontrado de DAAS
+            df_das=self.complete_DAAS(df2)              #coloca la variable df2 en la funcion complete_DAAS, para completar los puertos faltantes
             #Filtra las columnas necesarias para realizar el filtrado
             file_3=df_das.loc[:,['IP','Dispositivo','Puerto','status','stat2','ptp']].astype(str).fillna(value='No Data')          
             variable2="PUERTOLIBRE"  #utiliza la palabra clave "PUERTO LIBRE" para reducir la cantidad de resultados
@@ -371,8 +359,7 @@ class MiApp(QtWidgets.QMainWindow):
                     
             else:
                  DOS_DAAS=CON_DAAS_COS[CON_DAAS_COS['Dispositivo'].str.contains(str(filter_daas),case=False,na=False,regex=True)]    
-            #Lee el archivo encontrado de COS
-            df_cos=pd.DataFrame(self.file_despues_COS)
+            df_cos=pd.DataFrame(self.file_despues_COS)      #Lee el archivo encontrado de COS
             df_cos=df_cos.loc[:,['IP','Dispositivo','Puerto','ID','moka','status','ptp']]
             #print(df_cos)
             
@@ -686,12 +673,9 @@ class MiApp(QtWidgets.QMainWindow):
         :ruta_de_busqueda: Las rutas de directorio donde la función buscará los archivos
         :return: un diccionario de marcos de datos de pandas, donde las claves son una combinación del
         nombre de la hoja (si se proporciona) y el nombre del archivo donde se obtuvo el marco de datos.
-            """
-            #if __name__=='__main__':
-            freeze_support()       
-                #with Pool(processes=os.cpu_count()) as pool:
+            """          
+            freeze_support()            
             with concurrent.futures.ThreadPoolExecutor() as executor:    
-                #rutas_files=pool.starmap(self.search.buscar_archivo,[(name_file,ruta) for ruta in ruta_de_busqueda for name_file in name_files])
                 rutas_files = list(executor.map(lambda x: self.search.buscar_archivo(*x), [(name_file, ruta) for ruta in ruta_de_busqueda for name_file in name_files]))
                 rutas_files=[ruta_file for ruta_file in rutas_files if ruta_file is not None]
             dfs={}
@@ -701,13 +685,11 @@ class MiApp(QtWidgets.QMainWindow):
                 #print(ruta_file.name,sheet_name)
                 if sheet_name is not None:
                     for sheet_name in sheet_names:
-
                         df=pd.read_excel(ruta_file,sheet_name=sheet_name,engine='openpyxl')
                         dfs[f"{sheet_name }_{ruta_file.name}"]=df
                 else:
                     df=pd.read_excel(ruta_file)
-                    dfs[ruta_file.name]=df
-                    
+                    dfs[ruta_file.name]=df           
             return dfs
     def read_data(self):
                 """
@@ -716,8 +698,7 @@ class MiApp(QtWidgets.QMainWindow):
                 arris_df=None
                 Casa_df=None
                 COS_df=None
-                DAAS_df=None
-                #if __name__=='__main__':  
+                DAAS_df=None               
                 dataframes=self.obtener_dataframes(name_files,self.ruta_de_busqueda)
                 arris_df=dataframes['Arris_SCMSummary.xlsx']
                 Casa_df=dataframes['Casa_SCMSummary.xlsx']               
@@ -1055,8 +1036,7 @@ class MiApp(QtWidgets.QMainWindow):
                             continue
                             
                             continue
-
-                                         
+                            
     def save_path_list(self):
         #Revisa que el nombre del archivo en el LineEdit no este vacio y si es asi lo guarde como ya estaba guardado
         # y si tiene algo nuevo lo guarde en el archivo y lo tome como la nueva ruta

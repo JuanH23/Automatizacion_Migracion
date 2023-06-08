@@ -58,7 +58,7 @@ class Login(QWidget):
                   # y ademas de revisar si el texto digitado esta en el archivo de texto
 
                   users=[]
-                  user_path='usuarios.txt'
+                  user_path='.env.users'
 
                   try:
                     with open(user_path,'r') as f:

@@ -12,6 +12,7 @@
 *[Librerias](#Librerias_utilizadas)
 
 *[Instalación librerias](#Para-instalar-las-librerias)
+
 *[Creación de ejecutable](#Creación-de-ejecutable)
 
 *[Archivos del proyecto](#Archivos-del-proyecto)

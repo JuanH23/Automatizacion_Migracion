@@ -15,6 +15,8 @@
 
 *[Creación de ejecutable](#Creación-de-ejecutable)
 
+*[Creación de ejecutable](#Creación-de-ejecutable)
+
 *[Archivos del proyecto](#Archivos-del-proyecto)
 
 * [config.py](#config)

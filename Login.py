@@ -11,7 +11,7 @@ import sys
 from PyQt5.QtWidgets import (QApplication,QLabel,QWidget,QLineEdit,QPushButton,QMessageBox,QCheckBox)
 from PyQt5.QtGui import QFont,QPixmap
 from PyQt5.QtWidgets import (QDialog,QLabel,QPushButton,QLineEdit,QMessageBox,)
-from main import MiApp
+from modules.models.main import MiApp
 from modules.models.Config_User import ConfigUsuarioView
 from dotenv import set_key,dotenv_values
 from modules.statics.Login_Final import*

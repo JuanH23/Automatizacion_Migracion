@@ -72,7 +72,7 @@ Las principales librerías utilizadas son:
 2. Posicionarse en la ruta de la carpeta del proyeto
 3. Crear un entorno virtual ` python -m venv env`
 4. Activar el entorno virtual ` env\Scripts\activate.bat`
-5. Instalar las librerías ` pip install -r requiriments_f.txt`
+5. Instalar las librerías ` pip install -r requiriments.txt`
 ------
 ### Creación-de-ejecutable 
 - para realizar la creación del aplicativo .exe se utiliza la librería pyinstaller. 

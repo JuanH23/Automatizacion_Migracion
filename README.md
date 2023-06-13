@@ -80,6 +80,7 @@ Las principales librerías utilizadas son:
 - coloque el siguiente comando ` pyinstaller --clean --onefile --windowed [FILE].py`
 - De la carpeta dist saque el ejecutable que se acaba de crear y cámbielo a la ubicación del archivo principal.
 ## Nota:
+
 Para el uso del aplicativo, cree dos archivos de entorno.
 1.".env": Este archivo va junto al archivo principal, el cual va a almacenar toda la información
 2.".env.users": En la carpeta config, cree este archivo el cual va a almacenar los usuarios que se registren.

@@ -1,18 +1,15 @@
 # Automatización diseños de migración de Tecnología
 
 
-
 **Table of Contents**
-
 
 *[Descripción del proyecto](#Descripción-del-proyecto)
 
 *[Tecnologías](#Tecnología_utilizadas)
 
-*[Librerias](#Librerias_utilizadas)
+*[Librerías](#Librerias_utilizadas)
 
-*[Instalación librerias](#Para-instalar-las-librerias)
-
+*[Instalación librerías](#Para-instalar-las-librerias)
 
 *[Creación de ejecutable](#Creación-de-ejecutable)
 
@@ -32,7 +29,6 @@
 * [Prueba_formato.py](#Prueba_formato)
 
 
-
 ------
 ### Descripción-del-proyecto
 Este es un proyecto realizado con Python, el cual permite realizar subida de archivos Excel a listas de SharePoint, descarga de listas de SharePoint, esto con el fin de tener actualizada información acerca de los nodos que se están utilizando y cuales están disponibles para poder reemplazarlos a Remote PHY, en donde se tiene un apartado de filtrado de información, el cual se busca un nodo en específico y este va a generar un filtrado del nodo en caso de que este libre, con la respectiva información de los puertos DAAS y COS disponibles que se puedan utilizar mostrando los en la UI.
@@ -43,17 +39,17 @@ Esto con el fin de optimizar tiempos al momento de actualizar la información de
 
 ----------
 
-### Tecnología_utilizadas 
+### Tecnología utilizadas 
 - python 3.19
 ----
 ### Librerias_utilizadas   
-Las principales librerias utilizadas son:
+Las principales librerías utilizadas son:
 - Office365-REST-Python-Client:
     Libreria encargada de la autenticación, manipulación, subida de datos, subida de archivos, descarga de archivos.
 - openpyxl:
-    Lectura de archivos Excel, ademas de que con su extensión de estilos, realización y manipulación de los archivos excel, para generar los diseño de nodos
+    Lectura de archivos Excel, además de que con su extensión de estilos, realización y manipulación de los archivos Excel, para generar los diseños de nodos
 - pandas:
-    Manejo, manipulación de gran cantidad de datos, almacenados en dataframes
+    Manejo, manipulación de gran cantidad de datos, almacenados en Dataframes
 - PyQt5:
     compatibilidad con python, para el diseño de la interfaz gráfica, también responsable de todo el manejo de usuario que tenga dentro del aplicativo
 - threading:
@@ -61,22 +57,22 @@ Las principales librerias utilizadas son:
 - sys:
     Uso de funcionalidades del sistema
 - ssl:
-    Ayuda a disminuir la posibilidad de que al momento de realizar subida de datos a las listas, detecte o perciba que es un bot, y no interrumpa la subida o descarga de datos.
+    Ayuda a disminuir la posibilidad de que, al momento de realizar subida de datos a las listas, detecte o perciba que es un bot, y no interrumpa la subida o descarga de datos.
 - multiprocessing:
-    Para la busqueda de archivos en el PC, es necesario que se maneje con esta librería para manejar en parelelo la busqueda, debido a que el proceso puede ser mas pesado y la librería threading no lo llega a manejar bien del todo.
+    Para la búsqueda de archivos en el PC, es necesario que se maneje con esta librería para manejar en paralelo la búsqueda, debido a que el proceso puede ser más pesado y la librería threading no lo llega a manejar bien del todo.
 - PyQt5Designer:
     Esta librería contiene un programa ejecutable, para facilitar el diseño de las interfaces graficas
 - python-dotenv:
-    Manejo y manipulación de los archivos .env, principalmente para guardar información y que solo el sistema en el que se este corriendo se pueda manejar o leer.
+    Manejo y manipulación de los archivos .env, principalmente para guardar información y que solo el sistema en el que se esté corriendo se pueda manejar o leer.
 - pyinstaller: 
     Creación del aplicativo ejecutable
 ----
 # Para-instalar-las-librerias
 1. Ir al cmd o terminal del editor
 2. Posicionarse en la ruta de la carpeta del proyeto
-3. Crear un entorno virtual  ` python -m venv env`
-4. Activar el entorno virtual  ` env\Scripts\activate.bat`
-5. Instalar las librerias  ` pip install -r requiriments_f.txt`
+3. Crear un entorno virtual ` python -m venv env`
+4. Activar el entorno virtual ` env\Scripts\activate.bat`
+5. Instalar las librerías ` pip install -r requiriments_f.txt`
 ------
 ### Creación-de-ejecutable 
 - para realizar la creación del aplicativo .exe se utiliza la librería pyinstaller. 
@@ -91,10 +87,10 @@ Las principales librerias utilizadas son:
 Este archivo contiene una clase llamada Ui_config, la cual tiene la codificación de toda la interfaz gráfica de la ventana de registro del programa, donde están los siguientes componentes:
 - label4: Texto de registro de usuario
 - lineEdit: Espacio para registrar usuario
-- lineEdit_2: Espacio para registrar el password
-- lineEdit_3: Espacio para confirmar el password
+- lineEdit_2: Espacio para registrar la contraseña
+- lineEdit_3: Espacio para confirmar la contraseña
 - Login_button: Botón para guardar las configuraciones
-- checkBox: Caja para visualizar el contenido de los password 
+- checkBox: Caja para visualizar el contenido de las contraseñas 
 ## Config_User
 Este archivo contiene una clase llamada ConfigUsuarioView, la cual tiene la codificación del funcionamiento de la interfaz gráfica, este archivo está dividido en varias funciones:
 - __init__(self): Esta función inicializa y coloca parámetros esenciales 
@@ -110,7 +106,7 @@ Dependiendo del tipo de archivo que sea, va a ejecutar la función para guardar 
 - mostrar_pass(self,clicked): Esta función le entra como parámetro si fue presionado o no el checkbox, mostrando o no el texto que se introduce.
 - save_Execel(list_items,dir_path,file_name): Esta función, de los datos obtenidos de la lista de SharePoint que se quiere descargar, va a comenzar a escribir en un archivo Excel los datos, además de revisar cada uno de los archivos para que filtre y solo se obtenga el archivo con la información necesaria.
 ## Advertencia
-Este archivo contiene una clase llamada Ui_ADVERTENCIA, el cual contiene todas los parámetros de la UI, además de funciones que realiza los botones que contiene:
+Este archivo contiene una clase llamada Ui_ADVERTENCIA, el cual contiene todos los parámetros de la UI, además de funciones que realiza los botones que contiene:
 
 - self.label: Contiene un mensaje que se muestra en la ventana emergente.
 - self.pushButton: Ejecuta la función para subir los archivos de los Diseños
@@ -121,9 +117,9 @@ Este archivo contiene una clase llamada Ui_ADVERTENCIA, el cual contiene todas l
 Este archivo contiene una clase llamada Ui_Form, la cual tiene la codificación de toda la interfaz gráfica de la ventana de inicio del programa, donde están los siguientes componentes:
 - label4: Texto de inicio de usuario
 - lineEdit: Espacio para registrar usuario
-- lineEdit_2: Espacio para registrar el password
+- lineEdit_2: Espacio para registrar la contraseña
 - Login_button: Botón para guardar realizar el Login
-- checkBox: Caja para visualizar el contenido de los password
+- checkBox: Caja para visualizar el contenido de las contraseñas
 - Config_button: Botón para entrar a la ventana de configuración de usuario.
 ## Login
 Este archivo contiene una clase llamada Login, la cual tiene la codificación del funcionamiento de la interfaz gráfica, este archivo está dividido en varias funciones:
@@ -171,7 +167,7 @@ Este archivo contiene una clase llamada principal del programa, donde están los
 - bt_filtrar_2: Espacio que ejecuta la función upload_LIST
 - search_files: Botón para abrir el buscador de Windows para buscar el archivo .xlsx que se desea subir
 - bt_stop: Botón que ejecuta la función cancelar_stop
-- label_15:Texto en la ventana(page_cuatro) "Adicione una vez más este caracter \'\\\' , a la ruta como este ejemplo: C:-->\\\\<--Users\\PC\\Desktop"
+- label_15: Texto en la ventana(page_cuatro) "Adicione una vez más este caracter \'\\\' , a la ruta como este ejemplo: C:-->\\\\<--Users\\PC\\Desktop"
 - label_16: Texto en la ventana(page_cuatro) "CONFIGURACION"
 - label_17: Texto en la ventana(page_cuatro) "Ejemplo: https://claromovilco.sharepoint.com/sites/nombre_sitio_SharePoint/" "
 - lineEdit_site_Sharepoint: Espacio para configurar el Path donde se va a guardar el sitio de SharePoint y se guardara en el archivo .env

@@ -75,8 +75,8 @@ Las principales librerias utilizadas son:
 
 -------------
 # Archivos-del-proyecto
-*Todos los archivos se encuentran en la carpeta modules, archivos que están en la carpeta models, son los archivos principales para el funcionamiento.
-*En la carpeta statics, se encuentran los archivos de la interfaz gráfica.
+* Todos los archivos se encuentran en la carpeta modules, archivos que están en la carpeta models, son los archivos principales para el funcionamiento.
+* En la carpeta statics, se encuentran los archivos de la interfaz gráfica.
 ## config
 Este archivo contiene una clase llamada Ui_config, la cual tiene la codificación de toda la interfaz gráfica de la ventana de registro del programa, donde están los siguientes componentes:
 - label4: Texto de registro de usuario

@@ -12,6 +12,7 @@
 *[Librerias](#Librerias_utilizadas)
 
 *[Instalación librerias](#Para-instalar-las-librerias)
+*[Creación de ejecutable](#Creación-de-ejecutable)
 
 *[Archivos del proyecto](#Archivos-del-proyecto)
 
@@ -73,7 +74,7 @@ Las principales librerias utilizadas son:
 4. Activar el entorno virtual  ` env\Scripts\activate.bat`
 5. Instalar las librerias  ` pip install -r requiriments_f.txt`
 ------
-### Creación de ejecutable 
+### Creación-de-ejecutable 
 - para realizar la creación del aplicativo .exe se utiliza la librería pyinstaller. 
 - ubíquese en la ruta donde se encuentra el archivo principal, desde el terminal o cmd
 - coloque el siguiente comando ` pyinstaller --clean --onefile --windowed [FILE].py`

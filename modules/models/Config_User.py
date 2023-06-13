@@ -2,7 +2,7 @@
 from PyQt5.QtWidgets import (QDialog,QLabel,QPushButton,QLineEdit,QMessageBox,)
 from PyQt5.QtGui import QFont
 from dotenv import set_key,dotenv_values
-from Config import*
+from modules.statics.Config import*
 class ConfigUsuarioView(QDialog):
     
 
@@ -52,7 +52,7 @@ class ConfigUsuarioView(QDialog):
         #usuario: Guarda en texto lo que se escriba en el LineEdit para el usuario
         #password1: Guarda en texto lo que se escriba en el LineEdit para comparar la contraseña
         #password2: Guarda en texto lo que se escriba en el LineEdit para comparar la contraseña
-        user_path='usuarios.txt'
+        user_path='config/.env.users'
         usuario=self.ui.lineEdit.text()
         password1=self.ui.lineEdit_2.text()
         password2=self.ui.lineEdit_3.text()

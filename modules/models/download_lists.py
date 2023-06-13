@@ -1,4 +1,4 @@
-from office365_api import SharePoint
+from modules.models.office365_api import SharePoint
 import sys
 import csv
 from pathlib import PurePath
@@ -10,7 +10,7 @@ import threading
 import os
 import ssl
 from openpyxl import load_workbook
-from Estructura_principal_FINAL import *
+from modules.statics.Estructura_principal_FINAL import *
 from tqdm import tqdm
 from PyQt5 import QtCore, QtGui, QtWidgets
 from concurrent.futures import ThreadPoolExecutor

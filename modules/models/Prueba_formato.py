@@ -6,12 +6,12 @@ from openpyxl.styles import Color,Font
 import openpyxl
 import os
 from dotenv import set_key,dotenv_values 
-from Advertencia import*
+from modules.models.Advertencia import*
 import numpy as np
 import random
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import QTimer
-from filter_daas import sum_daas
+from modules.models.filter_daas import sum_daas
 def diseño(df,df_cos_daas,name_file,filter_daas,type_node): # Crear DataFrame con información
 
     ###########

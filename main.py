@@ -1,18 +1,18 @@
 import sys
 #from estructura_principal import*
-from Estructura_principal_FINAL import *
+from modules.statics.Estructura_principal_FINAL import *
 from PyQt5.QtWidgets import QTableWidgetItem,QFileDialog,QMessageBox
 from PyQt5 import QtCore
 from PyQt5 import QtCore, QtGui, QtWidgets
 import pandas as pd
-import download_lists
+import modules.models.download_lists
 import threading
-from office365_api import SharePoint
-import download_lists
+from modules.models.office365_api import SharePoint
+import modules.models.download_lists
 from PyQt5.QtCore import QTimer
-from Advertencia import*
-from search_files import Search
-from Prueba_formato import diseño
+from modules.models.Advertencia import*
+from modules.models.search_files import Search
+from modules.models.Prueba_formato import diseño
 from PyQt5 import QtCore, QtGui, QtWidgets
 ##########################################################################################################
 #*Librerias utilizadas en la función de subir lista a SharePoint
@@ -305,11 +305,11 @@ class MiApp(QtWidgets.QMainWindow):
     def filtrado_COS_DAAS(self):
 
          try:           
-            df=pd.DataFrame(self.file_arris)        #Lee el archivo encontrado de ARRIS
-            df_casa=pd.DataFrame(self.file_casa)    #Lee el archivo encontrado de CASA
+            df=pd.DataFrame(self.file_arris)            #Lee el archivo encontrado de ARRIS
+            df_casa=pd.DataFrame(self.file_casa)        #Lee el archivo encontrado de CASA
             df_casa=df_casa.loc[:,['CMTS','Upstream','Total','Description']].astype(str).fillna('No data')    #Filtra las columnas necesarias para realizar el filtrado      
             df_casa=df_casa.rename(columns={'Upstream':'Up'})       #Cambia el nombre de la columna
-                                                    #Filtra las columnas necesarias para realizar el filtrado
+                                                        #Filtra las columnas necesarias para realizar el filtrado
             file_2=df.loc[:,['CMTS','Up','Total','Description']].astype(str).fillna('No data')
             df_concat = pd.concat([file_2, df_casa])    #Une el Dataframe de ARRIS con el de CASA                                                                                                      
             variable=self.ui.lineEdit_buscar.text()     #Toma el nombre del nodo que se dijite en el LineEdit
@@ -637,8 +637,8 @@ class MiApp(QtWidgets.QMainWindow):
                 QMessageBox.StandardButton.Close)
             else:
                 ssl._create_default_https_context=ssl._create_unverified_context
-                file_name= download_lists.Type_file(FILE_NAME,EXPORT_TYPE)
-                downloader_thread = threading.Thread(target=download_lists.download_list,args=(LIST_NAME,EXPORT_TYPE,FOLDER_DEST,file_name,self.signal_handler))
+                file_name= modules.models.download_lists.Type_file(FILE_NAME,EXPORT_TYPE)
+                downloader_thread = threading.Thread(target=modules.models.download_lists.download_list,args=(LIST_NAME,EXPORT_TYPE,FOLDER_DEST,file_name,self.signal_handler))
                 downloader_thread.start()
                     
                 #########################################

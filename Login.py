@@ -12,10 +12,10 @@ from PyQt5.QtWidgets import (QApplication,QLabel,QWidget,QLineEdit,QPushButton,Q
 from PyQt5.QtGui import QFont,QPixmap
 from PyQt5.QtWidgets import (QDialog,QLabel,QPushButton,QLineEdit,QMessageBox,)
 from main import MiApp
-from Config_User import ConfigUsuarioView
+from modules.models.Config_User import ConfigUsuarioView
 from dotenv import set_key,dotenv_values
-from Login_Final import*
-from search_files import*
+from modules.statics.Login_Final import*
+from modules.models.search_files import*
 from dotenv import load_dotenv
 load_dotenv()
 class Login(QWidget):
@@ -58,7 +58,7 @@ class Login(QWidget):
                   # y ademas de revisar si el texto digitado esta en el archivo de texto
 
                   users=[]
-                  user_path='.env.users'
+                  user_path='config/.env.users'
 
                   try:
                     with open(user_path,'r') as f:

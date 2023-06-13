@@ -1,4 +1,4 @@
-from office365_api import SharePoint
+from modules.models.office365_api import SharePoint
 import re
 import sys,os
 from pathlib import PurePath
@@ -33,7 +33,7 @@ def upload_files(folder,keyword=None):
             
             try:
                     
-                    SharePoint().upload_file(file[0],SHAREPOINT_FOLDER__NAME,file_content) #!SI ES NECESARIO COLOCAR EL INTENTO DE AUTENTICACION    
+                    SharePoint().upload_file(file[0],SHAREPOINT_FOLDER__NAME,file_content)   
                     print("ARCHIVOS SUBIDOS")
             except:
                         c+=1

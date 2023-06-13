@@ -40,7 +40,9 @@ Este es un proyecto realizado con Python, el cual permite realizar subida de arc
  A su vez dependiendo del tipo de nodo que sea escogido, ya sea 1 x 2 ó 2 x 4, va a generar automáticamente un formato con el diseño del nodo, guardando en una carpeta, permitiendo con un botón, subir todos los archivos a una carpeta de SharePoint.
 
 Esto con el fin de optimizar tiempos al momento de actualizar la información de los nodos de la tecnología Arris y Casa, y los puertos disponibles que se pueden utilizar de los COS y DAAS, reduciendo los tiempos para generar los formatos de los diseños de nodos que se requieran.
------
+
+----------
+
 ### Tecnología_utilizadas 
 - python 3.19
 ----

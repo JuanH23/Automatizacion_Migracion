@@ -63,7 +63,8 @@ Las principales librerias utilizadas son:
     Esta librería contiene un programa ejecutable, para facilitar el diseño de las interfaces graficas
 - python-dotenv:
     Manejo y manipulación de los archivos .env, principalmente para guardar información y que solo el sistema en el que se este corriendo se pueda manejar o leer.
-
+- pyinstaller: 
+    Creación del aplicativo ejecutable
 ----
 # Para-instalar-las-librerias
 1. Ir al cmd o terminal del editor
@@ -71,8 +72,12 @@ Las principales librerias utilizadas son:
 3. Crear un entorno virtual  ` python -m venv env`
 4. Activar el entorno virtual  ` env\Scripts\activate.bat`
 5. Instalar las librerias  ` pip install -r requiriments_f.txt`
-
-
+------
+### Creación de ejecutable 
+- para realizar la creación del aplicativo .exe se utiliza la librería pyinstaller. 
+- ubíquese en la ruta donde se encuentra el archivo principal, desde el terminal o cmd
+- coloque el siguiente comando ` pyinstaller --clean --onefile --windowed [FILE].py`
+- De la carpeta dist saque el ejecutable que se acaba de crear y cámbielo a la ubicación del archivo principal.
 -------------
 # Archivos-del-proyecto
 * Todos los archivos se encuentran en la carpeta modules, archivos que están en la carpeta models, son los archivos principales para el funcionamiento.

@@ -33,7 +33,7 @@
 
 
 
-
+------
 ### Descripción-del-proyecto
 Este es un proyecto realizado con Python, el cual permite realizar subida de archivos Excel a listas de SharePoint, descarga de listas de SharePoint, esto con el fin de tener actualizada información acerca de los nodos que se están utilizando y cuales están disponibles para poder reemplazarlos a Remote PHY, en donde se tiene un apartado de filtrado de información, el cual se busca un nodo en específico y este va a generar un filtrado del nodo en caso de que este libre, con la respectiva información de los puertos DAAS y COS disponibles que se puedan utilizar mostrando los en la UI.
 

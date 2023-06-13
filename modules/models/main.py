@@ -1,9 +1,8 @@
 import sys
-#from estructura_principal import*
-from modules.statics.Estructura_principal_FINAL import *
+from modules.statics.Estructura_principal_FINAL import*
 from PyQt5.QtWidgets import QTableWidgetItem,QFileDialog,QMessageBox
 from PyQt5 import QtCore
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 import pandas as pd
 import modules.models.download_lists
 import threading
@@ -13,20 +12,12 @@ from PyQt5.QtCore import QTimer
 from modules.models.Advertencia import*
 from modules.models.search_files import Search
 from modules.models.Prueba_formato import diseño
-from PyQt5 import QtCore, QtGui, QtWidgets
-##########################################################################################################
 #*Librerias utilizadas en la función de subir lista a SharePoint
-from office365.sharepoint.lists.template_type import ListTemplateType
 from office365.runtime.auth.authentication_context import AuthenticationContext
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.files import file
 from office365.sharepoint.files.file import File
-from office365.sharepoint.lists.creation_information import ListCreationInformation
-from office365.runtime.auth.user_credential import UserCredential 
 from office365.sharepoint.lists.list import List   
-from office365.sharepoint.listitems.collection import ListItemCollection
-from office365.runtime.client_request_exception import ClientRequestException 
-import urllib
 import time
 import ssl
 import requests
@@ -37,12 +28,8 @@ from multiprocessing import Pool,cpu_count,freeze_support
 import numpy as np
 import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from tqdm import tqdm
-from functools import partial
-from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtCore import pyqtSignal, QObject
 from dotenv import load_dotenv
-###########################################################################################################
 #*Variables de entorno para las funciones con SharePoint
 load_dotenv()
 env=dotenv_values(".env")
@@ -50,19 +37,13 @@ username = env["sharepoint_email"]
 password = env["sharepoint_password"]
 url = env['sharepoint_url_site']
 ruth_list_download= env["path_list_download"]
-
 EXPORT_TYPE='Excel'
-
-##############################################################################################################
 #Lista de los nombres de los archivos que se van a buscar en el PC
 name_files=["Arris_SCMSummary.xlsx","Casa_SCMSummary.xlsx","Ocupacion- RPHY Harmonic_DAAS.xlsx","Ocupacion-Harmonic_COS.xlsx"]
-
 sheet_names=[None,None,None,None]#Si hay algun archivo con mas de una hoja, colocar el nombre de la hoja 
 #en orden de los archivos de la lista name_files
-##############################################################################################################
 class SignalHandler(QObject):
     download_finished = pyqtSignal()
-
     def __init__(self, parent=None):
         super().__init__(parent)
  # Establece el evento de finalización
@@ -124,8 +105,7 @@ class MiApp(QtWidgets.QMainWindow):
         QMessageBox.warning(self,"Advertencia",
         f"Programa finalizado, El último ID guardado en la lista es: {self.count3}") 
     def show_error(self):
-        #Hace con la función Qtimer.singleShot, que se ejecute una sola vez el mensaje de error
-        QTimer.singleShot(0, self.error) 
+        QTimer.singleShot(0, self.error) #Hace con la función Qtimer.singleShot, que se ejecute una sola vez el mensaje de error
     def error(self):
             QMessageBox.warning(self,"Advertencia",
             f"Por favor seleccione un documento a subir")
@@ -140,13 +120,9 @@ class MiApp(QtWidgets.QMainWindow):
 
     def update_progress_bar_Slot(self,value):
         self.ui.progressBar_2.setValue(value)
-
-    #*Esta función abre desde el sistema solo archivos Excel  guarda la información en la variable direccion    
+        
     def abrir_archivo(self):
-        """
-        Esta función abre un cuadro de diálogo de archivo para seleccionar un archivo de Excel y almacena la
-        ruta del archivo en la variable "dirección".
-        """
+        #*Esta función abre desde el sistema solo archivos Excel  guarda la información en la variable direccion
         #file: obtiene toda la informacion de el archivo, solo permitiendo abrir archivos Excel (xlsx)
         try:
             file=QFileDialog.getOpenFileName(self,"Abrir Archivo Excel", "","Excel Files (*.xlsx) ;; All Files (*)")
@@ -174,12 +150,10 @@ class MiApp(QtWidgets.QMainWindow):
         #param df: Un DataFrame de pandas que contiene información sobre los dispositivos y sus puertos
         #return:una versión modificada del marco de datos de entrada `df`, con filas adicionales agregadas
         #para completar los números de puerto que faltan para cada dispositivo.
-
         todos_valores_num1=pd.Series(range(1,113))
         todos_valores_num1=pd.concat([pd.Series([1]),todos_valores_num1,pd.Series([112])])
         todos_valores_num2=pd.Series(range(0,1))
-        todos_valores_num2=pd.concat([pd.Series([0]),todos_valores_num2,pd.Series([1])])
-        
+        todos_valores_num2=pd.concat([pd.Series([0]),todos_valores_num2,pd.Series([1])])      
         #print(todos_valores_num2)
         dispositivos=df['Dispositivo'].unique()
         dispositivos_con_puertos_faltantes=[]
@@ -207,13 +181,8 @@ class MiApp(QtWidgets.QMainWindow):
         return df
 
     def complete_DAAS(self,df):
-        """
-        :param df: un DataFrame de pandas que contiene información sobre los dispositivos de red y sus
-        puertos
-        :return: un DataFrame modificado con nuevas filas agregadas para dispositivos a los que les faltan
-        puertos.
-        """
-
+        #:param df: un DataFrame de pandas que contiene información sobre los dispositivos de red y sus puertos
+        #:return: un DataFrame modificado con nuevas filas agregadas para dispositivos a los que les faltan puertos
         #todos_valores_num1: Da un rango de valores el cual va a completar los puertos COS, del rango 1-112,Creando una serie con todos los valores posibles de puerto
         #dispositivos:dispositivos guarda como valores unicos a la columna del Dataframe 'Dispositivo'
         #puertos: guarda los valores resultantes de realizar una separacion de los datos de la columna 'Puerto' que contenga el simbolo ':'
@@ -231,17 +200,13 @@ class MiApp(QtWidgets.QMainWindow):
         # Crear una serie con todos los valores posibles de puerto
         todos_los_valores = pd.Series(range(1, 49))
         todos_los_valores = pd.concat([pd.Series([0]), todos_los_valores, pd.Series([48])])
-
-        # Identificar dispositivos con puertos faltantes
-        dispositivos = df['Dispositivo'].unique()
+        dispositivos = df['Dispositivo'].unique()# Identificar dispositivos con puertos faltantes
         dispositivos_con_puertos_faltantes = []
-        #print(f"DF====>{df}")
         for dispositivo in dispositivos:
             puertos = df[df['Dispositivo'] == dispositivo]['Puerto'].apply(lambda x: int(x.split('/')[-1]))
             puertos_faltantes = todos_los_valores[~todos_los_valores.isin(puertos)]
             if len(puertos_faltantes) > 0:
                 dispositivos_con_puertos_faltantes.append(dispositivo)
-
         # Crear DataFrame con nuevas filas para cada dispositivo
         nuevas_filas = []
         for dispositivo in dispositivos_con_puertos_faltantes:
@@ -258,9 +223,7 @@ class MiApp(QtWidgets.QMainWindow):
                         ip=np.nan
                     nuevas_filas.append((ip, dispositivo, puerto_str, np.nan, np.nan, "PUERTOLIBRE"))
         nuevas_filas_df = pd.DataFrame(nuevas_filas, columns=df.columns)
-
-        # Concatenar DataFrame original con nuevas filas y ordenar por dispositivo y puerto
-        df = pd.concat([df, nuevas_filas_df]).sort_values(['Dispositivo', 'Puerto']).reset_index(drop=True)
+        df = pd.concat([df, nuevas_filas_df]).sort_values(['Dispositivo', 'Puerto']).reset_index(drop=True)# Concatenar DataFrame original con nuevas filas y ordenar por dispositivo y puerto
         df=df.drop_duplicates()
         return df
 
@@ -277,7 +240,6 @@ class MiApp(QtWidgets.QMainWindow):
         indice_IP2=valor__list_IP[0]
         indice_Dispositivo=valor_list_dispositivo[0]
         Dispositivo= df.loc[indice_Dispositivo, "Dispositivo"]
-
         se_daas=Dispositivo.find("-")
         sel_daas=Dispositivo.find("-",se_daas+1)
         sele_daas=Dispositivo.find("-",sel_daas+1)
@@ -293,8 +255,6 @@ class MiApp(QtWidgets.QMainWindow):
         SLICE_IP2=IP2.find(".",Slic_IP2+1)
         filter_IP=int(IP[SLICE_IP+1:])
         filter_IP2=int(IP2[SLICE_IP2+1:])
-        #print(f"filter_IP==>{filter_IP}")
-        #print(f"filter_IP2==>{filter_IP2}")
         return Dispositivo,filter_IP,filter_IP2,int(filter_Daas)
 
 # The code defines a method called "filtrado_COS_DAAS" that takes no arguments. Within the method, it
@@ -362,9 +322,7 @@ class MiApp(QtWidgets.QMainWindow):
             df_cos=pd.DataFrame(self.file_despues_COS)      #Lee el archivo encontrado de COS
             df_cos=df_cos.loc[:,['IP','Dispositivo','Puerto','ID','moka','status','ptp']]
             #print(df_cos)
-            
-            df_out=self.complet_COS(df_cos)
-            
+            df_out=self.complet_COS(df_cos)           
             df_out=df_out[df_out['Dispositivo'].str.contains(variable3,case=False,na=False,regex=True)]
             ptp="unlocked"      #utiliza la palabra clave "unlocked" para reducir la cantidad de resultados
             df_out2=df_out[df_out['ptp'].str.contains(ptp,case=False,na=False,regex=True)]#*Filtrado columna ptp
@@ -449,8 +407,7 @@ class MiApp(QtWidgets.QMainWindow):
         try:
             self.variable=self.ui.lineEdit_buscar.text()#*Toma lo que se ingrese en el LineEdit y lo pasa como texto almacenandolo en una variable
             self.variable=self.variable.upper()#*Debido a que todas las letras en la columna esta en mayuscula no importa lo que se digite en el LineEdit, lo transforma a mayuscula para facilitar el filtrado
-            filtro,COS,DAAS=self.filtrado_COS_DAAS()
-            
+            filtro,COS,DAAS=self.filtrado_COS_DAAS()        
             if not (filtro['Description'].str.contains(self.variable,case=False,na=False,regex=True)!=self.variable).any() == (self.filtro['Description'].str.contains(self.variable,case=False,na=False,regex=True)==self.variable).any():#*Revisa con contains si lo ingresado en variable existe dentro del dataframe, si no existe continua sin realizar ningun proceso
                     #print(self.filtro)
                     if  not self.variable=='':#*Con esta condicion revisa que que lo ingresado no este vacio y si lo esta no realiza ninguna operación
@@ -460,17 +417,14 @@ class MiApp(QtWidgets.QMainWindow):
                         y=len(df_fila)#*Toma el tamaño o longitud de la variable para luego recorrerlo en un for                          
                         self.ui.tableWidget.setRowCount(y)#*inserta en el tableWidget la cantidad de filas que se van a mostrar                        
                         self.ui.tableWidget.setColumnCount(x)#*inserta en el tableWidget la cantidad de columnas que se van a mostrar                         
-  
                         for j in range(x):#*Recorre las columnas 
                             encabezado=QtWidgets.QTableWidgetItem(columnas[j])#*Guarda los encabezados de cada columna
-                            self.ui.tableWidget.setHorizontalHeaderItem(j,encabezado)#*Insterta en la tabla los encabezados guardados anteriormente
-                            
+                            self.ui.tableWidget.setHorizontalHeaderItem(j,encabezado)#*Insterta en la tabla los encabezados guardados anteriormente                           
                             for i in range (y):#*Recorre las filas
                                 dato= str(df_fila[i][j])#*guarda en una lista posicion a posicion de los datos filtrados
                                 if dato == 'nan':#*Revisa si hay algun dato vacio y si es asi colocarlo en blanco
                                     dato=''
-                                self.ui.tableWidget.setItem(i,j,QTableWidgetItem(dato))#*Inserta posicion a posicion en el tableWidget
-                                                        
+                                self.ui.tableWidget.setItem(i,j,QTableWidgetItem(dato))#*Inserta posicion a posicion en el tableWidget                                                       
                     else:
                         pass
             else:
@@ -497,14 +451,11 @@ class MiApp(QtWidgets.QMainWindow):
         except FileNotFoundError:#*si hay un error con el archivo, si esta dañado o no corresponde algo, captura el error y lo muestra en un MessageBox
             QMessageBox.about(self,'Informacion', 'El archivo esta \n malogrado')
             return None                         
-
         self.ui.tabla.setRowCount(yy)#*inserta en el tableWidget la cantidad de filas que se van a mostrar                        
-        self.ui.tabla.setColumnCount(xx)#*inserta en el tableWidget la cantidad de columnas que se van a mostrar                         
-            
+        self.ui.tabla.setColumnCount(xx)#*inserta en el tableWidget la cantidad de columnas que se van a mostrar                                   
         for jj in range(xx):#*Recorre las columnas 
             encabezado2=QtWidgets.QTableWidgetItem(columnas2[jj])#*Guarda los encabezados de cada columna
-            self.ui.tabla.setHorizontalHeaderItem(jj,encabezado2)#*Insterta en la tabla los encabezados guardados anteriormente
-                                
+            self.ui.tabla.setHorizontalHeaderItem(jj,encabezado2)#*Insterta en la tabla los encabezados guardados anteriormente                              
             for ii in range (yy):#*Recorre las filas
                 dato2= str(df_fila2[ii][jj])#*guarda en una lista posicion a posicion de los datos filtrados
                 if dato2 == 'nan':#*Revisa si hay algun dato vacio y si es asi colocarlo en blanco
@@ -525,30 +476,22 @@ class MiApp(QtWidgets.QMainWindow):
         except FileNotFoundError:#*si hay un error con el archivo, si esta dañado o no corresponde algo, captura el error y lo muestra en un MessageBox
             QMessageBox.about(self,'Informacion', 'El archivo esta \n malogrado')
             return None                         
-
         self.ui.tabla2.setRowCount(yy)#*inserta en el tableWidget la cantidad de filas que se van a mostrar                        
         self.ui.tabla2.setColumnCount(xx)#*inserta en el tableWidget la cantidad de columnas que se van a mostrar                         
             
         for jj in range(xx):#*Recorre las columnas 
             encabezado2=QtWidgets.QTableWidgetItem(columnas2[jj])#*Guarda los encabezados de cada columna
-            self.ui.tabla2.setHorizontalHeaderItem(jj,encabezado2)#*Insterta en la tabla los encabezados guardados anteriormente
-                                
+            self.ui.tabla2.setHorizontalHeaderItem(jj,encabezado2)#*Insterta en la tabla los encabezados guardados anteriormente                               
             for ii in range (yy):#*Recorre las filas
                 dato2= str(df_fila2[ii][jj])#*guarda en una lista posicion a posicion de los datos filtrados
                 if dato2 == 'nan':#*Revisa si hay algun dato vacio y si es asi colocarlo en blanco
                     dato2=''
                 self.ui.tabla2.setItem(ii,jj,QTableWidgetItem(dato2))#*Inserta posicion a posicion en el tableWidget          
     def control_bt_minimizar(self):
-        """
-        Esta función minimiza la ventana del programa.
-        """
-        self.showMinimized()
+        self.showMinimized()#minimiza la ventana del programa.
       
     def control_close(self):
-        """
-        La función "control_close" cierra el programa.
-        """
-        self.close()
+        self.close()#cierra el programa.
 
     def resizeEven(self,event):
         rect=self.rect()
@@ -569,15 +512,11 @@ class MiApp(QtWidgets.QMainWindow):
               self.showNormal()    
   
     def upload_file(self):
-        #ad: cuando se presione el botón, llamara a la Clase Ui_ADVERTENCIA.
-        #Muestra en pantalla esa ventana
-        self.ad=Ui_ADVERTENCIA()
-        self.ad.show()
+        self.ad=Ui_ADVERTENCIA()#ad: cuando se presione el botón, llamara a la Clase Ui_ADVERTENCIA.
+        self.ad.show()#Muestra en pantalla esa ventana
         
     def cancelar_stop(self):
-        """
-        Esta función cancela una parada y restablece ciertas variables.
-        """
+        #Esta función cancela una parada y restablece ciertas variables.
         # El código anterior es un fragmento de código de Python que establece el valor de algunas variables y
         # crea un nuevo objeto ClientContext. Luego ejecuta una consulta sobre el contexto e imprime el valor
         # de una variable. Finalmente, establece el valor de dos variables más en False y 0 respectivamente.
@@ -606,21 +545,17 @@ class MiApp(QtWidgets.QMainWindow):
             f"Por favor intente subir primero los datos nuevamente")   
         
     def seleccion_archivo(self):
-        #seleccion: Almacena el valor que se seleccione del comboBox
-        seleccion=self.ui.comboBox.itemText(self.ui.comboBox.currentIndex())
+        seleccion=self.ui.comboBox.itemText(self.ui.comboBox.currentIndex())#seleccion: Almacena el valor que se seleccione del comboBox
         #print(seleccion)   
         return seleccion
     
     def seleccion_archivo_2(self):
-        #seleccion_2: Almacena el valor que se seleccione del comboBox
-        self.seleccion_2=self.ui.comboBox2.itemText(self.ui.comboBox2.currentIndex())
+        self.seleccion_2=self.ui.comboBox2.itemText(self.ui.comboBox2.currentIndex())#seleccion_2: Almacena el valor que se seleccione del comboBox
         #print(self.seleccion_2)   
         return self.seleccion_2    
 
     def download_LISTS(self,pbar):
-        """
-        Esta función descarga una lista específica y la guarda en una carpeta específica.
-        """
+        #Esta función descarga una lista específica y la guarda en una carpeta específica.
         #LIST_NAME: Extrae del LineEdit el nombre de la lista el cual se va a descargar
         #FILE_NAME: Del nombre que se seleccione del comboBox se guardara una lista con ese nombre
         #De la ruta guardada, se extraera del archivo .env, la ruta en la cual se va a guardar el archivo descargado
@@ -640,8 +575,6 @@ class MiApp(QtWidgets.QMainWindow):
                 file_name= modules.models.download_lists.Type_file(FILE_NAME,EXPORT_TYPE)
                 downloader_thread = threading.Thread(target=modules.models.download_lists.download_list,args=(LIST_NAME,EXPORT_TYPE,FOLDER_DEST,file_name,self.signal_handler))
                 downloader_thread.start()
-                    
-                #########################################
         except PermissionError as e:
                 QMessageBox.warning(self,'Error','Ruta no valida',
                 QMessageBox.StandardButton.Close,
@@ -652,9 +585,7 @@ class MiApp(QtWidgets.QMainWindow):
                 QMessageBox.StandardButton.Close)
 
     def upload_LIST(self):
-        """
-        La función crea un hilo para cargar una lista y establece una variable en 1.
-        """
+        #La función crea un hilo para cargar una lista y establece una variable en 1.
         ssl._create_default_https_context=ssl._create_unverified_context
         self.upload_thread = threading.Thread(target=self.subir_list)
         
@@ -664,8 +595,6 @@ class MiApp(QtWidgets.QMainWindow):
            
     def update_progress_bar(self,progress):
         self.ui.progressBar_2.setValue(progress)
-
-######################################################################################
 
     def obtener_dataframes(self,name_files,ruta_de_busqueda):            
             """    
@@ -703,20 +632,11 @@ class MiApp(QtWidgets.QMainWindow):
                 arris_df=dataframes['Arris_SCMSummary.xlsx']
                 Casa_df=dataframes['Casa_SCMSummary.xlsx']               
                 COS_df=dataframes['Ocupacion-Harmonic_COS.xlsx']
-                DAAS_df=dataframes['Ocupacion- RPHY Harmonic_DAAS.xlsx']
-                '''for key in dataframes.keys():
-                    print(key)  # Imprimir las claves del diccionario
-                if 'Hoja5_Ocupacion - Marcacion RPHY Harmonic.xlsx' in dataframes.keys():
-                    ocupacion_Cos = dataframes['Hoja5_Ocupacion - Marcacion RPHY Harmonic.xlsx']
-                    print(ocupacion_Cos)
-                if 'Hoja2_Ocupacion - Marcacion RPHY Harmonic.xlsx' in dataframes.keys():
-                        ocupacion_Daas = dataframes['Hoja2_Ocupacion - Marcacion RPHY Harmonic.xlsx']'''
-                        
+                DAAS_df=dataframes['Ocupacion- RPHY Harmonic_DAAS.xlsx']     
                 return arris_df,DAAS_df,COS_df,Casa_df
   
     def search_file_filter(self):
-         #   Esta función busca archivos en función de un filtro y muestra los resultados en un cuadro de
-         #   mensaje.
+         # Esta función busca archivos en función de un filtro y muestra los resultados en un cuadro de mensaje.
          # El código anterior es un bloque de código de Python que intenta ejecutar un conjunto de
          # instrucciones. Primero obtiene el valor de una variable llamada `old_path_list_download` del
          # entorno, la agrega a una lista llamada `ruta_de_busqueda` y luego imprime el contenido de la lista y
@@ -728,10 +648,6 @@ class MiApp(QtWidgets.QMainWindow):
                 self.ruta_de_busqueda.append(old_path_list_download)
                 #print(self.ruta_de_busqueda)
                 self.file_arris,self.file_despues_DAAS,self.file_despues_COS,self.file_casa=self.read_data()
-                #print(f"file_arris==>{self.file_arris}")
-                #print(f"file_despues_DAAS==>{self.file_despues_DAAS}")
-                #print(f"file_depues_COS==>{self.file_despues_COS}")
-                #print(f"file_casa==>{self.file_casa}")
                 self.sch=1
                 QMessageBox.information(self,"OPERACION",
                 "La operación se ha completado correctamente",
@@ -739,10 +655,8 @@ class MiApp(QtWidgets.QMainWindow):
                 QMessageBox.StandardButton.Ok)
          except KeyError as e:
                 print(f"Error:{e}")  
-##########################################################################################
 
     def subir_list(self):
-
         self.btc_stop=1
         ssl._create_default_https_context=ssl._create_unverified_context
         self.continuar_subida=True
@@ -756,35 +670,21 @@ class MiApp(QtWidgets.QMainWindow):
         self.last_index = 0 # índice del último elemento agregado
         commit_count=0
         commit_interval=50#cantidad de datos que manda por cada paquete
-                # Manejar interrupciones y desconexiones, guardar el índice del último elemento agregado antes de la interrupción o desconexión
-                #######################################################################################
         last_saved_index = 0
         max_attempts = 5 #Maxima cantidad de intentos que va a realizar el programa antes de acabarse
         attempt_count = 0
-        total_items=0
         cout=0
         auth=True
-
         while auth==True:
             try:
                 auth_context = AuthenticationContext(url)
                 auth_context.acquire_token_for_user(username, password)
-                #ssl._create_default_https_context=ssl._create_unverified_context
-                #self.ctx=ClientContext(url).with_credentials(
-                #            UserCredential(
-                #                username,
-                #                password
-                #            )
-                #        )
-                        #############################################################################
                 ssl._create_default_https_context=ssl._create_unverified_context #*Quita la seguridad de número exedido de subida de datos
                 self.ctx = ClientContext(url, auth_context)
                 self.ctx.clear
-                        #############################################################################
                 list_title =self.ui.lineEdit_buscar_2.text()##!NOMBRE LISTA
                 print(list_title)
-                Sp_list = self.ctx.web.lists.get_by_title(list_title)#*Acceder a la lista
-                    
+                Sp_list = self.ctx.web.lists.get_by_title(list_title)#*Acceder a la lista            
                 print(Sp_list)
                 self.ctx.load(Sp_list)
                 self.ctx.execute_query()
@@ -801,8 +701,7 @@ class MiApp(QtWidgets.QMainWindow):
         
         data={}
         chunk=0
-        item_pro={}
-        
+        item_pro={}   
         print(self.process==True)
         while self.process==True:#Esta condicion solo cambiara cuando se ejecuta la funcion cancelar_stop o termine de enviar los datos
             print("BBBBBBBB")
@@ -822,11 +721,9 @@ class MiApp(QtWidgets.QMainWindow):
                             if header in cabeceras:
                                 cont1+=1
                                 if cont1==9:
-                                    file_2=file.loc[:,['CMTS','S/CG/CH','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']].fillna(value='No Data')
-                                    #file_2=file.loc[:,['CMTS','S/CG/CH','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
+                                    file_2=file.loc[:,['CMTS','S/CG/CH','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
                                     file_2=file_2.rename(columns={"S/CG/CH":"Up"})
-                                    file_2[['Up','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']] = file_2[['Up','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']].astype(str)
-                                    #file_2[['Up','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']] = file_2[['Up','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
+                                    file_2[['Up','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']] = file_2[['Up','Mac','Conn','Total','Oper','Disable','Init','Offline','Description']].astype(str)#*Convierte los valores de estas columnas a tipo str
                                     data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario
                                     flagg=1
             # El código lee un archivo de Excel y verifica si contiene una hoja específica llamada
@@ -864,28 +761,23 @@ class MiApp(QtWidgets.QMainWindow):
                             file_2[['IP','Dispositivo','Puerto','moka','status','ptp']] = file_2[['IP','Dispositivo','Puerto','moka','status','ptp']].astype(str)#*Convierte los valores de estas columnas a tipo str
                             data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
                             flagg=4 
-            elif ("Ocupacion - Marcacion RPHY Harmonic" in excel_file) and ("DAAS" in list_title) :
-                        
+            elif ("Ocupacion - Marcacion RPHY Harmonic" in excel_file) and ("DAAS" in list_title) :                       
                         df = pd.read_excel(excel_file,sheet_name='Hoja2',engine='openpyxl')
                         file=pd.DataFrame(df)
                         cont3=0
-                        print("c")
-                        
+                        print("c")                    
                         cabeceras=list(file.columns)
                         headers=['IP','Dispositivo','Puerto','status','Unnamed: 4','Unnamed: 5']        
                         for header in headers:
                             if header in cabeceras:
                                 cont3+=1
-                                if cont3==6:
-                                    
+                                if cont3==6:                 
                                     file_2=file.loc[:,['IP','Dispositivo','Puerto','status','Unnamed: 4','Unnamed: 5']].fillna(value='No Data')#*Filtra las columnas y si en esas columnas no hay ningún valor coloca "No Data"
                                     file_2=file.rename(columns={"Unnamed: 4":"stat2","Unnamed: 5":"ptp"})
-                                    #file_2[['IP','Dispositivo','Puerto','status']] = file_2[['IP','Dispositivo','Puerto','status']].astype(str)#*Convierte los valores de estas columnas a tipo str
                                     file_2[['IP','Dispositivo','Puerto','status','stat2','ptp']] = file_2[['IP','Dispositivo','Puerto','status','stat2','ptp']].astype(str)#*Convierte los valores de estas columnas a tipo str
                                     print(file_2)
                                     data = file_2.to_dict('records')#*Convierte el dataframe ya filtrado, en un diccionario 
                                     flagg=3
-
             # El código anterior es un script de Python que inserta datos en una lista de SharePoint mediante la
             # API REST de SharePoint. Incluye manejo de errores para errores HTTP y otras excepciones que pueden
             # ocurrir durante el proceso de inserción. El código también incluye una barra de progreso para
@@ -894,8 +786,7 @@ class MiApp(QtWidgets.QMainWindow):
             # elementos. El código también verifica el valor de ciertas variables y realiza diferentes acciones en
             # función de sus valores.
 
-            try:    
-                            
+            try:                     
                             print(self.flag==1)
             # El código anterior es un fragmento de código de Python que contiene una declaración if-else.
             # Comprueba el valor de la variable `self.flag` y realiza diferentes acciones en función de su valor.
@@ -918,7 +809,6 @@ class MiApp(QtWidgets.QMainWindow):
                                     print(self.flag==1)
 
                             while last_saved_index < len(data): 
-                                
                                 if  index_saved==False:
                                     self.saved_index=last_saved_index
                                     self.count2=count
@@ -961,26 +851,21 @@ class MiApp(QtWidgets.QMainWindow):
                                                 Sp_list.clear()
                                                 commit_count=0
                                             
-                                            break  #* Si la inserción es exitosa, salir del ciclo for
-                                                
+                                            break  #* Si la inserción es exitosa, salir del ciclo for                                               
                                         except requests.exceptions.HTTPError as http_error:
                                             cout+=1
                                             print(f"Error de HTTP al agregar el elemento #{c}: {http_error}")
                                             time.sleep(5)  #* Esperar 5 segundos antes de intentar de nuevo
-                                            #count=last_saved_index
                                             continue
-                                        except Exception as e:
-                                            
+                                        except Exception as e:                                        
                                             print(f"Error en el intento {i+1} de inserción para el elemento #{c}: {e}")  
                                             self.count2=count                            
                                             cout+=1
                                             time.sleep(5)  #*Esperar 5 segundos antes de intentar de nuevo
-                                            if i == max_attempts - 1:
-                                                # Si se alcanza el número máximo de intentos sin éxito, salir del programa
+                                            if i == max_attempts - 1: # Si se alcanza el número máximo de intentos sin éxito, salir del programa
                                                 print(f"No se pudo agregar el elemento #{c} después de {max_attempts} intentos. Saliendo del programa...")
                                                 break
-                                                
-                                    
+                                                                             
                                     if commit_count==commit_interval:
                                         print("h")
                                         self.ctx.execute_batch()                                                  
@@ -1034,23 +919,19 @@ class MiApp(QtWidgets.QMainWindow):
                             else:
                                 continue
                             continue
-                            
                             continue
-                            
+                                       
     def save_path_list(self):
         #Revisa que el nombre del archivo en el LineEdit no este vacio y si es asi lo guarde como ya estaba guardado
         # y si tiene algo nuevo lo guarde en el archivo y lo tome como la nueva ruta
         path_list = self.ui.lineEdit_Path_lists.text()
-        # Obtenemos el valor anterior de path_list_download del archivo .env
-        old_path_list_download = env.get('path_list_download', '')
+        old_path_list_download = env.get('path_list_download', '')# Obtenemos el valor anterior de path_list_download del archivo .env
         print(f"path_list==>{path_list}")
-
         if path_list=='':
             print("a")
             new_path_list_download = old_path_list_download
             self.ui.lineEdit_Path_lists.setText('')
-            self.ruta_de_busqueda.append(old_path_list_download)  
-            
+            self.ruta_de_busqueda.append(old_path_list_download)            
         else:
             print("b")
             new_path_list_download = path_list + "\\descarga"
@@ -1073,7 +954,6 @@ class MiApp(QtWidgets.QMainWindow):
         # y si tiene algo nuevo lo guarde en el archivo y lo tome como la nueva ruta
         path_Sharepoint=self.ui.lineEdit_site_Sharepoint.text()
         old_path_path_sharepoint = env.get('sharepoint_url_site', '')
-
         if path_Sharepoint=='':
             print("a")
             new_path_Sharepoint = old_path_path_sharepoint
@@ -1107,7 +987,6 @@ class MiApp(QtWidgets.QMainWindow):
             self.ui.lineEdit_folder_subir_archivo.setText('')
         print(f"name_folder_Sharepoint==>{new_path_folder_name}")    
         set_key(".env","sharepoint_name_folder",new_path_folder_name)   
-
 if __name__=="__main__":
     app=QtWidgets.QApplication(sys.argv)
     mi_app=MiApp()

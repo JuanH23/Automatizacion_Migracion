@@ -1,5 +1,4 @@
 from modules.models.office365_api import SharePoint
-import sys
 import csv
 from pathlib import PurePath
 from pathlib import Path
@@ -7,14 +6,10 @@ from openpyxl import Workbook
 import pandas as pd
 import time
 import threading
-import os
 import ssl
 from openpyxl import load_workbook
 from modules.statics.Estructura_principal_FINAL import *
-from tqdm import tqdm
-from PyQt5 import QtCore, QtGui, QtWidgets
-from concurrent.futures import ThreadPoolExecutor
-from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtCore import pyqtSignal
 download_finished = pyqtSignal()
 download_finished=pyqtSignal()
 def Type_file(file_name,export_type):
@@ -60,7 +55,6 @@ def download_list(list_name,export_type,dir_path,file_name,signal_handler):
     
 
 def save_file_csv(list_items,dir_path,file_name):
-
     dir_file_path=PurePath(dir_path,file_name)
     with open (dir_file_path,'w',newline='\n',encoding='utf8') as f:
         header=list_items[0].properties.keys()
@@ -68,7 +62,6 @@ def save_file_csv(list_items,dir_path,file_name):
         w.writeheader()
         for item in list_items:
             w.writerow(item.properties)
-
 
 def save_Execel(list_items,dir_path,file_name):
     ssl._create_default_https_context=ssl._create_unverified_context   

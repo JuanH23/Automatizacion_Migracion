@@ -13,7 +13,6 @@
 
 *[Instalación librerias](#Para-instalar-las-librerias)
 
-*[Creación de ejecutable](#Creación-de-ejecutable)
 
 *[Creación de ejecutable](#Creación-de-ejecutable)
 

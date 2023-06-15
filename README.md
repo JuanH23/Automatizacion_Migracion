@@ -215,6 +215,7 @@ Este archivo contiene funciones, principalmente, para la descarga de las listas 
 Este archivo contiene diferentes funcionalidades que utiliza principalmente de la librería, openpyxl, específicamente de openpyxl.styles, en donde se genera el diseño de los nodos, dependiendo si se selecciona un nodo 1 x 2 o 2 x 4, obteniendo texto del resultado final del Dataframe filtrado, caracterizando las celdas necesarias con color de fondo, rellenos, contorno, tipo de letra, tamaño de celda, tamaño de texto, ajustándose la información en el espacio de "SCRIPT  ANTES-NOC CABLE", dependiendo de la cantidad de información que tenga un nodo, seleccionando un puerto en específico dentro de los disponibles y coincidentes entre el dispositivo COS y el dispositivo DAAS, y dejando solo uno para el diseño final. 
 ## filter_daas
 Este archivo hace procesamiento de datos del Dataframe de los dispositivos Daas, el cual reordena los puertos de los dispositivos, sumando valores cuando se tiene más de un dispositivo, en vez de que cada uno vaya de un rango del 1-48, el segundo comience desde 49-96, además de realizar la selección del puerto que va a ir a la creación del formato del diseño, retornando la variable filas_aleatorias, la cual se va a colocar en las celdas del Excel que se genera.       
-## Prueba_formato
-Este archivo contiene diferentes funcionalidades que utiliza principalmente de la librería, openpyxl,    
+
+
+
 ----

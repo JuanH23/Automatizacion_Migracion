@@ -24,21 +24,26 @@ def upload_files(folder,keyword=None):
 # Este código define una función llamada `upload_files` que toma dos parámetros: `carpeta` y `palabra
 # clave`.
     c=0
+    cfiles=0
     file_list=get_list_of_files(folder)
-    for file in file_list:
-        if keyword is None or keyword == 'None' or re.search(keyword,file[0]):
-            file_content=get_file_content(file[1])
-            
-            try:
-                    
-                    SharePoint().upload_file(file[0],SHAREPOINT_FOLDER__NAME,file_content)   
-                    print("ARCHIVOS SUBIDOS")
-            except:
+    while cfiles != len(file_list):
+        for file in file_list:
+            if keyword is None or keyword == 'None' or re.search(keyword,file[0]):
+                file_content=get_file_content(file[1])
+                
+                print(f"count==>{cfiles}")
+                print(f"len(file_list)==>{len(file_list)}")
+                try:              
+                        SharePoint().upload_file(file[0],SHAREPOINT_FOLDER__NAME,file_content)   
+                        print("ARCHIVOS SUBIDOS")
+                        cfiles+=1
+                        if cfiles == len(file_list):
+                             break
+                except:
                         c+=1
                         print(f"error MFA, reintentando conectar #{c}")
                         time.sleep(2)
-
-                        continue  
+                        continue 
                         
 def get_list_of_files(folder):
     """

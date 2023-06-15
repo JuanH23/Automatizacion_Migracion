@@ -77,9 +77,9 @@ Las principales librerías utilizadas son:
 ------
 ### Creación-de-ejecutable 
 - para realizar la creación del aplicativo .exe se utiliza la librería pyinstaller. 
-- ubíquese en la ruta donde se encuentra el archivo principal, desde el terminal o cmd
-- coloque el siguiente comando ` pyinstaller --clean --onefile --windowed [FILE].py`
-- De la carpeta dist saque el ejecutable que se acaba de crear y cámbielo a la ubicación del archivo principal.
+1. ubíquese en la ruta donde se encuentra el archivo principal, desde el terminal o cmd
+2. coloque el siguiente comando ` pyinstaller --clean --onefile --windowed [FILE].py`
+3. De la carpeta dist saque el ejecutable que se acaba de crear y cámbielo a la ubicación del archivo principal.
 ## Nota:
 
 Para el uso del aplicativo, cree dos archivos de entorno.

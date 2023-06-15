@@ -1,11 +1,11 @@
-import sys
-from PyQt5.QtWidgets import (QApplication,QWidget,QLineEdit,QMessageBox,QLineEdit,QMessageBox)
+from PyQt5.QtWidgets import (QApplication,QWidget,QLineEdit,QMessageBox)
 from modules.models.main import MiApp
-from modules.models.Config_User import ConfigUsuarioView
-from dotenv import set_key,dotenv_values
 from modules.statics.Login_Final import*
 from modules.models.search_files import*
+from modules.models.Config_User import ConfigUsuarioView
+from dotenv import set_key,dotenv_values
 from dotenv import load_dotenv
+import sys
 load_dotenv()
 class Login(QWidget):
         def __init__(self):
@@ -13,8 +13,7 @@ class Login(QWidget):
             self.ui=Ui_Form()
             self.ui.setupUi(self)
             self.ui.Login_button.clicked.connect(self.login) 
-             #*Button Config
-            self.ui.Config_button.clicked.connect(self.config_usuario)
+            self.ui.Config_button.clicked.connect(self.config_usuario)#*Button Config
             self.ui.Close_button.clicked.connect(self.control_close)          
             self.is_loged=False     
             self.ui.lineEdit_2.setEchoMode(     #Label de usuario

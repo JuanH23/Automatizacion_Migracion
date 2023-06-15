@@ -58,7 +58,7 @@ class Ui_ADVERTENCIA(QDialog):
         self.label_2 = QtWidgets.QLabel(self)
         self.label_2.setGeometry(QtCore.QRect(30, 40, 41, 41))
         self.label_2.setText("")
-        self.label_2.setPixmap(QtGui.QPixmap("images/advertencia.png"))
+        self.label_2.setPixmap(QtGui.QPixmap("modules/images/advertencia.png"))
         self.label_2.setObjectName("label_2")
 
         QtCore.QMetaObject.connectSlotsByName(self)

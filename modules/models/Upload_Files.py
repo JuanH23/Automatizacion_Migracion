@@ -5,7 +5,6 @@ from pathlib import PurePath
 from dotenv import set_key,dotenv_values
 from dotenv import load_dotenv
 import time
-from PyQt5.QtWidgets import QMessageBox
 load_dotenv()
 #Ruta a donde se va a subir
 #Path de computador de desde donde se va a subir el archivo
@@ -13,7 +12,6 @@ ROOT_DIR=""
 #Nombre del archivo, incluye subfolders para subir
 #Ruta de SharePoint a donde se va a subir 
 env=dotenv_values(".env")
-ROOT_DIR="C:\\Users\IC0167A\Desktop\Proyecto_final\prueba_s"
 SHAREPOINT_FOLDER__NAME=env["sharepoint_name_folder"]
 #archivo nombre pattern, si se quiere subir un archivo en especifico colocar en ese parametro el nombre sin extension
 FILE_NAME_PATTERN='None'

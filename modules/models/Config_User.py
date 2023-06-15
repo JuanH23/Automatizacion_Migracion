@@ -1,6 +1,5 @@
 
-from PyQt5.QtWidgets import (QDialog,QLabel,QPushButton,QLineEdit,QMessageBox,)
-from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import (QDialog,QLineEdit,QMessageBox,)
 from dotenv import set_key,dotenv_values
 from modules.statics.Config import*
 class ConfigUsuarioView(QDialog):

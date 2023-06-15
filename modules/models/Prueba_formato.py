@@ -7,13 +7,8 @@ import openpyxl
 import os
 from dotenv import set_key,dotenv_values 
 from modules.models.Advertencia import*
-import numpy as np
-import random
-from PyQt5.QtWidgets import QMessageBox
-from PyQt5.QtCore import QTimer
 from modules.models.filter_daas import sum_daas
 def diseño(df,df_cos_daas,name_file,filter_daas,type_node): # Crear DataFrame con información
-
     ###########
     env=dotenv_values(".env")
     ruth_list_download= env["path_list_download"]
@@ -26,20 +21,16 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node): # Crear DataFrame c
         file_name='Diseño Segmentaciones RPHY 2x4-NODO '
 
     ruta_archivo = os.path.join(ruta_nueva_carpeta,file_name+ name_file +'.xlsx')
-
     ###########
     archivo_excel = pd.ExcelWriter(ruta_archivo, engine='openpyxl')     # Crear archivo Excel desde cero y escribir información del DataFrame
-
     df_cd=pd.DataFrame(df_cos_daas)                                     # Escribir el DataFrame en el archivo Excel
     print(f"df_cd==>{df_cd}")
     ################################################################ 
     df.to_excel(archivo_excel,sheet_name='Hoja1' ,index=False)
     ################################################################
-    hoja = archivo_excel.sheets['Hoja1']
-    
+    hoja = archivo_excel.sheets['Hoja1']   
     workbook = archivo_excel.book   # Obtener el libro de trabajo y la hoja
     worksheet = workbook.active
-    
     #######################
     # Escribir la primera columna del dataframe en la columna A de la hoja de trabajo
     columna = 1  # Columna A
@@ -69,7 +60,7 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node): # Crear DataFrame c
     
     columna = worksheet["C"]
     rango=columna[3:12]
-    
+  
     for celda in rango:     # bucle para establecer el valor de cada celda en None
         celda.value = None
         
@@ -85,7 +76,6 @@ def diseño(df,df_cos_daas,name_file,filter_daas,type_node): # Crear DataFrame c
     for sheet_name in workbook.sheetnames:      # Recorrer todas las celdas y aplicar el relleno blanco
         sheet = workbook[sheet_name]
         
-
         # Obtener el número de filas y columnas de la hoja
         max_row = sheet.max_row
         max_col = sheet.max_column

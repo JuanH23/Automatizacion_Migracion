@@ -1,7 +1,6 @@
 import sys
 from modules.statics.Estructura_principal_FINAL import*
 from PyQt5.QtWidgets import QTableWidgetItem,QFileDialog,QMessageBox
-from PyQt5 import QtCore
 from PyQt5 import QtCore, QtWidgets
 import pandas as pd
 import modules.models.download_lists

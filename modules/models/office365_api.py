@@ -1,6 +1,4 @@
-import environ
-from office365.sharepoint.client_context import ClientContext
-from office365.runtime.auth.user_credential import UserCredential 
+from office365.sharepoint.client_context import ClientContext 
 from office365.sharepoint.files.file import File
 import ssl
 from office365.runtime.auth.authentication_context import AuthenticationContext
@@ -25,12 +23,6 @@ class SharePoint:
         auth_context = AuthenticationContext(SHAREPOINT_SITE)
         auth_context.acquire_token_for_user(USERNAME, PASSWORD)
         conn = ClientContext(SHAREPOINT_SITE, auth_context)
-        #conn=ClientContext(SHAREPOINT_SITE).with_credentials(
-        #    UserCredential(
-        #        USERNAME,
-        #        PASSWORD
-        #    )
-        #)
         return conn
 
     def _get_files_list(self,folder_name):

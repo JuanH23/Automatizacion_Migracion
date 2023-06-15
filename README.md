@@ -27,6 +27,7 @@
 * [main.py](#main)
 * [office365_api.py](#office365_api)
 * [Prueba_formato.py](#Prueba_formato)
+* [Filter_daas.py](#filter_daas)
 
 
 ------
@@ -212,6 +213,6 @@ Este archivo contiene funciones, principalmente, para la descarga de las listas 
 - get_list(self,list_name): Esta función recupera todos los elementos de una lista de SharePoint con un nombre dado.
 ## Prueba_formato
 Este archivo contiene diferentes funcionalidades que utiliza principalmente de la librería, openpyxl, específicamente de openpyxl.styles, en donde se genera el diseño de los nodos, dependiendo si se selecciona un nodo 1 x 2 o 2 x 4, obteniendo texto del resultado final del Dataframe filtrado, caracterizando las celdas necesarias con color de fondo, rellenos, contorno, tipo de letra, tamaño de celda, tamaño de texto, ajustándose la información en el espacio de "SCRIPT  ANTES-NOC CABLE", dependiendo de la cantidad de información que tenga un nodo, seleccionando un puerto en específico dentro de los disponibles y coincidentes entre el dispositivo COS y el dispositivo DAAS, y dejando solo uno para el diseño final. 
-
-                
+## filter_daas
+    uhidfgdf            
 ----
